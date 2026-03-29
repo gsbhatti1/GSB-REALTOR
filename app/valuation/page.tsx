@@ -15,7 +15,7 @@ export default function ValuationPage() {
   const [form, setForm] = useState({
     address: '',
     city: '',
-    zip: '',
+    zip: '84084',
     bedrooms: '',
     bathrooms: '',
     sqft: '',
@@ -248,14 +248,13 @@ export default function ValuationPage() {
                       <button
                         type="button"
                         onClick={() => setStep(2)}
-                        disabled={!form.address || !form.city || !form.zip}
                         style={{
                           marginTop: '32px', width: '100%',
-                          background: form.address && form.city && form.zip ? 'linear-gradient(135deg, #C9A84C, #E2C070)' : 'rgba(255,255,255,0.05)',
-                          color: form.address && form.city && form.zip ? '#0A0A0A' : '#555',
+                          background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
+                          color: '#0A0A0A',
                           fontWeight: '600', fontSize: '15px',
                           padding: '16px', borderRadius: '10px',
-                          border: 'none', cursor: form.address && form.city && form.zip ? 'pointer' : 'not-allowed',
+                          border: 'none', cursor: 'pointer',
                           fontFamily: 'inherit', letterSpacing: '0.04em',
                           transition: 'all 0.2s',
                         }}

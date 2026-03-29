@@ -60,16 +60,17 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div style={{ position: 'relative', overflow: 'hidden', minHeight: '500px' }}>
+          <div style={{ position: 'relative', overflow: 'hidden', minHeight: '500px', height: '70vh' }}>
             <Image
               src="/images/gurpreet-fullbody.jpg"
               alt="Gurpreet Bhatti, Utah REALTOR®"
               fill
-              style={{ objectFit: 'cover', objectPosition: 'center top' }}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{ objectFit: 'cover', objectPosition: 'top center' }}
               priority
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #0A0A0A 0%, transparent 25%)' }} />
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '30%', background: 'linear-gradient(to top, #0A0A0A, transparent)' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, #0A0A0A 0%, transparent 30%)' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '25%', background: 'linear-gradient(to top, #0A0A0A, transparent)' }} />
           </div>
         </section>
 
