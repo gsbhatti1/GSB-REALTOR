@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── GSB Design System ─────────────────────── */
+:root {
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --gold:         #C9A84C;
+  --gold-light:   #E2C070;
+  --gold-dark:    #A8863A;
+  --black:        #0A0A0A;
+  --dark:         #111111;
+  --white:        #F5F3EE;
+  --gray:         #888888;
+}
+
+/* ─── Base ──────────────────────────────────── */
+* { box-sizing: border-box; padding: 0; margin: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--black);
+  color: var(--white);
+  line-height: 1.6;
+}
+
+/* ─── Typography ────────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Gold Gradient Text ────────────────────── */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #C9A84C 0%, #E2C070 50%, #A8863A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Scrollbar ─────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ─── Skeleton Loading ──────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Mapbox overrides ──────────────────────── */
+.mapboxgl-ctrl-logo,
+.mapboxgl-ctrl-attrib { display: none !important; }
+
+/* ─── Feature Cards ─────────────────────────── */
+.feature-card {
+  padding: 32px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  transition: border-color 0.3s;
+}
+.feature-card:hover {
+  border-color: rgba(201,168,76,0.25);
+}
+
+/* ─── City Pills ────────────────────────────── */
+.city-pill {
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px;
+  font-size: 14px;
+  color: rgba(245,243,238,0.8);
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.city-pill:hover {
+  border-color: rgba(201,168,76,0.5);
+  color: #C9A84C;
+  background: rgba(201,168,76,0.06);
+}
+
+/* ─── Buttons ───────────────────────────────── */
+.btn-gold {
+  display: inline-block;
+  background: linear-gradient(135deg, #C9A84C, #E2C070);
+  color: #0A0A0A;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.btn-gold:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-ghost {
+  display: inline-block;
+  background: transparent;
+  color: rgba(245,243,238,0.7);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+}
+.btn-ghost:hover {
+  border-color: rgba(201,168,76,0.4);
+  color: #C9A84C;
+}
+
+/* ─── Section Label ─────────────────────────── */
+.section-label {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C9A84C;
+}
+
+/* ─── Property Card ─────────────────────────── */
+.property-card-link { text-decoration: none; display: block; }
+
+.property-card {
+  background: #111;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.property-card:hover {
+  border-color: rgba(201,168,76,0.25);
+  transform: translateY(-2px);
+}
+.property-card img { transition: transform 0.4s ease; }
+.property-card:hover img { transform: scale(1.04); }
+
+/* ─── Price Tag ─────────────────────────────── */
+.price-tag {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #C9A84C;
+  margin-bottom: 8px;
+}
+
+/* ─── Input Field ───────────────────────────── */
+.input-field {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #F5F3EE;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.input-field:focus { border-color: rgba(201,168,76,0.4); }
+
+/* ─── Footer Link ───────────────────────────── */
+.footer-link {
+  font-size: 14px;
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: #C9A84C; }
+
+/* ─── Hero Mobile ───────────────────────────── */
+@media (max-width: 768px) {
+  .hero-grid { grid-template-columns: 1fr !important; }
+  .hero-photo { display: none !important; }
+  .hero-content {
+    background: linear-gradient(rgba(10,10,10,0.85), rgba(10,10,10,0.85)),
+    url('/images/gurpreet-hero.jpg') center/cover !important;
+  }
+}
