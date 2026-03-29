@@ -1,17 +1,12 @@
 export const dynamic = 'force-dynamic'
-
-/**
- * GSB REALTOR — PROPERTY SEARCH API
- * GET /api/search?city=...&minPrice=...&maxPrice=...etc
- * Server-side: hides WFRMLS bearer token from browser
- */
+export const revalidate = 0
 
 import { NextRequest, NextResponse } from 'next/server'
 import { searchProperties, SearchFilters } from '@/lib/mls'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const searchParams = request.nextUrl.searchParams
 
     const filters: SearchFilters = {
       city:           searchParams.get('city') || undefined,
@@ -37,17 +32,14 @@ export async function GET(request: NextRequest) {
     const result = await searchProperties(filters)
 
     return NextResponse.json(result, {
-      headers: {
-        // Cache search results for 5 minutes in browser
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
-      },
+      headers: { 'Cache-Control': 'no-store' },
     })
 
   } catch (error) {
     console.error('Search API error:', error)
     return NextResponse.json(
-      { error: 'Search failed. Please try again.' },
-      { status: 500 }
+      { properties: [], total: 0, hasMore: false },
+      { status: 200 }
     )
   }
 }
