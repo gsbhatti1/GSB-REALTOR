@@ -41,7 +41,6 @@ export default async function ListingPage({ params }: Props) {
     { label: 'Garage',       value: property.GarageSpaces ? `${property.GarageSpaces} car` : '—' },
     { label: 'Type',         value: property.PropertyType ?? '—' },
     { label: 'Status',       value: property.StandardStatus ?? '—' },
-    { label: 'Days on MLS',  value: property.DaysOnMarket ?? '—' },
     { label: 'MLS #',        value: property.ListingId ?? property.ListingKey },
   ]
 
