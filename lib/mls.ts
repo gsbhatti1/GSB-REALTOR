@@ -10,8 +10,8 @@
 const BASE_URL = 'https://resoapi.utahrealestate.com/reso/odata'
 const BEARER_TOKEN = process.env.WFRMLS_BEARER_TOKEN
 
-if (!BEARER_TOKEN && process.env.NODE_ENV === 'production') {
-  throw new Error('WFRMLS_BEARER_TOKEN is not set. Check your environment variables.')
+if (!BEARER_TOKEN) {
+  console.warn('⚠️  WFRMLS_BEARER_TOKEN not set — listings will not load.')
 }
 
 // -----------------------------------------------
