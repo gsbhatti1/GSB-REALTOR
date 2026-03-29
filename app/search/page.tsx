@@ -1,4 +1,7 @@
-'use client'
+﻿'use client'
+
+import { Suspense } from 'react'
+import { Suspense } from 'react'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -6,7 +9,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/listings/PropertyCard'
 
-// ─── Types ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface SearchFilters {
   city: string
@@ -34,9 +37,10 @@ const UTAH_CITIES = [
   'West Valley City', 'Millcreek', 'Cottonwood Heights', 'Holladay',
 ]
 
-// ─── Page Component ───────────────────────────────────────────────────────
+// â”€â”€â”€ Page Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-export default function SearchPage() {
+function SearchContent() {
+
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -57,7 +61,7 @@ export default function SearchPage() {
   const [hasMore, setHasMore]       = useState(false)
   const PER_PAGE = 24
 
-  // ─── Fetch listings ──────────────────────────────────────────────────
+  // â”€â”€â”€ Fetch listings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const fetchListings = useCallback(async (f: SearchFilters, pageNum: number, append = false) => {
     setLoading(true)
@@ -95,7 +99,7 @@ export default function SearchPage() {
     fetchListings(filters, 0)
   }, []) // eslint-disable-line
 
-  // ─── Apply filters ───────────────────────────────────────────────────
+  // â”€â”€â”€ Apply filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   const applyFilters = () => {
     setPage(0)
@@ -116,14 +120,14 @@ export default function SearchPage() {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
 
-  // ─── Render ──────────────────────────────────────────────────────────
+  // â”€â”€â”€ Render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   return (
     <>
       <Navbar />
       <main style={{ minHeight: '100vh', paddingTop: '80px', background: '#0A0A0A' }}>
 
-        {/* ── Filter Bar ── */}
+        {/* â”€â”€ Filter Bar â”€â”€ */}
         <div style={{
           background: '#111',
           borderBottom: '1px solid rgba(255,255,255,0.06)',
@@ -231,7 +235,7 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* ── Results ── */}
+        {/* â”€â”€ Results â”€â”€ */}
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 24px' }}>
 
           {/* Count + summary */}
@@ -251,7 +255,7 @@ export default function SearchPage() {
             </div>
             {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN ? null : (
               <button style={{ fontSize: '13px', background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '8px 16px', color: '#888', cursor: 'pointer' }}>
-                🗺 Map View (coming soon)
+                ðŸ—º Map View (coming soon)
               </button>
             )}
           </div>
@@ -272,7 +276,7 @@ export default function SearchPage() {
             </div>
           ) : properties.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '96px 32px', color: '#555' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏠</div>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>ðŸ </div>
               <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', color: '#888', marginBottom: '8px' }}>
                 No listings found
               </h3>
@@ -317,7 +321,7 @@ export default function SearchPage() {
   )
 }
 
-// ─── Micro styles ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Micro styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
@@ -340,3 +344,5 @@ const inputStyle: React.CSSProperties = {
   fontFamily: 'inherit',
   height: '42px',
 }
+
+
