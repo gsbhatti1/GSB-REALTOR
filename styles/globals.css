@@ -186,13 +186,3 @@ h1, h2, h3 {
   transition: color 0.2s;
 }
 .footer-link:hover { color: #C9A84C; }
-
-/* ─── Hero Mobile ───────────────────────────── */
-@media (max-width: 768px) {
-  .hero-grid { grid-template-columns: 1fr !important; }
-  .hero-photo { display: none !important; }
-  .hero-content {
-    background: linear-gradient(rgba(10,10,10,0.85), rgba(10,10,10,0.85)),
-    url('/images/gurpreet-hero.jpg') center/cover !important;
-  }
-}

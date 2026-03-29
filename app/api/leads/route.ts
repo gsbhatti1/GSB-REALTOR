@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 /**
  * GSB REALTOR — LEAD CAPTURE API
  * POST /api/leads

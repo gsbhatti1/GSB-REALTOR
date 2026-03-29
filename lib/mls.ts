@@ -11,7 +11,7 @@ const BASE_URL = 'https://resoapi.utahrealestate.com/reso/odata'
 const BEARER_TOKEN = process.env.WFRMLS_BEARER_TOKEN
 
 if (!BEARER_TOKEN) {
-  console.warn('⚠️  WFRMLS_BEARER_TOKEN not set — listings will not load.')
+  console.warn('26a0Fe0f  WFRMLS_BEARER_TOKEN not set')
 }
 
 // -----------------------------------------------
