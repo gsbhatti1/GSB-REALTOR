@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import '../styles/globals.css'
+import ChatBot from '@/components/ui/ChatBot'
 
 export const metadata: Metadata = {
   title: {
@@ -67,6 +68,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <ChatBot />
       </body>
     </html>
   )

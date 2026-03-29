@@ -116,3 +116,59 @@ CREATE TRIGGER update_leads_updated_at
 -- =============================================
 -- DONE! Your database is ready.
 -- =============================================
+
+-- -----------------------------------------------
+-- CHAT SESSIONS TABLE (Phase 3 — AI Chatbot)
+-- -----------------------------------------------
+CREATE TABLE IF NOT EXISTS chat_sessions (
+  id              UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  session_id      TEXT NOT NULL,
+  messages        JSONB DEFAULT '[]',
+  lead_captured   BOOLEAN DEFAULT false,
+  lead_id         UUID REFERENCES leads(id),
+  ip_address      TEXT,
+  user_agent      TEXT,
+  created_at      TIMESTAMPTZ DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS chat_session_id_idx ON chat_sessions(session_id);
+ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow_chat_insert" ON chat_sessions FOR INSERT WITH CHECK (true);
+CREATE POLICY "allow_chat_update" ON chat_sessions FOR UPDATE USING (true);
+
+-- -----------------------------------------------
+-- EMAIL DRIP TABLE (Phase 3 — Automation)
+-- -----------------------------------------------
+CREATE TABLE IF NOT EXISTS email_drip_queue (
+  id              UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  lead_id         UUID REFERENCES leads(id) ON DELETE CASCADE,
+  email           TEXT NOT NULL,
+  drip_step       INT DEFAULT 1,
+  send_after      TIMESTAMPTZ NOT NULL,
+  sent_at         TIMESTAMPTZ,
+  status          TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'failed', 'unsubscribed')),
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS email_drip_send_after_idx ON email_drip_queue(send_after) WHERE status = 'pending';
+ALTER TABLE email_drip_queue ENABLE ROW LEVEL SECURITY;
+
+-- -----------------------------------------------
+-- MARKET REPORTS TABLE (Phase 2)
+-- -----------------------------------------------
+CREATE TABLE IF NOT EXISTS market_reports (
+  id              UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  city            TEXT NOT NULL,
+  report_data     JSONB NOT NULL DEFAULT '{}',
+  generated_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS market_reports_city_idx ON market_reports(city);
+ALTER TABLE market_reports ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow_report_read" ON market_reports FOR SELECT USING (true);
+
+-- =============================================
+-- SCHEMA COMPLETE — Run this ONCE in Supabase
+-- SQL Editor → New Query → Paste → Run
+-- =============================================

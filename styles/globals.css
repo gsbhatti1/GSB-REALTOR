@@ -186,3 +186,110 @@ h1, h2, h3 {
   transition: color 0.2s;
 }
 .footer-link:hover { color: #C9A84C; }
+
+/* ─── Valuation page inputs ─────────────────── */
+input:focus, select:focus, textarea:focus {
+  border-color: rgba(201,168,76,0.4) !important;
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.06);
+}
+
+/* ─── Section labels ────────────────────────── */
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+}
+
+/* ─── Ghost button ──────────────────────────── */
+.btn-ghost {
+  display: inline-block;
+  padding: 10px 24px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  font-size: 13px;
+  color: rgba(245,243,238,0.7);
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.04em;
+  font-family: var(--font-body);
+}
+.btn-ghost:hover {
+  border-color: rgba(201,168,76,0.3);
+  color: #C9A84C;
+}
+
+/* ─── Footer links ──────────────────────────── */
+.footer-link {
+  font-size: 14px;
+  color: rgba(245,243,238,0.55);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: #C9A84C; }
+
+/* ─── Property Card ─────────────────────────── */
+.property-card-link { text-decoration: none; display: block; }
+.property-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.2s;
+  cursor: pointer;
+}
+.property-card:hover {
+  border-color: rgba(201,168,76,0.2);
+  transform: translateY(-2px);
+}
+
+/* ─── Mobile — Responsive ───────────────────── */
+@media (max-width: 768px) {
+  /* Hero: stack vertically */
+  section[style*="gridTemplateColumns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hide the photo column on mobile hero */
+  section > div:last-child[style*="position: relative"][style*="overflow: hidden"] {
+    display: none;
+  }
+
+  /* Listings grid: single column */
+  div[style*="gridTemplateColumns: repeat(auto-fill"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Stats row: 2 columns */
+  div[style*="gap: '40px'"] {
+    gap: 20px !important;
+  }
+
+  /* Reduce padding */
+  section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* Navbar */
+  .nav-links { display: none !important; }
+  .mobile-menu-btn { display: block !important; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: clamp(32px, 10vw, 48px) !important; }
+  h2 { font-size: clamp(24px, 8vw, 36px) !important; }
+
+  section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* ─── PWA / Install prompt ──────────────────── */
+@media (display-mode: standalone) {
+  nav { padding-top: env(safe-area-inset-top, 0); }
+}
