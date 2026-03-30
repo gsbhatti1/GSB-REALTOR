@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!
-const REDIRECT_URI = 'https://gsbrealtor.com/api/youtube-auth'
+const REDIRECT_URI = 'https://www.gsbrealtor.com/api/youtube-auth'
 const SCOPES = 'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube'
 
 export async function GET(request: NextRequest) {
