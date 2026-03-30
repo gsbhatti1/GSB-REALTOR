@@ -123,6 +123,95 @@ export async function sendLeadSMS(lead: Lead): Promise<void> {
   })
 }
 
+// -----------------------------------------------
+// SEND DRIP EMAIL TO LEAD (14-day nurture sequence)
+// Called from n8n or a scheduled job
+// -----------------------------------------------
+
+export async function sendDripEmail(params: {
+  to: string
+  firstName: string
+  day: number
+}): Promise<void> {
+  if (!RESEND_API_KEY) return
+
+  const sequences: Record<number, { subject: string; html: string }> = {
+    1: {
+      subject: `Welcome! I'm here to help — Gurpreet Bhatti, GSB Realtor`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #111; color: #f5f3ee; padding: 32px; border-radius: 12px;">
+          <h2 style="color: #C9A84C;">Hi ${params.firstName},</h2>
+          <p>Thank you for reaching out. I'm Gurpreet Bhatti — USMC veteran, REALTOR®, and commercial real estate specialist across Utah, Nevada, and Wyoming.</p>
+          <p>Whether you're buying, selling, or investing — I'm here to make the process smooth and stress-free.</p>
+          <p>A few ways I can help you right now:</p>
+          <ul>
+            <li><a href="https://gsbrealtor.com/search" style="color: #C9A84C;">🔍 Search all Utah MLS listings</a></li>
+            <li><a href="https://gsbrealtor.com/valuation" style="color: #C9A84C;">🏠 Get your home's value (free, instant)</a></li>
+            <li><a href="https://gsbrealtor.com/investor" style="color: #C9A84C;">📊 Investment calculators</a></li>
+          </ul>
+          <p>Reply to this email anytime — I respond fast.</p>
+          <p style="color: #888;">— Gurpreet Bhatti<br>801-635-8462 | gsbrealtor.com</p>
+        </div>`,
+    },
+    3: {
+      subject: `Utah Market Update — What's happening this week`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #111; color: #f5f3ee; padding: 32px; border-radius: 12px;">
+          <h2 style="color: #C9A84C;">Hi ${params.firstName},</h2>
+          <p>The Utah real estate market is moving fast. Here are a few things worth knowing:</p>
+          <ul>
+            <li>Salt Lake County median home price: <strong>~$525,000</strong></li>
+            <li>Days on market trending down in West Jordan, Herriman, and Lehi</li>
+            <li>Commercial NNN opportunities still available in West Jordan corridor</li>
+          </ul>
+          <p><a href="https://gsbrealtor.com/search" style="color: #C9A84C;">Browse current listings →</a></p>
+          <p style="color: #888;">— Gurpreet | 801-635-8462</p>
+        </div>`,
+    },
+    7: {
+      subject: `Still looking? I have new matches for you`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #111; color: #f5f3ee; padding: 32px; border-radius: 12px;">
+          <h2 style="color: #C9A84C;">Hi ${params.firstName},</h2>
+          <p>Just checking in — are you still searching for the right property?</p>
+          <p>I work across <strong>50+ Utah cities</strong> and specialize in finding off-market deals and investment properties others miss.</p>
+          <p><strong>Want me to set up a personalized search alert?</strong> I'll notify you the moment something matching your criteria hits the MLS.</p>
+          <p><a href="https://gsbrealtor.com/contact" style="color: #C9A84C; display: inline-block; padding: 12px 24px; background: #C9A84C; color: #000; border-radius: 6px; text-decoration: none;">Schedule a Free Consultation</a></p>
+          <p style="color: #888;">— Gurpreet | 801-635-8462</p>
+        </div>`,
+    },
+    14: {
+      subject: `Last check-in from Gurpreet — GSB Realtor`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #111; color: #f5f3ee; padding: 32px; border-radius: 12px;">
+          <h2 style="color: #C9A84C;">Hi ${params.firstName},</h2>
+          <p>I wanted to reach out one more time. Real estate is one of the biggest decisions you'll make — and I want to make sure you have the right person in your corner.</p>
+          <p>As a USMC veteran, I bring the same discipline and commitment to real estate that I brought to service. No pressure, no games — just results.</p>
+          <p>Whenever you're ready, I'm here.</p>
+          <p><a href="https://gsbrealtor.com/contact" style="color: #C9A84C;">Get in touch →</a></p>
+          <p style="color: #888;">— Gurpreet Bhatti, REALTOR®<br>UT #12907042-SA00 | 801-635-8462</p>
+        </div>`,
+    },
+  }
+
+  const seq = sequences[params.day]
+  if (!seq) return
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: RESEND_FROM,
+      to: [params.to],
+      subject: seq.subject,
+      html: seq.html,
+    }),
+  })
+}
+
 function formatLeadType(type: string): string {
   const map: Record<string, string> = {
     tour_request: 'Tour Request',

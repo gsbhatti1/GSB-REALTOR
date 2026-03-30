@@ -43,6 +43,24 @@ export async function POST(request: NextRequest) {
     sendLeadEmail(lead).catch(e => console.error('Email failed:', e))
     sendLeadSMS(lead).catch(e => console.error('SMS failed:', e))
 
+    // Ping n8n webhook for automations (non-blocking)
+    const n8nWebhook = process.env.N8N_WEBHOOK_URL
+    if (n8nWebhook) {
+      fetch(n8nWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${lead.first_name} ${lead.last_name}`,
+          email: lead.email,
+          phone: lead.phone || '',
+          message: lead.message || '',
+          type: lead.lead_type,
+          property_address: lead.property_address || '',
+          source: lead.source,
+        }),
+      }).catch(e => console.error('n8n webhook failed:', e))
+    }
+
     return NextResponse.json({ success: true })
 
   } catch (error) {
