@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import '../styles/globals.css'
 import ChatBot from '@/components/ui/ChatBot'
 
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'add-your-google-verification-code-here',
+    google: 'NaXF_l7ss5Layf3j8Ba1tMtfmiwGr69E_UDGuP273XY',
   },
 }
 
@@ -69,6 +70,21 @@ export default function RootLayout({
       <body>
         {children}
         <ChatBot />
+        {/* Google Analytics GA4 — G-KVVK68CQXZ */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-KVVK68CQXZ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KVVK68CQXZ', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
       </body>
     </html>
   )
