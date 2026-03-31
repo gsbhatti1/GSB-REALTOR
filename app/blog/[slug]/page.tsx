@@ -179,6 +179,15 @@ export default function BlogPostPage({ params }: { params: Params }) {
   return (
     <>
       <Navbar />
+      <style>{`
+        @media (max-width: 480px) {
+          .blog-post-content p { font-size: 15px !important; line-height: 1.8 !important; }
+          .blog-post-content li { font-size: 15px !important; }
+          .blog-post-faq { padding: 20px !important; }
+          .blog-post-cta { padding: 24px !important; }
+          .blog-related-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <main style={{ paddingTop: '72px', background: '#0A0A0A', minHeight: '100vh' }}>
 
         {/* Hero */}
@@ -264,13 +273,13 @@ export default function BlogPostPage({ params }: { params: Params }) {
             </div>
 
             {/* Main content */}
-            <div style={{ lineHeight: '1.8' }}>
+            <div className="blog-post-content" style={{ lineHeight: '1.8' }}>
               {renderContent(mainContent)}
             </div>
 
             {/* FAQ section */}
             {faqContent.trim() && (
-              <div style={{
+              <div className="blog-post-faq" style={{
                 marginTop: '56px',
                 padding: '32px',
                 background: 'rgba(255,255,255,0.02)',
@@ -297,7 +306,7 @@ export default function BlogPostPage({ params }: { params: Params }) {
             )}
 
             {/* CTA block */}
-            <div style={{
+            <div className="blog-post-cta" style={{
               marginTop: '56px',
               padding: '40px',
               background: 'linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02))',
@@ -370,7 +379,7 @@ export default function BlogPostPage({ params }: { params: Params }) {
                   Related Articles
                 </h2>
               </div>
-              <div style={{
+              <div className="blog-related-grid" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                 gap: '20px',

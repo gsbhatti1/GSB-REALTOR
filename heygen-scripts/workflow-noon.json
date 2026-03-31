@@ -1,0 +1,95 @@
+{
+  "name": "GSB — Noon Social Post",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * *"
+            }
+          ]
+        }
+      },
+      "id": "node-cron-noon",
+      "name": "Every Day 12PM MT (18:00 UTC)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.gsbrealtor.com/api/daily-content",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "node-http-noon",
+      "name": "GET Daily Content API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst slot = data.posts.noon;\nconst label = 'Noon';\nconst hashtags = Array.isArray(slot.content.hashtags)\n  ? slot.content.hashtags.join(' ')\n  : (slot.content.hashtags || '');\n\nconst message = `\ud83d\udcf1 GSB REALTOR DAILY POST \u2014 ${label}\\nType: ${slot.type}\\n\\n\ud83d\udcd8 FACEBOOK:\\n${slot.content.facebook}\\n\\n\ud83d\udcf8 INSTAGRAM:\\n${slot.content.instagram}\\n\\n\ud83d\udc26 X/TWITTER:\\n${slot.content.twitter}\\n\\n\ud83d\udcbc LINKEDIN:\\n${slot.content.linkedin}\\n\\n\ud83c\udfb5 TIKTOK SCRIPT:\\n${slot.content.tiktok_script}\\n\\n#\ufe0f\u20e3 HASHTAGS:\\n${hashtags}`;\n\nreturn [{ json: { text: message } }];"
+      },
+      "id": "node-code-noon",
+      "name": "Format Noon Telegram Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "8441233388",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "id": "node-telegram-noon",
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [900, 300],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-gsb-bot",
+          "name": "GSB Realtor Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every Day 12PM MT (18:00 UTC)": {
+      "main": [
+        [{ "node": "GET Daily Content API", "type": "main", "index": 0 }]
+      ]
+    },
+    "GET Daily Content API": {
+      "main": [
+        [{ "node": "Format Noon Telegram Message", "type": "main", "index": 0 }]
+      ]
+    },
+    "Format Noon Telegram Message": {
+      "main": [
+        [{ "node": "Send to Telegram", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["social-media", "gsb-realtor", "noon"],
+  "triggerCount": 1,
+  "active": true,
+  "versionId": "1"
+}

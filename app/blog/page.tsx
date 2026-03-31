@@ -193,6 +193,9 @@ export default function BlogIndexPage() {
           transform: translateY(-2px);
           box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
+        @media (max-width: 480px) {
+          .blog-card { margin-bottom: 0; }
+        }
       `}</style>
     </>
   )

@@ -4,6 +4,13 @@ export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
+    <>
+    <style>{`
+      @media (max-width: 480px) {
+        .footer-grid { gap: 32px !important; }
+        .footer-social { flex-wrap: wrap !important; }
+      }
+    `}</style>
     <footer style={{
       background: '#080808',
       borderTop: '1px solid rgba(201,168,76,0.12)',
@@ -12,7 +19,7 @@ export default function Footer() {
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
         {/* Top grid */}
-        <div style={{
+        <div className="footer-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '48px',
@@ -38,7 +45,7 @@ export default function Footer() {
               </div>
             </div>
             {/* Social Media */}
-            <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap' }}>
+            <div className="footer-social" style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap' }}>
               {[
                 { href: 'https://www.youtube.com/@GSBRealtorUtah', label: 'YouTube', icon: '▶' },
                 { href: 'https://www.facebook.com/gsbrealtorUtah', label: 'Facebook', icon: 'f' },
@@ -99,6 +106,7 @@ export default function Footer() {
               { href: '/investor',            label: 'Investor Tools' },
               { href: '/investor#cap-rate',   label: 'Cap Rate Calculator' },
               { href: '/investor#cash-flow',  label: 'Cash Flow Tool' },
+              { href: '/market-reports',      label: 'Market Reports' },
               { href: '/about',               label: 'About Gurpreet' },
               { href: '/contact',             label: 'Contact' },
             ].map(link => (
@@ -128,5 +136,6 @@ export default function Footer() {
 
       </div>
     </footer>
+    </>
   )
 }

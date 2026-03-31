@@ -23,7 +23,14 @@ export default async function HomePage() {
       <main>
 
         {/* ── CINEMATIC HERO ── */}
-        <section style={{
+        <style>{`
+          @media (max-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr !important; }
+            .hero-image { display: none !important; }
+            .hero-content { padding: 100px 24px 60px !important; }
+          }
+        `}</style>
+        <section className="hero-grid" style={{
           minHeight: '100vh',
           background: '#0A0A0A',
           display: 'grid',
@@ -32,7 +39,7 @@ export default async function HomePage() {
           overflow: 'hidden',
         }}>
           {/* Left: Content */}
-          <div style={{
+          <div className="hero-content" style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -149,7 +156,7 @@ export default async function HomePage() {
           </div>
 
           {/* Right: Gurpreet's photo */}
-          <div style={{
+          <div className="hero-image" style={{
             position: 'relative',
             overflow: 'hidden',
           }}>

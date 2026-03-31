@@ -13,6 +13,11 @@ export default function ContactPage() {
   return (
     <>
       <Navbar />
+      <style>{`
+        @media (max-width: 768px) {
+          .contact-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+      `}</style>
       <main style={{ paddingTop: '72px', background: '#0A0A0A', minHeight: '100vh' }}>
 
         {/* Hero */}
@@ -28,7 +33,7 @@ export default function ContactPage() {
 
         {/* Contact grid */}
         <section style={{ padding: '48px 32px 96px' }}>
-          <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '80px', alignItems: 'start' }}>
+          <div className="contact-grid" style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '80px', alignItems: 'start' }}>
 
             {/* Left: Info */}
             <div>

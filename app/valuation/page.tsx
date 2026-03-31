@@ -88,6 +88,12 @@ export default function ValuationPage() {
   return (
     <>
       <Navbar />
+      <style>{`
+        @media (max-width: 600px) {
+          .val-two-col { grid-template-columns: 1fr !important; }
+          .val-four-col { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
       <main style={{ paddingTop: '72px', background: '#0A0A0A', minHeight: '100vh' }}>
 
         {/* Hero */}
@@ -195,7 +201,7 @@ export default function ValuationPage() {
                           <label style={labelStyle}>Street Address *</label>
                           <input required value={form.address} onChange={e => update('address', e.target.value)} placeholder="e.g. 1234 Oak Lane" style={inputStyle} />
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div className="val-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                           <div>
                             <label style={labelStyle}>City *</label>
                             <select required value={form.city} onChange={e => update('city', e.target.value)} style={inputStyle}>
@@ -208,7 +214,7 @@ export default function ValuationPage() {
                             <input required value={form.zip} onChange={e => update('zip', e.target.value)} placeholder="84084" maxLength={5} style={inputStyle} />
                           </div>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
+                        <div className="val-four-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
                           <div>
                             <label style={labelStyle}>Beds</label>
                             <select value={form.bedrooms} onChange={e => update('bedrooms', e.target.value)} style={inputStyle}>
@@ -319,7 +325,7 @@ export default function ValuationPage() {
                       <p style={{ fontSize: '14px', color: '#666', marginBottom: '32px' }}>Step 3 of 3 — your contact info</p>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div className="val-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                           <div>
                             <label style={labelStyle}>First Name *</label>
                             <input required value={form.firstName} onChange={e => update('firstName', e.target.value)} placeholder="Gurpreet" style={inputStyle} />

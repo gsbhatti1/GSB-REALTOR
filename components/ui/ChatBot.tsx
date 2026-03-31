@@ -110,7 +110,7 @@ export default function ChatBot() {
 
       {/* Chat window */}
       {open && (
-        <div style={{
+        <div className="chatbot-window" style={{
           position: 'fixed',
           bottom: '96px',
           right: '24px',
@@ -277,6 +277,9 @@ export default function ChatBot() {
         @keyframes bounce {
           0%, 80%, 100% { transform: translateY(0); }
           40% { transform: translateY(-6px); }
+        }
+        @media (max-width: 480px) {
+          .chatbot-window { width: calc(100vw - 32px) !important; right: 16px !important; }
         }
       `}</style>
     </>

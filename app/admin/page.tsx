@@ -35,18 +35,75 @@ const LEAD_TYPE_LABELS: Record<string, string> = {
   investor_inquiry: 'Investor',
 }
 
+// ── Lead Scoring ────────────────────────────────────────────────────────────
+
+type LeadScore = 'hot' | 'warm' | 'cold'
+
+function computeLeadScore(lead: Lead): LeadScore {
+  const msg = (lead.message || '').toLowerCase()
+  const source = (lead.source || '').toLowerCase()
+
+  // Phone is the #1 qualifier
+  const hasPhone = !!lead.phone
+
+  // Check for budget signals in message
+  const hasBudget = /budget|under \$|\$\d+k|\d{3},000|\d{3}k/.test(msg)
+
+  // Check for city signals
+  const hasCitySignal = /west jordan|sandy|draper|herriman|riverton|lehi|provo|orem|ogden|layton|st george|salt lake|murray|taylorsville/.test(msg)
+
+  // Check for timeline signals
+  const hasUrgentTimeline = /asap|this month|30 days|60 days|soon|immediately|right away|2-3 months/.test(msg)
+  const hasBrowsingSignal = /browsing|just looking|no rush|eventually/.test(msg)
+
+  // Score calculation
+  if (hasPhone && (hasBudget || hasCitySignal) && hasUrgentTimeline) return 'hot'
+  if (hasPhone && (hasBudget || hasCitySignal)) return 'hot'
+  if (hasPhone) return 'warm'
+  if (hasBudget && hasCitySignal) return 'warm'
+  if (source === 'chatbot' && (hasBudget || hasCitySignal)) return 'warm'
+  if (hasBrowsingSignal) return 'cold'
+  if (lead.lead_type === 'tour_request' || lead.lead_type === 'call_request') return 'warm'
+  if (hasBudget || hasCitySignal) return 'warm'
+
+  return 'cold'
+}
+
+function LeadScoreBadge({ score }: { score: LeadScore }) {
+  const config = {
+    hot: { emoji: '🔥', label: 'HOT', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.3)', color: '#ef4444' },
+    warm: { emoji: '☀️', label: 'WARM', bg: 'rgba(251,191,36,0.12)', border: 'rgba(251,191,36,0.3)', color: '#fbbf24' },
+    cold: { emoji: '🌱', label: 'COLD', bg: 'rgba(100,116,139,0.12)', border: 'rgba(100,116,139,0.3)', color: '#64748b' },
+  }[score]
+
+  return (
+    <span style={{
+      fontSize: '11px',
+      color: config.color,
+      background: config.bg,
+      border: `1px solid ${config.border}`,
+      padding: '3px 8px',
+      borderRadius: '100px',
+      whiteSpace: 'nowrap',
+      fontWeight: '600',
+      letterSpacing: '0.05em',
+    }}>
+      {config.emoji} {config.label}
+    </span>
+  )
+}
+
 export default function AdminPage() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [scoreFilter, setScoreFilter] = useState<'all' | LeadScore>('all')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Lead | null>(null)
   const [authorized, setAuthorized] = useState(false)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
 
-  // Simple client-side password gate
-  // In production, replace with proper Supabase Auth
   const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'gsbrealtor2024'
 
   const handleAuth = (e: React.FormEvent) => {
@@ -86,9 +143,10 @@ export default function AdminPage() {
 
   const filteredLeads = leads.filter(lead => {
     const matchesFilter = filter === 'all' || lead.status === filter
+    const matchesScore = scoreFilter === 'all' || computeLeadScore(lead) === scoreFilter
     const matchesSearch = !search || [lead.first_name, lead.last_name, lead.email, lead.phone, lead.property_address]
       .join(' ').toLowerCase().includes(search.toLowerCase())
-    return matchesFilter && matchesSearch
+    return matchesFilter && matchesScore && matchesSearch
   })
 
   const stats = {
@@ -96,6 +154,8 @@ export default function AdminPage() {
     new: leads.filter(l => l.status === 'new').length,
     qualified: leads.filter(l => l.status === 'qualified').length,
     closed: leads.filter(l => l.status === 'closed').length,
+    hot: leads.filter(l => computeLeadScore(l) === 'hot').length,
+    warm: leads.filter(l => computeLeadScore(l) === 'warm').length,
   }
 
   if (!authorized) {
@@ -149,12 +209,14 @@ export default function AdminPage() {
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px' }}>
 
         {/* Stats row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px', marginBottom: '32px' }}>
           {[
             { label: 'Total Leads', val: stats.total, color: '#F5F3EE' },
             { label: 'New', val: stats.new, color: '#C9A84C' },
             { label: 'Qualified', val: stats.qualified, color: '#4ade80' },
             { label: 'Closed', val: stats.closed, color: '#22c55e' },
+            { label: '🔥 Hot Leads', val: stats.hot, color: '#ef4444' },
+            { label: '☀️ Warm Leads', val: stats.warm, color: '#fbbf24' },
           ].map(s => (
             <div key={s.label} style={{ padding: '20px 24px', background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px' }}>
               <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '36px', fontWeight: '600', color: s.color, lineHeight: '1' }}>{s.val}</div>
@@ -171,13 +233,15 @@ export default function AdminPage() {
             placeholder="Search by name, email, phone..."
             style={{ flex: '1 1 240px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit' }}
           />
+
+          {/* Status filter */}
           <div style={{ display: 'flex', gap: '6px' }}>
             {['all', 'new', 'contacted', 'qualified', 'closed'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
                 style={{
-                  padding: '8px 16px', borderRadius: '8px', fontSize: '13px',
+                  padding: '8px 14px', borderRadius: '8px', fontSize: '13px',
                   background: filter === f ? 'rgba(201,168,76,0.15)' : 'rgba(255,255,255,0.03)',
                   border: `1px solid ${filter === f ? 'rgba(201,168,76,0.3)' : 'rgba(255,255,255,0.06)'}`,
                   color: filter === f ? '#C9A84C' : '#888',
@@ -188,6 +252,31 @@ export default function AdminPage() {
               </button>
             ))}
           </div>
+
+          {/* Score filter */}
+          <div style={{ display: 'flex', gap: '6px' }}>
+            {[
+              { key: 'all', label: 'All Scores' },
+              { key: 'hot', label: '🔥 Hot' },
+              { key: 'warm', label: '☀️ Warm' },
+              { key: 'cold', label: '🌱 Cold' },
+            ].map(f => (
+              <button
+                key={f.key}
+                onClick={() => setScoreFilter(f.key as 'all' | LeadScore)}
+                style={{
+                  padding: '8px 12px', borderRadius: '8px', fontSize: '12px',
+                  background: scoreFilter === f.key ? 'rgba(201,168,76,0.1)' : 'rgba(255,255,255,0.02)',
+                  border: `1px solid ${scoreFilter === f.key ? 'rgba(201,168,76,0.25)' : 'rgba(255,255,255,0.05)'}`,
+                  color: scoreFilter === f.key ? '#C9A84C' : '#666',
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
           <button
             onClick={fetchLeads}
             style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '13px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#888', cursor: 'pointer', fontFamily: 'inherit' }}
@@ -212,7 +301,7 @@ export default function AdminPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                    {['Name', 'Contact', 'Type', 'Property', 'Status', 'Date', 'Actions'].map(col => (
+                    {['Name', 'Score', 'Contact', 'Type', 'Property', 'Status', 'Date', 'Actions'].map(col => (
                       <th key={col} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '500', whiteSpace: 'nowrap' }}>
                         {col}
                       </th>
@@ -220,54 +309,60 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredLeads.map((lead, i) => (
-                    <tr
-                      key={lead.id}
-                      onClick={() => setSelected(lead)}
-                      style={{
-                        borderBottom: '1px solid rgba(255,255,255,0.04)',
-                        cursor: 'pointer',
-                        background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
-                        transition: 'background 0.15s',
-                      }}
-                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(201,168,76,0.04)'}
-                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)'}
-                    >
-                      <td style={{ padding: '14px 16px', fontSize: '14px', fontWeight: '500', color: '#F5F3EE', whiteSpace: 'nowrap' }}>
-                        {lead.first_name} {lead.last_name}
-                      </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ fontSize: '13px', color: '#888' }}>{lead.email}</div>
-                        {lead.phone && <div style={{ fontSize: '12px', color: '#555' }}>{lead.phone}</div>}
-                      </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontSize: '12px', color: '#C9A84C', background: 'rgba(201,168,76,0.08)', padding: '4px 10px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
-                          {LEAD_TYPE_LABELS[lead.lead_type] || lead.lead_type}
-                        </span>
-                      </td>
-                      <td style={{ padding: '14px 16px', fontSize: '13px', color: '#666', maxWidth: '200px' }}>
-                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {lead.property_address || '—'}
-                        </div>
-                      </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ fontSize: '12px', color: STATUS_COLORS[lead.status] || '#888', background: `${STATUS_COLORS[lead.status]}15`, padding: '4px 10px', borderRadius: '100px', textTransform: 'capitalize', whiteSpace: 'nowrap' }}>
-                          {lead.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: '14px 16px', fontSize: '12px', color: '#555', whiteSpace: 'nowrap' }}>
-                        {new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          <a href={`mailto:${lead.email}`} onClick={e => e.stopPropagation()} style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#888', textDecoration: 'none', fontSize: '12px' }}>Email</a>
-                          {lead.phone && (
-                            <a href={`tel:${lead.phone}`} onClick={e => e.stopPropagation()} style={{ padding: '5px 10px', background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: '6px', color: '#C9A84C', textDecoration: 'none', fontSize: '12px' }}>Call</a>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredLeads.map((lead, i) => {
+                    const score = computeLeadScore(lead)
+                    return (
+                      <tr
+                        key={lead.id}
+                        onClick={() => setSelected(lead)}
+                        style={{
+                          borderBottom: '1px solid rgba(255,255,255,0.04)',
+                          cursor: 'pointer',
+                          background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
+                          transition: 'background 0.15s',
+                        }}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(201,168,76,0.04)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)'}
+                      >
+                        <td style={{ padding: '14px 16px', fontSize: '14px', fontWeight: '500', color: '#F5F3EE', whiteSpace: 'nowrap' }}>
+                          {lead.first_name} {lead.last_name}
+                        </td>
+                        <td style={{ padding: '14px 16px', whiteSpace: 'nowrap' }}>
+                          <LeadScoreBadge score={score} />
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
+                          <div style={{ fontSize: '13px', color: '#888' }}>{lead.email}</div>
+                          {lead.phone && <div style={{ fontSize: '12px', color: '#555' }}>{lead.phone}</div>}
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
+                          <span style={{ fontSize: '12px', color: '#C9A84C', background: 'rgba(201,168,76,0.08)', padding: '4px 10px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
+                            {LEAD_TYPE_LABELS[lead.lead_type] || lead.lead_type}
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 16px', fontSize: '13px', color: '#666', maxWidth: '200px' }}>
+                          <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {lead.property_address || '—'}
+                          </div>
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
+                          <span style={{ fontSize: '12px', color: STATUS_COLORS[lead.status] || '#888', background: `${STATUS_COLORS[lead.status]}15`, padding: '4px 10px', borderRadius: '100px', textTransform: 'capitalize', whiteSpace: 'nowrap' }}>
+                            {lead.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 16px', fontSize: '12px', color: '#555', whiteSpace: 'nowrap' }}>
+                          {new Date(lead.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <a href={`mailto:${lead.email}`} onClick={e => e.stopPropagation()} style={{ padding: '5px 10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', color: '#888', textDecoration: 'none', fontSize: '12px' }}>Email</a>
+                            {lead.phone && (
+                              <a href={`tel:${lead.phone}`} onClick={e => e.stopPropagation()} style={{ padding: '5px 10px', background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: '6px', color: '#C9A84C', textDecoration: 'none', fontSize: '12px' }}>Call</a>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -277,7 +372,7 @@ export default function AdminPage() {
         {/* Lead detail panel */}
         {selected && (
           <div style={{
-            position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(420px, 100vw)',
+            position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(440px, 100vw)',
             background: '#111', borderLeft: '1px solid rgba(201,168,76,0.15)',
             zIndex: 100, overflowY: 'auto', padding: '32px 24px',
             display: 'flex', flexDirection: 'column', gap: '24px',
@@ -288,6 +383,17 @@ export default function AdminPage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+              {/* Lead score badge in detail panel */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <LeadScoreBadge score={computeLeadScore(selected)} />
+                <span style={{ fontSize: '12px', color: '#555' }}>
+                  {computeLeadScore(selected) === 'hot' ? 'High priority — respond immediately' :
+                   computeLeadScore(selected) === 'warm' ? 'Follow up within 24 hours' :
+                   'Nurture with drip campaign'}
+                </span>
+              </div>
+
               <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div style={{ fontSize: '20px', fontWeight: '600', color: '#F5F3EE', marginBottom: '4px' }}>{selected.first_name} {selected.last_name}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
@@ -303,15 +409,15 @@ export default function AdminPage() {
 
               {selected.property_address && (
                 <div>
-                  <div style={{ fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Property</div>
+                  <div style={{ fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Property / Area</div>
                   <div style={{ fontSize: '14px', color: '#F5F3EE' }}>{selected.property_address}</div>
                 </div>
               )}
 
               {selected.message && (
                 <div>
-                  <div style={{ fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Message</div>
-                  <div style={{ fontSize: '14px', color: '#888', lineHeight: '1.7', whiteSpace: 'pre-wrap' }}>{selected.message}</div>
+                  <div style={{ fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Message / Conversation</div>
+                  <div style={{ fontSize: '13px', color: '#888', lineHeight: '1.7', whiteSpace: 'pre-wrap', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', maxHeight: '200px', overflowY: 'auto' }}>{selected.message}</div>
                 </div>
               )}
 
@@ -349,11 +455,17 @@ export default function AdminPage() {
 
               {/* Quick actions */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '8px' }}>
-                <a href={`mailto:${selected.email}?subject=Following up — ${selected.first_name}, let's connect!&body=Hi ${selected.first_name},%0A%0AThank you for reaching out to GSB Realtor. I'd love to connect with you and help with your real estate needs.%0A%0ABest,%0AGurpreet Bhatti%0A801-635-8462`} style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'linear-gradient(135deg, #C9A84C, #E2C070)', color: '#0A0A0A', fontWeight: '600', fontSize: '14px', textDecoration: 'none', borderRadius: '10px' }}>
+                <a
+                  href={`mailto:${selected.email}?subject=Following up — ${selected.first_name}, let's connect!&body=Hi ${selected.first_name},%0A%0AThank you for reaching out to GSB Realtor. I'd love to connect with you and help with your real estate needs.%0A%0ABest,%0AGurpreet Bhatti%0A801-635-8462`}
+                  style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'linear-gradient(135deg, #C9A84C, #E2C070)', color: '#0A0A0A', fontWeight: '600', fontSize: '14px', textDecoration: 'none', borderRadius: '10px' }}
+                >
                   ✉️ Send Follow-up Email
                 </a>
                 {selected.phone && (
-                  <a href={`tel:${selected.phone}`} style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#F5F3EE', fontSize: '14px', textDecoration: 'none', borderRadius: '10px' }}>
+                  <a
+                    href={`tel:${selected.phone}`}
+                    style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#F5F3EE', fontSize: '14px', textDecoration: 'none', borderRadius: '10px' }}
+                  >
                     📞 Call {selected.first_name}
                   </a>
                 )}

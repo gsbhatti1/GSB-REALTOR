@@ -15,13 +15,14 @@ export default function Navbar() {
   }, [])
 
   const navLinks = [
-    { href: '/search',     label: 'Search Homes' },
-    { href: '/sell',       label: 'Sell Your Home' },
-    { href: '/commercial', label: 'Commercial' },
-    { href: '/investor',   label: 'Investor Tools' },
-    { href: '/blog',       label: 'Blog' },
-    { href: '/about',      label: 'About' },
-    { href: '/contact',    label: 'Contact' },
+    { href: '/search',         label: 'Search Homes' },
+    { href: '/sell',           label: 'Sell Your Home' },
+    { href: '/commercial',     label: 'Commercial' },
+    { href: '/investor',       label: 'Investor Tools' },
+    { href: '/market-reports', label: 'Market Reports' },
+    { href: '/blog',           label: 'Blog' },
+    { href: '/about',          label: 'About' },
+    { href: '/contact',        label: 'Contact' },
   ]
 
   return (
@@ -44,10 +45,10 @@ export default function Navbar() {
           style={{ borderRadius: '50%', border: '2px solid rgba(201,168,76,0.5)', objectFit: 'cover' }}
         />
         <div>
-          <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '18px', fontWeight: '600', color: '#F5F3EE', lineHeight: '1.1' }}>
+          <div className="nav-logo-name" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '18px', fontWeight: '600', color: '#F5F3EE', lineHeight: '1.1' }}>
             GSB Realtor
           </div>
-          <div style={{ fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', lineHeight: '1.1' }}>
+          <div className="nav-logo-sub" style={{ fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', lineHeight: '1.1' }}>
             Gurpreet Bhatti · REALTOR®
           </div>
         </div>
@@ -60,6 +61,33 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
+        {/* Language toggle */}
+        <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+          <Link href="/es" style={{
+            padding: '5px 10px',
+            border: '1px solid rgba(201,168,76,0.5)',
+            borderRadius: '4px 0 0 4px',
+            fontSize: '11px', fontWeight: '600',
+            color: '#C9A84C', textDecoration: 'none',
+            letterSpacing: '0.06em',
+            background: 'transparent',
+            transition: 'all 0.2s',
+          }}>
+            ES
+          </Link>
+          <Link href="/" style={{
+            padding: '5px 10px',
+            border: '1px solid rgba(201,168,76,0.5)',
+            borderRadius: '0 4px 4px 0',
+            fontSize: '11px', fontWeight: '600',
+            color: '#C9A84C', textDecoration: 'none',
+            letterSpacing: '0.06em',
+            background: 'rgba(201,168,76,0.08)',
+            transition: 'all 0.2s',
+          }}>
+            EN
+          </Link>
+        </div>
         <a href="tel:8016358462" style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
           background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
@@ -125,6 +153,10 @@ export default function Navbar() {
         @media (max-width: 768px) {
           .nav-links { display: none !important; }
           .mobile-menu-btn { display: block !important; }
+        }
+        @media (max-width: 480px) {
+          .nav-logo-name { font-size: 15px !important; }
+          .nav-logo-sub { display: none !important; }
         }
       `}</style>
     </nav>

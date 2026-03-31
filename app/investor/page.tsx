@@ -48,6 +48,12 @@ export default function InvestorPage() {
   return (
     <>
       <Navbar />
+      <style>{`
+        @media (max-width: 600px) {
+          .investor-cash-flow-inputs { grid-template-columns: 1fr !important; }
+          .investor-cash-flow-results { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <main style={{ paddingTop: '72px', background: '#0A0A0A', minHeight: '100vh' }}>
 
         {/* Hero */}
@@ -117,7 +123,7 @@ export default function InvestorPage() {
                 See your monthly and annual cash flow after mortgage, expenses, and vacancy.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+              <div className="investor-cash-flow-inputs" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
                 {[
                   { label: 'Purchase Price ($)', key: 'price', val: cashFlow.price },
                   { label: 'Monthly Rent ($)', key: 'rent', val: cashFlow.rent },
@@ -139,7 +145,7 @@ export default function InvestorPage() {
               </div>
 
               <div style={{ padding: '20px', background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '12px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="investor-cash-flow-results" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
                     <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>Monthly Cash Flow</div>
                     <div style={{ ...resultStyle, fontSize: '24px', color: monthlyCashFlow >= 0 ? '#4ade80' : '#ef4444' }}>

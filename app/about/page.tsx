@@ -14,10 +14,18 @@ export default function AboutPage() {
   return (
     <>
       <Navbar />
+      <style>{`
+        @media (max-width: 768px) {
+          .about-hero-grid { grid-template-columns: 1fr !important; }
+          .about-hero-image { display: none !important; }
+          .about-photo-grid { grid-template-columns: 1fr !important; }
+          .about-photo-img { height: 300px !important; }
+        }
+      `}</style>
       <main style={{ paddingTop: '72px', background: '#0A0A0A', minHeight: '100vh' }}>
 
         {/* ── HERO ── */}
-        <section style={{
+        <section className="about-hero-grid" style={{
           minHeight: '70vh',
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -60,7 +68,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div style={{ position: 'relative', overflow: 'hidden', minHeight: '500px', height: '70vh' }}>
+          <div className="about-hero-image" style={{ position: 'relative', overflow: 'hidden', minHeight: '500px', height: '70vh' }}>
             <Image
               src="/images/gurpreet-fullbody.jpg"
               alt="Gurpreet Bhatti, Utah REALTOR®"
@@ -151,8 +159,8 @@ export default function AboutPage() {
         {/* ── PHOTO SECTION ── */}
         <section style={{ padding: '96px 32px', background: '#0D0D0D' }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', borderRadius: '16px', overflow: 'hidden' }}>
-              <div style={{ position: 'relative', height: '500px' }}>
+            <div className="about-photo-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', borderRadius: '16px', overflow: 'hidden' }}>
+              <div className="about-photo-img" style={{ position: 'relative', height: '500px' }}>
                 <Image
                   src="/images/gurpreet-hero.jpg"
                   alt="Gurpreet Bhatti, Utah REALTOR"

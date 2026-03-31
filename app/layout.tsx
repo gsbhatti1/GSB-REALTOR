@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import '../styles/globals.css'
+import '../styles/mobile.css'
 import ChatBot from '@/components/ui/ChatBot'
 
 export const metadata: Metadata = {
