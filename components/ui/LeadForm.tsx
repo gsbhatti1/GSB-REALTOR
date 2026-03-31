@@ -9,6 +9,7 @@ interface LeadFormProps {
   title?: string
   subtitle?: string
   compact?: boolean
+  source?: string
 }
 
 export default function LeadForm({
