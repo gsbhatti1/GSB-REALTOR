@@ -140,6 +140,7 @@ export default function AdminPage() {
           <div style={{ fontSize: '11px', color: '#555', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Lead Dashboard</div>
         </div>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <Link href="/social" style={{ color: '#C9A84C', textDecoration: 'none', fontSize: '13px', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)', padding: '6px 12px', borderRadius: '7px' }}>📱 Social Hub</Link>
           <Link href="/" style={{ color: '#888', textDecoration: 'none', fontSize: '13px' }}>← Live Site</Link>
           <a href="tel:8016358462" style={{ color: '#C9A84C', textDecoration: 'none', fontSize: '13px' }}>📞 801.635.8462</a>
         </div>
