@@ -154,8 +154,8 @@ export default function AboutPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', borderRadius: '16px', overflow: 'hidden' }}>
               <div style={{ position: 'relative', height: '500px' }}>
                 <Image
-                  src="/images/gurpreet-snow.jpg"
-                  alt="Gurpreet Bhatti in Utah"
+                  src="/images/gurpreet-hero.jpg"
+                  alt="Gurpreet Bhatti, Utah REALTOR"
                   fill
                   style={{ objectFit: 'cover' }}
                 />
