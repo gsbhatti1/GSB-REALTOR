@@ -43,7 +43,7 @@ interface ScheduledPostInput {
   content?: string
   hashtags?: string[]
   scheduled_time?: string  // ISO datetime — defaults to next available slot
-  full_content?: object
+  full_content?: Record<string, unknown>
   notes?: string
 }
 
@@ -61,7 +61,7 @@ async function supabaseGet(table: string, query: string = '') {
   return res.json()
 }
 
-async function supabaseInsert(table: string, row: object) {
+async function supabaseInsert(table: string, row: Record<string, unknown>) {
   if (!SUPABASE_URL || !SUPABASE_KEY) return null
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST',

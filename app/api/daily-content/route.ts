@@ -70,7 +70,7 @@ const MARKET_TOPICS = [
 ]
 
 // ── Generate a single post via the social-post API ───────────────────────────
-async function generatePost(type: string, data: object): Promise<object | null> {
+async function generatePost(type: string, data: Record<string, unknown>): Promise<object | null> {
   try {
     const response = await fetch(`${BASE_URL}/api/social-post`, {
       method: 'POST',
@@ -89,7 +89,7 @@ async function generatePost(type: string, data: object): Promise<object | null> 
 
 // ── Generate content for a specific post slot ─────────────────────────────────
 async function generateSlotContent(type: string, slotLabel: string): Promise<DailyPost> {
-  let postData: object = {}
+  let postData: Record<string, unknown> = {}
   let specificType = type
 
   // Enrich data based on type
@@ -191,7 +191,7 @@ interface SocialContent {
 interface DailyPost {
   slot: string
   type: string
-  data: object
+  data: Record<string, unknown>
   content: SocialContent
   generated_at: string
 }
