@@ -61,7 +61,7 @@ async function supabaseGet(table: string, query: string = '') {
   return res.json()
 }
 
-async function supabaseInsert(table: string, row: Record<string, unknown>) {
+async function supabaseInsert(table: string, row: Record<string, unknown> | object) {
   if (!SUPABASE_URL || !SUPABASE_KEY) return null
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST',

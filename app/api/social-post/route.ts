@@ -230,7 +230,7 @@ function generateFallback(type: string, data?: Record<string, unknown>): SocialC
     },
   }
 
-  return (base[type] || base['tip']) as SocialContent
+  return ((base as Record<string, SocialContent>)[type] || base['tip']) as SocialContent
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
