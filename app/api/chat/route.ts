@@ -28,9 +28,11 @@ WHEN USERS ASK ABOUT SPECIFIC CITIES:
 
 KEY PAGES TO REFERENCE:
 - Home search: gsbrealtor.com/search
+- Sell your home: gsbrealtor.com/sell
 - Free home value: gsbrealtor.com/valuation
 - Investor tools: gsbrealtor.com/investor
 - Contact: gsbrealtor.com/contact
+- YouTube channel: youtube.com/@GSBRealtorUtah
 
 RULES:
 - Keep answers under 80 words unless detail is truly needed
@@ -69,8 +71,14 @@ function smartFallback(messages: Array<{ role: string; content: string }>): stri
   if (lastMessage.includes('buy') || lastMessage.includes('purchase') || lastMessage.includes('looking for')) {
     return "Let's find your home. Search 17,000+ live Utah listings at gsbrealtor.com/search. When you find something you want to see, text me at 801-635-8462 — I do same-day showings on most properties."
   }
-  if (lastMessage.includes('sell') || lastMessage.includes('list my') || lastMessage.includes('selling')) {
-    return "First step is knowing what your home is worth. Get a free valuation at gsbrealtor.com/valuation — takes 60 seconds. I'll respond personally within the hour with real market data."
+  if (lastMessage.includes('sell') || lastMessage.includes('list my') || lastMessage.includes('selling') || lastMessage.includes('seller')) {
+    return "Selling? Start with a free valuation at gsbrealtor.com/valuation — takes 60 seconds and I'll give you a real number, not an inflated one. Or visit gsbrealtor.com/sell to see exactly how I work with sellers. I'll respond personally within the hour."
+  }
+  if (lastMessage.includes('rent') || lastMessage.includes('lease') || lastMessage.includes('tenant') || lastMessage.includes('landlord')) {
+    return "I specialize in commercial leasing and tenant placement across Utah. NNN leases, retail, office, and strip mall tenant placement are my wheelhouse. Call me directly at 801-635-8462 — commercial deals move fast and phone is always better than email."
+  }
+  if (lastMessage.includes('market') || lastMessage.includes('price') || lastMessage.includes('trend') || lastMessage.includes('average')) {
+    return "Utah market is competitive right now — Salt Lake County median home prices are holding strong with limited inventory. Best data is always at gsbrealtor.com/search where you can filter by city and see live MLS data. For a deeper market analysis on a specific area, call me at 801-635-8462."
   }
   if (lastMessage.includes('invest') || lastMessage.includes('cap rate') || lastMessage.includes('cash flow') || lastMessage.includes('rental')) {
     return "Investment is my specialty. Run free cap rate, cash flow, and NNN analysis at gsbrealtor.com/investor. Then call me — 801-635-8462 — and I'll show you what's actually worth buying in this market."

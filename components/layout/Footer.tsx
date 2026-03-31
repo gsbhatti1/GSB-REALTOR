@@ -37,6 +37,27 @@ export default function Footer() {
                 <a href="tel:8016358462" style={{ color: '#C9A84C' }}>801.635.8462</a>
               </div>
             </div>
+            {/* Social Media */}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap' }}>
+              {[
+                { href: 'https://www.youtube.com/@GSBRealtorUtah', label: 'YouTube', icon: '▶' },
+                { href: 'https://www.facebook.com/gsbrealtorUtah', label: 'Facebook', icon: 'f' },
+                { href: 'https://www.instagram.com/gsbrealtorUtah', label: 'Instagram', icon: '◈' },
+                { href: 'https://www.tiktok.com/@gsbrealtorUtah', label: 'TikTok', icon: '♪' },
+                { href: 'https://www.linkedin.com/in/gurpreet-bhatti-realtor', label: 'LinkedIn', icon: 'in' },
+              ].map(s => (
+                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                  title={s.label}
+                  style={{
+                    width: '36px', height: '36px', borderRadius: '8px',
+                    background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#C9A84C', fontSize: '13px', fontWeight: '700',
+                    textDecoration: 'none', transition: 'all 0.2s',
+                  }}
+                >{s.icon}</a>
+              ))}
+            </div>
           </div>
 
           {/* Search links */}

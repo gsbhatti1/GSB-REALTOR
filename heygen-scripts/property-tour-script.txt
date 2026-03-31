@@ -1,0 +1,40 @@
+GSB REALTOR — PROPERTY TOUR VIDEO SCRIPT TEMPLATE
+==================================================
+Use this template for each new listing. Fill in the [BRACKETS].
+
+---
+
+Hi, I'm Gurpreet Bhatti — REALTOR® with Dynasty Point Referral Group, 
+serving Utah, Nevada, and Wyoming.
+
+Today I want to show you an amazing property that just hit the market 
+in [CITY], Utah.
+
+[PROPERTY_ADDRESS] is a [BEDROOMS]-bedroom, [BATHROOMS]-bathroom 
+[PROPERTY_TYPE] listed at [PRICE].
+
+Here's what makes this property stand out:
+
+[FEATURE_1]
+
+[FEATURE_2]
+
+[FEATURE_3]
+
+This home has [SQUARE_FEET] square feet of living space, 
+[GARAGE] garage, and [SPECIAL_FEATURE].
+
+Whether you're a first-time buyer, growing family, or investor — 
+this one checks a lot of boxes.
+
+Properties like this don't last long in today's Utah market.
+
+If you want to schedule a private tour or get more details, 
+call me directly at 801-635-8462, or visit gsbrealtor.com 
+to search all available listings.
+
+I'm Gurpreet Bhatti — let's find your next property together.
+
+---
+END OF SCRIPT
+Estimated video length: ~60-90 seconds

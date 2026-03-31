@@ -15,10 +15,11 @@ export default function Navbar() {
   }, [])
 
   const navLinks = [
-    { href: '/search',   label: 'Search Homes' },
-    { href: '/investor', label: 'Investor Tools' },
-    { href: '/about',    label: 'About' },
-    { href: '/contact',  label: 'Contact' },
+    { href: '/search',    label: 'Search Homes' },
+    { href: '/sell',      label: 'Sell Your Home' },
+    { href: '/investor',  label: 'Investor Tools' },
+    { href: '/about',     label: 'About' },
+    { href: '/contact',   label: 'Contact' },
   ]
 
   return (

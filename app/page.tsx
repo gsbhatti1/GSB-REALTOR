@@ -264,12 +264,15 @@ export default async function HomePage() {
             ) : (
               <div style={{ padding: '80px 40px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(201,168,76,0.15)' }}>
                 <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏠</div>
-                <p style={{ color: '#555', fontSize: '15px', marginBottom: '8px' }}>
-                  WFRMLS token pending activation from Scott.
+                <p style={{ color: '#888', fontSize: '17px', fontWeight: '500', marginBottom: '12px' }}>
+                  17,000+ Active Utah Listings
                 </p>
-                <p style={{ color: '#444', fontSize: '13px' }}>
-                  Live Utah listings will appear here automatically once connected.
+                <p style={{ color: '#555', fontSize: '14px', marginBottom: '28px' }}>
+                  Search homes by city, price, bedrooms, and more — updated daily from Utah MLS.
                 </p>
+                <Link href="/search" style={{ display: 'inline-block', background: '#C9A84C', color: '#0A0A0A', padding: '14px 32px', borderRadius: '8px', fontWeight: '600', fontSize: '15px', textDecoration: 'none' }}>
+                  Search All Utah Homes →
+                </Link>
               </div>
             )}
           </div>
