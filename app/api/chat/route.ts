@@ -177,7 +177,7 @@ function extractQualifyingInfo(messages: Message[]): {
 
 // ── Tool: Score Lead ─────────────────────────────────────────────────────────
 
-export function scoreLead(data: {
+function scoreLead(data: {
   phone?: string
   budget?: number
   city?: string
