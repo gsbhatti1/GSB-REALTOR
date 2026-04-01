@@ -1,5 +1,4 @@
 ﻿export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 import { NextRequest, NextResponse } from 'next/server'
 import { searchProperties, SearchFilters } from '@/lib/mls'
@@ -22,7 +21,8 @@ export async function GET(request: NextRequest) {
     }
     const result = await searchProperties(filters)
     return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } })
-  } catch (error) {
-    return NextResponse.json({ properties: [], total: 0, hasMore: false })
+  } catch (error: any) {
+    console.error('[Search API Error]', error?.message || error)
+    return NextResponse.json({ properties: [], total: 0, hasMore: false, error: error?.message })
   }
 }
