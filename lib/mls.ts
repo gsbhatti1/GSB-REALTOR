@@ -176,7 +176,11 @@ function buildFilter(filters: SearchFilters): string {
   if (filters.maxPrice) conditions.push(`ListPrice le ${filters.maxPrice}`)
 
   // Location
-  if (filters.city) conditions.push(`City eq '${filters.city}'`)
+  if (filters.city) {
+    // Use contains for broader city matching (WFRMLS stores some cities with county names)
+    const cityEncoded = filters.city.replace(/'/g, "''")
+    conditions.push(`contains(tolower(City), tolower('${cityEncoded}'))`)
+  }
   if (filters.countyOrParish) conditions.push(`CountyOrParish eq '${filters.countyOrParish}'`)
 
   // Beds/baths

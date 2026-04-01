@@ -1,14 +1,35 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import LeadForm from '@/components/ui/LeadForm'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Bienes Raíces en Utah | GSB Realtor — Gurpreet Bhatti',
   description: 'Compra, vende e invierte en bienes raíces en Utah con Gurpreet Bhatti, REALTOR® y Veterano del USMC. Servicio en español. Llame al 801-635-8462.',
   alternates: { canonical: 'https://gsbrealtor.com/es' },
+}
+
+async function submitSpanishLead(formData: FormData) {
+  'use server'
+  // Server action — saves lead via /api/leads
+  const body = {
+    first_name: formData.get('firstName') as string,
+    last_name: formData.get('lastName') as string,
+    phone: formData.get('phone') as string,
+    email: formData.get('email') as string,
+    message: formData.get('message') as string,
+    lead_type: 'contact_form',
+    source: 'es-page',
+  }
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.gsbrealtor.com'
+  try {
+    await fetch(`${baseUrl}/api/leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  } catch { /* silent */ }
 }
 
 export default function SpanishPage() {
@@ -350,12 +371,60 @@ export default function SpanishPage() {
                 </div>
               </div>
 
-              <LeadForm
-                leadType="contact_form"
-                title="Envíe un Mensaje"
-                subtitle="Gurpreet responde en menos de una hora."
-                source="es-page"
-              />
+              <div style={{
+                padding: '40px',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(201,168,76,0.15)',
+                borderRadius: '16px',
+              }}>
+                <div style={{ marginBottom: '24px' }}>
+                  <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', fontWeight: '400', color: '#F5F3EE', marginBottom: '4px' }}>
+                    Envíe un Mensaje
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#666' }}>Gurpreet responde en menos de una hora.</p>
+                </div>
+                <form action={submitSpanishLead} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <input
+                      placeholder="Nombre"
+                      name="firstName"
+                      required
+                      style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                    />
+                    <input
+                      placeholder="Apellido"
+                      name="lastName"
+                      required
+                      style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <input
+                    placeholder="Teléfono"
+                    name="phone"
+                    type="tel"
+                    required
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                  />
+                  <input
+                    placeholder="Correo electrónico"
+                    name="email"
+                    type="email"
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                  />
+                  <textarea
+                    placeholder="¿En qué le puedo ayudar?"
+                    name="message"
+                    rows={3}
+                    style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }}
+                  />
+                  <button
+                    type="submit"
+                    style={{ background: 'linear-gradient(135deg, #C9A84C, #E2C070)', border: 'none', borderRadius: '8px', padding: '14px 28px', fontSize: '14px', fontWeight: '600', color: '#0A0A0A', cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.04em' }}
+                  >
+                    Enviar Mensaje →
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </section>
@@ -387,6 +456,29 @@ export default function SpanishPage() {
                   {city}
                 </Link>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Spanish Mini-Footer */}
+        <section style={{ padding: '40px 32px', background: '#080808', borderTop: '1px solid rgba(201,168,76,0.12)' }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '32px', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ color: '#C9A84C', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Buscar</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a href="/search" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Todas las propiedades</a>
+                <a href="/sell" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Vender mi casa</a>
+                <a href="/commercial" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Comercial</a>
+                <a href="/investor" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Herramientas de inversión</a>
+              </div>
+            </div>
+            <div>
+              <div style={{ color: '#C9A84C', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Contacto</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <a href="tel:8016358462" style={{ color: '#C9A84C', fontSize: '14px', textDecoration: 'none' }}>📞 801-635-8462</a>
+                <a href="/contact" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Formulario de contacto</a>
+                <span style={{ color: '#555', fontSize: '12px' }}>UT Lic# 12907042-SA00</span>
+              </div>
             </div>
           </div>
         </section>

@@ -283,6 +283,11 @@ const UTAH_CITIES: Record<string, { name: string; county: string; description: s
   },
 }
 
+// Convert URL slug to proper city name
+function slugToCity(slug: string): string {
+  return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+}
+
 type Params = { city: string }
 
 export async function generateStaticParams() {
@@ -448,7 +453,7 @@ export default async function CityPage({ params }: { params: Params }) {
               <div style={{ padding: '64px 40px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(201,168,76,0.15)' }}>
                 <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏠</div>
                 <p style={{ color: '#555', fontSize: '15px', marginBottom: '8px' }}>
-                  Live {cityData.name} listings will appear here once the WFRMLS token is active.
+                  No active listings found in {cityData.name} right now. The market moves fast — check back soon or browse all Utah listings.
                 </p>
                 <Link href={`/search?city=${encodeURIComponent(cityData.name)}`} style={{ color: '#C9A84C', textDecoration: 'none', fontSize: '14px' }}>
                   Search {cityData.name} Listings →

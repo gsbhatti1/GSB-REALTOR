@@ -7,9 +7,13 @@ import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/listings/PropertyCard'
 
 const UTAH_CITIES = [
-  'Salt Lake City','West Jordan','Sandy','South Jordan','Taylorsville',
-  'Murray','Provo','Orem','Ogden','Layton','St. George','Logan',
+  'Salt Lake City','West Jordan','Sandy','South Jordan','Taylorsville','Murray',
   'Draper','Herriman','Riverton','Lehi','West Valley City','Millcreek',
+  'Cottonwood Heights','Midvale','Holladay','Bountiful','North Salt Lake',
+  'Farmington','Kaysville','Layton','Ogden','Roy','Clearfield','Provo',
+  'Orem','Springville','Spanish Fork','American Fork','Highland','Alpine',
+  'Saratoga Springs','Eagle Mountain','St. George','Washington','Hurricane',
+  'Cedar City','Logan','Heber City','Park City','Payson','Tooele',
 ]
 
 function SearchContent() {
@@ -93,8 +97,20 @@ function SearchContent() {
           <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: '1 1 160px' }}>
               <label style={{ display: 'block', fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>City</label>
-              <input list="cities" value={filters.city} onChange={e => update('city', e.target.value)} onKeyDown={e => e.key === 'Enter' && applyFilters()} placeholder="Any city..." style={inputStyle} />
-              <datalist id="cities">{UTAH_CITIES.map(c => <option key={c} value={c} />)}</datalist>
+              <select
+                value={filters.city}
+                onChange={e => { update('city', e.target.value); setTimeout(() => applyFilters(), 100) }}
+                style={{
+                  ...inputStyle,
+                  background: '#111',
+                  color: filters.city ? '#F5F3EE' : '#666',
+                }}
+              >
+                <option value="" style={{ background: '#111', color: '#666' }}>Any city...</option>
+                {UTAH_CITIES.map(city => (
+                  <option key={city} value={city} style={{ background: '#111', color: '#F5F3EE' }}>{city}</option>
+                ))}
+              </select>
             </div>
             <div style={{ flex: '1 1 120px' }}>
               <label style={{ display: 'block', fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>Min Price</label>
