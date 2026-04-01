@@ -176,9 +176,9 @@ function buildFilter(filters: SearchFilters): string {
 
   // Location
   if (filters.city) {
-    // Use contains for broader city matching (WFRMLS stores some cities with county names)
+    // WFRMLS uses exact City match — ensure proper casing
     const cityEncoded = filters.city.replace(/'/g, "''")
-    conditions.push(`contains(tolower(City), tolower('${cityEncoded}'))`)
+    conditions.push(`City eq '${cityEncoded}'`)
   }
   if (filters.countyOrParish) conditions.push(`CountyOrParish eq '${filters.countyOrParish}'`)
 
