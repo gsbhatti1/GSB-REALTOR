@@ -232,7 +232,6 @@ export async function searchProperties(filters: SearchFilters = {}): Promise<Sea
     '$top': String(top),
     '$skip': String(skip),
     '$count': 'true',
-    '$expand': 'Media',
   }
 
   const data = await fetchMLS('Property', params)
@@ -271,7 +270,6 @@ async function searchByLocation(filters: SearchFilters): Promise<SearchResult> {
     '$top': String(top),
     '$skip': String(skip),
     '$count': 'true',
-    '$expand': 'Media',
   }
 
   const data = await fetchMLS('Property', params)
@@ -290,7 +288,6 @@ async function searchByLocation(filters: SearchFilters): Promise<SearchResult> {
 export async function getProperty(listingKey: string): Promise<MLSProperty | null> {
   try {
     const data = await fetchMLS(`Property('${listingKey}')`, {
-      '$expand': 'Media($orderby=Order asc)',
     })
     return data || null
   } catch {
