@@ -327,7 +327,7 @@ export async function getPropertyThumbnailURL(listingKey: string): Promise<strin
 export async function getProperty(listingKey: string): Promise<MLSProperty | null> {
   try {
     const [data, media] = await Promise.all([
-      fetchMLS(`Property('${listingKey}')`, {}),
+      fetchMLS(`Property(${listingKey})`, {}),  // numeric key — no quotes
       getPropertyMedia(listingKey)
     ])
     if (data) {
