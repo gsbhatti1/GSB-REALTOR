@@ -116,7 +116,3 @@ gsb-realtor/
 
 ---
 
-## 📞 SUPPORT
-
-Built with Claude AI. Questions? Keep talking to Claude.
-Gurpreet: 801.635.8462 | gsbhatti1@yahoo.com
