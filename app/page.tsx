@@ -6,7 +6,8 @@ import PropertyCard from '@/components/listings/PropertyCard'
 import LeadForm from '@/components/ui/LeadForm'
 import { getFeaturedListings, getMarketStats, formatPrice } from '@/lib/mls'
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function HomePage() {
   const [featuredListings, slcStats] = await Promise.allSettled([
