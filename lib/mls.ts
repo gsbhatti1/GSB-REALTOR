@@ -128,8 +128,6 @@ async function fetchMLS(endpoint: string, params?: Record<string, string>): Prom
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    // Cache for 2 minutes
-    next: { revalidate: 120 },
     cache: 'no-store',
   })
 
