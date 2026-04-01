@@ -99,12 +99,12 @@ export default function Navbar() {
         </a>
       </div>
 
-      {/* Mobile button */}
+      {/* Mobile button — shown only via CSS media query, never inline display:none */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className="mobile-menu-btn"
         aria-label="Toggle menu"
-        style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: '#F5F3EE' }}
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: '#F5F3EE' }}
       >
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
           {menuOpen ? (
@@ -150,9 +150,11 @@ export default function Navbar() {
           letter-spacing: 0.01em;
         }
         .nav-link:hover { color: #C9A84C; }
+        /* Desktop: hide hamburger */
+        .mobile-menu-btn { display: none !important; }
         @media (max-width: 768px) {
           .nav-links { display: none !important; }
-          .mobile-menu-btn { display: block !important; }
+          .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; }
         }
         @media (max-width: 480px) {
           .nav-logo-name { font-size: 15px !important; }

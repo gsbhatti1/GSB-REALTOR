@@ -25,9 +25,38 @@ export default async function HomePage() {
         {/* ── CINEMATIC HERO ── */}
         <style>{`
           @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr !important; }
+            .hero-grid { grid-template-columns: 1fr !important; min-height: auto !important; }
             .hero-image { display: none !important; }
-            .hero-content { padding: 100px 24px 60px !important; }
+            .hero-content {
+              padding: 96px 20px 52px !important;
+              text-align: center;
+              align-items: center;
+            }
+            .hero-content h1 { font-size: clamp(34px, 8vw, 52px) !important; }
+            .hero-content p { font-size: 15px !important; max-width: 100% !important; }
+            .hero-cta-row {
+              flex-direction: column !important;
+              align-items: stretch !important;
+              gap: 12px !important;
+            }
+            .hero-cta-row a {
+              justify-content: center !important;
+              text-align: center !important;
+              padding: 14px 20px !important;
+            }
+            .hero-stats-row {
+              justify-content: center !important;
+              gap: 20px !important;
+            }
+            .hero-stats-row > div {
+              text-align: center;
+              min-width: 70px;
+            }
+          }
+          @media (max-width: 480px) {
+            .hero-content { padding: 88px 16px 44px !important; }
+            .hero-stats-row { gap: 14px !important; }
+            .hero-stats-row > div { min-width: 60px; }
           }
         `}</style>
         <section className="hero-grid" style={{
@@ -113,7 +142,7 @@ export default async function HomePage() {
             </p>
 
             {/* CTA row */}
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '56px' }}>
+            <div className="hero-cta-row" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '56px' }}>
               <Link href="/search" style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
@@ -136,7 +165,7 @@ export default async function HomePage() {
             </div>
 
             {/* Stats row */}
-            <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+            <div className="hero-stats-row" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
               {[
                 { value: stats?.activeCount?.toLocaleString() || '17K+', label: 'Active Listings' },
                 { value: formatPrice(stats?.avgPrice || 520000), label: 'Avg SLC Price' },
