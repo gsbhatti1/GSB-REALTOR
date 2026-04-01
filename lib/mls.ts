@@ -153,7 +153,7 @@ const PROPERTY_SELECT_FIELDS = [
   'ListPrice', 'OriginalListPrice',
   'BedroomsTotal', 'BathroomsTotalInteger', 'LivingArea',
   'LotSizeAcres', 'LotSizeSquareFeet', 'YearBuilt', 'GarageSpaces',
-  'Latitude', 'Longitude',
+  'GeoLocation',
   'PhotosCount', 'ListingContractDate', 'OnMarketDate', 'ModificationTimestamp',
   'ListAgentFullName', 'ListOfficeName',
   'PublicRemarks', 'AssociationFee', 'AssociationFeeFrequency'
