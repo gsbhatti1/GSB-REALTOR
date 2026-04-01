@@ -1,5 +1,4 @@
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -9,8 +8,6 @@ import PropertyCard from '@/components/listings/PropertyCard'
 import LeadForm from '@/components/ui/LeadForm'
 import { searchProperties, formatPrice } from '@/lib/mls'
 import type { Metadata } from 'next'
-
-export const revalidate = 3600 // Revalidate hourly
 
 // All 50 Utah cities for SEO pages
 const UTAH_CITIES: Record<string, { name: string; county: string; description: string; zipCodes: string[] }> = {
