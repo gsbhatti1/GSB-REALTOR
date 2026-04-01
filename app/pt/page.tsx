@@ -1,4 +1,4 @@
-import Navbar from '@/components/layout/Navbar'
+import NavbarPT from '@/components/layout/NavbarPT'
 import Footer from '@/components/layout/Footer'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -34,7 +34,7 @@ async function submitPortugueseLead(formData: FormData) {
 export default function PortuguesePage() {
   return (
     <>
-      <Navbar />
+      <NavbarPT />
       <main style={{ background: '#0A0A0A', minHeight: '100vh', paddingTop: '72px' }}>
 
         {/* Language Toggle Banner */}

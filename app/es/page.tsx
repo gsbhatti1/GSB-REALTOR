@@ -1,5 +1,5 @@
-import Navbar from '@/components/layout/Navbar'
-import Footer from '@/components/layout/Footer'
+import NavbarES from '@/components/layout/NavbarES'
+import FooterES from '@/components/layout/FooterES'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -35,7 +35,7 @@ async function submitSpanishLead(formData: FormData) {
 export default function SpanishPage() {
   return (
     <>
-      <Navbar />
+      <NavbarES />
       <main style={{ background: '#0A0A0A', minHeight: '100vh', paddingTop: '72px' }}>
 
         {/* Language Toggle Banner */}
@@ -484,7 +484,7 @@ export default function SpanishPage() {
         </section>
 
       </main>
-      <Footer />
+      <FooterES />
     </>
   )
 }
