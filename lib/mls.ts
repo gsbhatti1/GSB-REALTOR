@@ -236,8 +236,22 @@ export async function searchProperties(filters: SearchFilters = {}): Promise<Sea
 
   const data = await fetchMLS('Property', params)
 
+  // Fetch media for returned properties in parallel (max 6 for speed)
+  const properties = data.value || []
+  const propertiesWithMedia = await Promise.all(
+    properties.slice(0, 6).map(async (prop: MLSProperty) => {
+      const media = await getPropertyMedia(prop.ListingKey)
+      return { ...prop, Media: media }
+    })
+  )
+  // For remaining properties beyond 6, no photos (pagination will load them)
+  const allProps = [
+    ...propertiesWithMedia,
+    ...properties.slice(6)
+  ]
+
   return {
-    properties: data.value || [],
+    properties: allProps,
     total: data['@odata.count'] || 0,
     hasMore: (skip + top) < (data['@odata.count'] || 0),
   }
@@ -282,13 +296,43 @@ async function searchByLocation(filters: SearchFilters): Promise<SearchResult> {
 }
 
 // -----------------------------------------------
+// MEDIA ENDPOINT
+// -----------------------------------------------
+
+// Fetch photos for a single property from WFRMLS Media endpoint
+export async function getPropertyMedia(listingKey: string): Promise<MLSMedia[]> {
+  try {
+    const data = await fetchMLS('Media', {
+      '$filter': `ResourceRecordKey eq '${listingKey}' and ResourceName eq 'Property'`,
+      '$select': 'MediaURL,Order,MediaKey,MediaType',
+      '$top': '25',
+      '$orderby': 'Order asc',
+    })
+    return data.value || []
+  } catch {
+    return []
+  }
+}
+
+// Fetch thumbnail photo for a property (just first photo)
+export async function getPropertyThumbnailURL(listingKey: string): Promise<string> {
+  const media = await getPropertyMedia(listingKey)
+  return media[0]?.MediaURL || '/images/no-photo.jpg'
+}
+
+// -----------------------------------------------
 // GET SINGLE LISTING
 // -----------------------------------------------
 
 export async function getProperty(listingKey: string): Promise<MLSProperty | null> {
   try {
-    const data = await fetchMLS(`Property('${listingKey}')`, {
-    })
+    const [data, media] = await Promise.all([
+      fetchMLS(`Property('${listingKey}')`, {}),
+      getPropertyMedia(listingKey)
+    ])
+    if (data) {
+      data.Media = media
+    }
     return data || null
   } catch {
     return null

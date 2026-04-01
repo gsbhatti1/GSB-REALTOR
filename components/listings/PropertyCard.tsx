@@ -1,5 +1,8 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { MLSProperty, formatPrice, getPropertyThumbnail, getPropertyAddress } from '@/lib/mls'
+import { MLSProperty, formatPrice, getPropertyAddress } from '@/lib/mls'
 
 interface PropertyCardProps {
   property: MLSProperty
@@ -7,8 +10,26 @@ interface PropertyCardProps {
 }
 
 export default function PropertyCard({ property }: PropertyCardProps) {
-  const photo   = getPropertyThumbnail(property)
   const address = getPropertyAddress(property)
+
+  const [photoUrl, setPhotoUrl] = useState<string>(
+    property.Media?.[0]?.MediaURL || ''
+  )
+
+  useEffect(() => {
+    if (!photoUrl && property.ListingKey) {
+      fetch(`/api/property-media?key=${property.ListingKey}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.media?.[0]?.MediaURL) {
+            setPhotoUrl(data.media[0].MediaURL)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [property.ListingKey])
+
+  const photo = photoUrl || '/images/no-photo.jpg'
 
   return (
     <Link href={`/listing/${property.ListingKey}`} className="property-card-link">

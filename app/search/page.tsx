@@ -70,6 +70,48 @@ function SearchContent() {
 
   useEffect(() => { fetchListings(filters, 0) }, [])
 
+  // Geolocation auto-detect on mount
+  useEffect(() => {
+    // Only auto-detect if no city is pre-selected
+    if (filters.city || searchParams.get('city')) return
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords
+
+          // Use OpenStreetMap Nominatim (free, no API key)
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+              { headers: { 'Accept-Language': 'en' } }
+            )
+            const data = await res.json()
+            const city = data.address?.city || data.address?.town || data.address?.village
+
+            if (city) {
+              // Check if this city is in our Utah cities list
+              const utahCity = UTAH_CITIES.find(c =>
+                c.toLowerCase() === city.toLowerCase()
+              )
+              if (utahCity) {
+                update('city', utahCity)
+                // Auto-search after setting city
+                setTimeout(() => applyFilters(), 200)
+              }
+            }
+          } catch {
+            // Geolocation failed silently — user stays on all listings
+          }
+        },
+        () => {
+          // User denied geolocation — just load all Utah listings
+        },
+        { timeout: 5000 }
+      )
+    }
+  }, []) // Run once on mount
+
   const applyFilters = () => {
     setPage(0)
     fetchListings(filters, 0)
@@ -111,6 +153,42 @@ function SearchContent() {
                   <option key={city} value={city} style={{ background: '#111', color: '#F5F3EE' }}>{city}</option>
                 ))}
               </select>
+            </div>
+            {/* Near Me button */}
+            <div style={{ alignSelf: 'flex-end' }}>
+              <button
+                onClick={() => {
+                  if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(async (pos) => {
+                      try {
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`, { headers: { 'Accept-Language': 'en' } })
+                        const data = await res.json()
+                        const city = data.address?.city || data.address?.town
+                        if (city) {
+                          const match = UTAH_CITIES.find(c => c.toLowerCase() === city.toLowerCase())
+                          if (match) { update('city', match); setTimeout(applyFilters, 200) }
+                        }
+                      } catch {
+                        // ignore
+                      }
+                    })
+                  }
+                }}
+                style={{
+                  background: 'rgba(201,168,76,0.1)',
+                  border: '1px solid rgba(201,168,76,0.3)',
+                  color: '#C9A84C',
+                  padding: '0 12px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  height: '42px',
+                  whiteSpace: 'nowrap',
+                  fontFamily: 'inherit'
+                }}
+              >
+                📍 Near Me
+              </button>
             </div>
             <div style={{ flex: '1 1 120px' }}>
               <label style={{ display: 'block', fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>Min Price</label>
