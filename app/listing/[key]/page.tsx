@@ -1,11 +1,12 @@
 export const dynamic = 'force-dynamic'
 
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import LeadForm from '@/components/ui/LeadForm'
+import ListingGallery from '@/components/listings/ListingGallery'
+import ListingClientSection from '@/components/listings/ListingClientSection'
 import { getProperty, formatPrice } from '@/lib/mls'
 import type { Metadata } from 'next'
 
@@ -73,50 +74,8 @@ export default async function ListingPage({ params }: Props) {
       <Navbar />
       <main style={{ paddingTop: '80px', background: '#0A0A0A', minHeight: '100vh' }}>
 
-        {/* ── Photo Gallery ── */}
-        <div style={{ position: 'relative', height: 'clamp(300px, 50vw, 560px)', background: '#111', overflow: 'hidden' }}>
-          <img
-            src={mainPhoto}
-            alt={property.UnparsedAddress}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }}
-          />
-          {/* Photo count badge */}
-          {photos.length > 1 && (
-            <div style={{
-              position: 'absolute',
-              bottom: '20px',
-              right: '20px',
-              background: 'rgba(0,0,0,0.7)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: '8px',
-              padding: '8px 16px',
-              fontSize: '13px',
-              color: '#F5F3EE',
-            }}>
-              📷 {photos.length} photos
-            </div>
-          )}
-          {/* Thumbnail strip */}
-          {photos.length > 1 && (
-            <div style={{
-              position: 'absolute',
-              bottom: '20px',
-              left: '20px',
-              display: 'flex',
-              gap: '8px',
-            }}>
-              {photos.slice(1, 5).map((photo, i) => (
-                <img
-                  key={i}
-                  src={photo.MediaURL}
-                  alt={`Photo ${i + 2}`}
-                  style={{ width: '72px', height: '54px', objectFit: 'cover', borderRadius: '6px', opacity: 0.8, border: '1px solid rgba(255,255,255,0.1)' }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        {/* ── Photo Gallery (client component) ── */}
+        <ListingGallery photos={photos} address={property.UnparsedAddress || ''} />
 
         {/* ── Main Content ── */}
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px' }}>
@@ -162,7 +121,7 @@ export default async function ListingPage({ params }: Props) {
               }}>
                 {property.UnparsedAddress}
               </h1>
-              <p style={{ fontSize: '16px', color: '#888', marginBottom: '24px' }}>
+              <p style={{ fontSize: '16px', color: '#888', marginBottom: '16px' }}>
                 {property.City}, Utah {property.PostalCode}
               </p>
               <div style={{
@@ -170,10 +129,21 @@ export default async function ListingPage({ params }: Props) {
                 fontSize: 'clamp(32px, 5vw, 52px)',
                 fontWeight: '600',
                 color: '#C9A84C',
-                marginBottom: '40px',
+                marginBottom: '32px',
               }}>
                 {formatPrice(property.ListPrice)}
               </div>
+
+              {/* Client section: Save + Maps + Share */}
+              <ListingClientSection
+                listingKey={property.ListingKey}
+                address={property.UnparsedAddress || ''}
+                city={property.City || ''}
+                price={property.ListPrice || 0}
+                bedrooms={property.BedroomsTotal || 0}
+                bathrooms={property.BathroomsTotalInteger || 0}
+                photoUrl={mainPhoto}
+              />
 
               {/* Quick stats */}
               <div style={{

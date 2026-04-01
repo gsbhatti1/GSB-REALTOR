@@ -19,16 +19,17 @@ export default function Navbar() {
     { href: '/sell',           label: 'Sell Your Home' },
     { href: '/commercial',     label: 'Commercial' },
     { href: '/investor',       label: 'Investor Tools' },
-    { href: '/market-reports', label: 'Market Reports' },
-    { href: '/blog',           label: 'Blog' },
-    { href: '/about',          label: 'About' },
+    { href: '/market-reports', label: 'Market Reports',  hideBelow1280: true },
+    { href: '/blog',           label: 'Blog',            hideBelow1280: true },
+    { href: '/about',          label: 'About',           hideBelow1280: true },
     { href: '/contact',        label: 'Contact' },
+    { href: '/saved',          label: '❤️ Saved' },
   ]
 
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      padding: '0 32px', height: '72px',
+      padding: '0 24px', height: '72px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       transition: 'all 0.3s ease',
       background: scrolled ? 'rgba(10,10,10,0.95)' : 'transparent',
@@ -37,7 +38,7 @@ export default function Navbar() {
     }}>
 
       {/* Logo */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
         <Image
           src="/images/gurpreet-headshot.jpg"
           alt="Gurpreet Bhatti"
@@ -55,16 +56,20 @@ export default function Navbar() {
       </Link>
 
       {/* Desktop links */}
-      <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+      <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         {navLinks.map(link => (
-          <Link key={link.label} href={link.href} className="nav-link">
+          <Link
+            key={link.label}
+            href={link.href}
+            className={`nav-link${link.hideBelow1280 ? ' hide-below-1280' : ''}`}
+          >
             {link.label}
           </Link>
         ))}
         {/* Language toggle */}
         <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
           <Link href="/es" style={{
-            padding: '5px 10px',
+            padding: '5px 8px',
             border: '1px solid rgba(201,168,76,0.5)',
             borderRadius: '4px 0 0 4px',
             fontSize: '11px', fontWeight: '600',
@@ -76,7 +81,7 @@ export default function Navbar() {
             ES
           </Link>
           <Link href="/" style={{
-            padding: '5px 10px',
+            padding: '5px 8px',
             border: '1px solid rgba(201,168,76,0.5)',
             borderRadius: '0 4px 4px 0',
             fontSize: '11px', fontWeight: '600',
@@ -89,11 +94,11 @@ export default function Navbar() {
           </Link>
         </div>
         <a href="tel:8016358462" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
           background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
-          color: '#0A0A0A', fontWeight: '600', fontSize: '13px',
-          padding: '10px 20px', borderRadius: '8px', textDecoration: 'none',
-          letterSpacing: '0.04em',
+          color: '#0A0A0A', fontWeight: '600', fontSize: '12px',
+          padding: '9px 16px', borderRadius: '8px', textDecoration: 'none',
+          letterSpacing: '0.04em', whiteSpace: 'nowrap',
         }}>
           📞 801.635.8462
         </a>
@@ -131,6 +136,24 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {/* Language toggle in mobile */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <Link href="/es" onClick={() => setMenuOpen(false)} style={{
+              padding: '8px 16px', border: '1px solid rgba(201,168,76,0.5)',
+              borderRadius: '6px', fontSize: '13px', fontWeight: '600',
+              color: '#C9A84C', textDecoration: 'none',
+            }}>
+              🇪🇸 Español
+            </Link>
+            <Link href="/" onClick={() => setMenuOpen(false)} style={{
+              padding: '8px 16px', border: '1px solid rgba(201,168,76,0.5)',
+              borderRadius: '6px', fontSize: '13px', fontWeight: '600',
+              color: '#C9A84C', textDecoration: 'none',
+              background: 'rgba(201,168,76,0.08)',
+            }}>
+              🇺🇸 English
+            </Link>
+          </div>
           <a href="tel:8016358462" style={{
             color: '#C9A84C', textDecoration: 'none',
             fontFamily: 'Cormorant Garamond, serif', fontSize: '20px',
@@ -143,16 +166,20 @@ export default function Navbar() {
       <style>{`
         .nav-link {
           font-family: DM Sans, sans-serif;
-          font-size: 14px;
+          font-size: 13px;
           color: rgba(245,243,238,0.75);
           text-decoration: none;
           transition: color 0.2s;
           letter-spacing: 0.01em;
+          white-space: nowrap;
         }
         .nav-link:hover { color: #C9A84C; }
         /* Desktop: hide hamburger */
         .mobile-menu-btn { display: none !important; }
-        @media (max-width: 768px) {
+        @media (max-width: 1280px) {
+          .hide-below-1280 { display: none !important; }
+        }
+        @media (max-width: 1100px) {
           .nav-links { display: none !important; }
           .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; }
         }

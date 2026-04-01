@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { MLSProperty, formatPrice, getPropertyAddress } from '@/lib/mls'
+import { saveProperty, unsaveProperty, isPropertySaved } from '@/lib/saved-properties'
 
 interface PropertyCardProps {
   property: MLSProperty
@@ -15,6 +16,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   const [photoUrl, setPhotoUrl] = useState<string>(
     property.Media?.[0]?.MediaURL || ''
   )
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (!photoUrl && property.ListingKey) {
@@ -27,6 +29,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         })
         .catch(() => {})
     }
+  }, [property.ListingKey])
+
+  useEffect(() => {
+    setSaved(isPropertySaved(property.ListingKey))
   }, [property.ListingKey])
 
   const photo = photoUrl || '/images/no-photo.jpg'
@@ -68,18 +74,40 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             {property.StandardStatus}
           </div>
 
-          {/* Property type */}
-          {property.PropertySubType && (
-            <div style={{
-              position: 'absolute', top: '12px', right: '12px',
-              background: 'rgba(10,10,10,0.8)', backdropFilter: 'blur(8px)',
-              color: '#C9A84C', fontSize: '10px', fontWeight: '600',
-              letterSpacing: '0.08em', textTransform: 'uppercase',
-              padding: '4px 10px', borderRadius: '4px',
-            }}>
-              {property.PropertySubType}
-            </div>
-          )}
+          {/* Save / Heart button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              if (saved) {
+                unsaveProperty(property.ListingKey)
+                setSaved(false)
+              } else {
+                saveProperty({
+                  listingKey: property.ListingKey,
+                  address: property.UnparsedAddress || '',
+                  city: property.City || '',
+                  price: property.ListPrice || 0,
+                  bedrooms: property.BedroomsTotal || 0,
+                  bathrooms: property.BathroomsTotalInteger || 0,
+                  photoUrl: photoUrl || '',
+                  savedAt: new Date().toISOString()
+                })
+                setSaved(true)
+              }
+            }}
+            style={{
+              position: 'absolute', top: '12px', right: '12px', zIndex: 10,
+              width: '36px', height: '36px', borderRadius: '50%',
+              background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '18px', backdropFilter: 'blur(4px)',
+              transition: 'transform 0.2s'
+            }}
+            title={saved ? 'Remove from saved' : 'Save property'}
+          >
+            {saved ? '❤️' : '🤍'}
+          </button>
         </div>
 
         {/* Info */}
