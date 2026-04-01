@@ -1,14 +1,9 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Our Team | GSB Realtor — Utah Real Estate Experts',
-  description: 'Meet the GSB Realtor team — led by Gurpreet Bhatti, USMC Veteran and Utah REALTOR®. Residential, commercial, and investment specialists serving all of Utah.',
-}
-
 const TEAM = [
   {
     name: 'Gurpreet Bhatti',
@@ -152,14 +147,7 @@ export default function TeamPage() {
                 overflow: 'hidden',
                 transition: 'border-color 0.3s, transform 0.3s',
               }}
-              onMouseOver={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(201,168,76,0.3)'
-                ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'
-              }}
-              onMouseOut={e => {
-                (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.06)'
-                ;(e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'
-              }}>
+className="team-card">
 
                 {/* Photo */}
                 <div style={{ position: 'relative', height: '320px', background: '#111' }}>
@@ -300,6 +288,15 @@ export default function TeamPage() {
           </div>
         </section>
 
+      <style>{`
+        .team-card {
+          transition: border-color 0.3s, transform 0.3s;
+        }
+        .team-card:hover {
+          border-color: rgba(201,168,76,0.3) !important;
+          transform: translateY(-4px);
+        }
+      `}</style>
       </main>
       <Footer />
     </>
