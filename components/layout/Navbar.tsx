@@ -1,12 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+
+const LANG_OPTIONS = [
+  { code: 'en', flag: '🇺🇸', label: 'EN', path: '/' },
+  { code: 'es', flag: '🇲🇽', label: 'ES', path: '/es' },
+  { code: 'pt', flag: '🇧🇷', label: 'PT', path: '/pt' },
+  { code: 'zh', flag: '🇨🇳', label: 'ZH', path: '/zh' },
+]
+
+function getCurrentLang(pathname: string) {
+  if (pathname.startsWith('/es')) return 'ES'
+  if (pathname.startsWith('/pt')) return 'PT'
+  if (pathname.startsWith('/zh')) return 'ZH'
+  return 'EN'
+}
 
 export default function Navbar() {
   const [scrolled,  setScrolled]  = useState(false)
   const [menuOpen,  setMenuOpen]  = useState(false)
+  const [langOpen,  setLangOpen]  = useState(false)
+  const langRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+  const currentLang = getCurrentLang(pathname)
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40)
@@ -14,11 +33,23 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
+  // Close lang dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
   const navLinks = [
     { href: '/search',         label: 'Search Homes' },
     { href: '/sell',           label: 'Sell Your Home' },
     { href: '/commercial',     label: 'Commercial' },
     { href: '/investor',       label: 'Investor Tools' },
+    { href: '/testimonials',   label: 'Reviews' },
     { href: '/market-reports', label: 'Market Reports',  hideBelow1280: true },
     { href: '/blog',           label: 'Blog',            hideBelow1280: true },
     { href: '/about',          label: 'About',           hideBelow1280: true },
@@ -66,33 +97,87 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
-        {/* Language toggle */}
-        <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-          <Link href="/es" style={{
-            padding: '5px 8px',
-            border: '1px solid rgba(201,168,76,0.5)',
-            borderRadius: '4px 0 0 4px',
-            fontSize: '11px', fontWeight: '600',
-            color: '#C9A84C', textDecoration: 'none',
-            letterSpacing: '0.06em',
-            background: 'transparent',
-            transition: 'all 0.2s',
-          }}>
-            ES
-          </Link>
-          <Link href="/" style={{
-            padding: '5px 8px',
-            border: '1px solid rgba(201,168,76,0.5)',
-            borderRadius: '0 4px 4px 0',
-            fontSize: '11px', fontWeight: '600',
-            color: '#C9A84C', textDecoration: 'none',
-            letterSpacing: '0.06em',
-            background: 'rgba(201,168,76,0.08)',
-            transition: 'all 0.2s',
-          }}>
-            EN
-          </Link>
+
+        {/* Language dropdown */}
+        <div ref={langRef} style={{ position: 'relative' }}>
+          <button
+            onClick={() => setLangOpen(!langOpen)}
+            style={{
+              background: 'none',
+              border: '1px solid rgba(201,168,76,0.3)',
+              borderRadius: '6px',
+              padding: '4px 10px',
+              color: '#C9A84C',
+              fontSize: '12px',
+              cursor: 'pointer',
+              letterSpacing: '0.05em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontFamily: 'DM Sans, sans-serif',
+            }}
+          >
+            🌐 {currentLang}
+          </button>
+          {langOpen && (
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+              background: '#0f0f0f',
+              border: '1px solid rgba(201,168,76,0.25)',
+              borderRadius: '10px',
+              padding: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px',
+              minWidth: '120px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+              zIndex: 200,
+            }}>
+              {LANG_OPTIONS.map(lang => (
+                <Link
+                  key={lang.code}
+                  href={lang.path}
+                  onClick={() => {
+                    setLangOpen(false)
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('gsb_language_selected', lang.code)
+                    }
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    borderRadius: '7px',
+                    textDecoration: 'none',
+                    color: currentLang === lang.label ? '#C9A84C' : '#888',
+                    fontSize: '13px',
+                    background: currentLang === lang.label ? 'rgba(201,168,76,0.08)' : 'transparent',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ fontSize: '16px' }}>{lang.flag}</span>
+                  <span>{lang.label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
+
+        {/* Sign In — subtle */}
+        <Link href="/login" style={{
+          fontSize: '12px',
+          color: 'rgba(245,243,238,0.45)',
+          textDecoration: 'none',
+          letterSpacing: '0.04em',
+          whiteSpace: 'nowrap',
+          transition: 'color 0.2s',
+        }}
+        onMouseOver={e => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseOut={e => (e.currentTarget.style.color = 'rgba(245,243,238,0.45)')}>
+          Sign In
+        </Link>
+
         <a href="tel:8016358462" style={{
           display: 'inline-flex', alignItems: 'center', gap: '6px',
           background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
@@ -136,23 +221,31 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          <Link href="/login" onClick={() => setMenuOpen(false)} style={{
+            fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: '#C9A84C',
+            textDecoration: 'none', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)',
+          }}>
+            Sign In / Create Account
+          </Link>
           {/* Language toggle in mobile */}
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <Link href="/es" onClick={() => setMenuOpen(false)} style={{
-              padding: '8px 16px', border: '1px solid rgba(201,168,76,0.5)',
-              borderRadius: '6px', fontSize: '13px', fontWeight: '600',
-              color: '#C9A84C', textDecoration: 'none',
-            }}>
-              🇪🇸 Español
-            </Link>
-            <Link href="/" onClick={() => setMenuOpen(false)} style={{
-              padding: '8px 16px', border: '1px solid rgba(201,168,76,0.5)',
-              borderRadius: '6px', fontSize: '13px', fontWeight: '600',
-              color: '#C9A84C', textDecoration: 'none',
-              background: 'rgba(201,168,76,0.08)',
-            }}>
-              🇺🇸 English
-            </Link>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {LANG_OPTIONS.map(lang => (
+              <Link key={lang.code} href={lang.path} onClick={() => {
+                setMenuOpen(false)
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('gsb_language_selected', lang.code)
+                }
+              }} style={{
+                padding: '8px 14px', border: '1px solid rgba(201,168,76,0.5)',
+                borderRadius: '6px', fontSize: '13px', fontWeight: '600',
+                color: '#C9A84C', textDecoration: 'none',
+                background: currentLang === lang.label ? 'rgba(201,168,76,0.08)' : 'transparent',
+                display: 'flex', alignItems: 'center', gap: '6px',
+              }}>
+                <span>{lang.flag}</span>
+                <span>{lang.label}</span>
+              </Link>
+            ))}
           </div>
           <a href="tel:8016358462" style={{
             color: '#C9A84C', textDecoration: 'none',
