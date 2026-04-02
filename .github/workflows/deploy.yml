@@ -1,0 +1,64 @@
+name: Deploy to Vercel Production
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to Vercel via API
+        run: |
+          RESPONSE=$(curl -s -X POST "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"name\": \"gsb-realtor\",
+              \"project\": \"prj_Bod5aHR41i6U60kE6sMd2lVk1mFA\",
+              \"target\": \"production\",
+              \"gitSource\": {
+                \"type\": \"github\",
+                \"repoId\": 1193960152,
+                \"ref\": \"master\",
+                \"sha\": \"${{ github.sha }}\"
+              }
+            }")
+          
+          DEPLOY_ID=$(echo $RESPONSE | python3 -c "import sys,json; print(json.load(sys.stdin).get('id','ERROR'))")
+          echo "Deploy ID: $DEPLOY_ID"
+          
+          if [ "$DEPLOY_ID" = "ERROR" ]; then
+            echo "Failed to start deployment"
+            echo $RESPONSE
+            exit 1
+          fi
+          
+          echo "Deployment started: $DEPLOY_ID"
+          echo "Track at: https://vercel.com/gsbhatti1s-projects/gsb-realtor/deployments"
+          
+          # Wait for deployment to complete
+          for i in $(seq 1 30); do
+            STATUS=$(curl -s "https://api.vercel.com/v13/deployments/$DEPLOY_ID" \
+              -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | \
+              python3 -c "import sys,json; print(json.load(sys.stdin).get('status','?'))")
+            
+            echo "[$i] Status: $STATUS"
+            
+            if [ "$STATUS" = "READY" ]; then
+              echo "✅ Deployment successful!"
+              exit 0
+            fi
+            
+            if [ "$STATUS" = "ERROR" ]; then
+              echo "❌ Deployment failed"
+              exit 1
+            fi
+            
+            sleep 15
+          done
+          
+          echo "⚠️ Deployment timed out"
+          exit 0
