@@ -568,16 +568,16 @@ export async function POST(request: NextRequest) {
 
     // ── Step 4: Call LLM ──
 
-    // GPT-4o (primary — best quality, multilingual)
-    if (OPENAI_API_KEY) {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Groq Llama 3.3 70B (primary — free, fast, multilingual)
+    if (GROQ_API_KEY) {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${GROQ_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'llama-3.3-70b-versatile',
           max_tokens: 350,
           temperature: 0.7,
           messages: [
