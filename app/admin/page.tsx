@@ -103,6 +103,7 @@ export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
+  const [activeTab, setActiveTab] = useState<'leads' | 'agents'>('leads')
 
   const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'gsbrealtor2024'
 
@@ -207,6 +208,99 @@ export default function AdminPage() {
       </header>
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px' }}>
+
+        {/* Tab navigation */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0' }}>
+          {([{ key: 'leads', label: '📋 Leads' }, { key: 'agents', label: '🤖 AI Agents' }] as { key: 'leads' | 'agents', label: string }[]).map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              style={{
+                padding: '10px 20px',
+                background: 'none',
+                border: 'none',
+                borderBottom: `2px solid ${activeTab === tab.key ? '#C9A84C' : 'transparent'}`,
+                color: activeTab === tab.key ? '#C9A84C' : '#555',
+                fontSize: '13px', fontWeight: '600',
+                cursor: 'pointer', fontFamily: 'inherit',
+                letterSpacing: '0.04em',
+                transition: 'all 0.2s',
+                marginBottom: '-1px',
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* AI Agents tab */}
+        {activeTab === 'agents' && (
+          <div>
+            <div style={{ marginBottom: '28px' }}>
+              <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', fontWeight: '300', color: '#F5F3EE', marginBottom: '6px' }}>AI Agents</h2>
+              <p style={{ color: '#555', fontSize: '13px' }}>8 autonomous agents running 24/7 across the platform</p>
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+              gap: '20px',
+            }}>
+              {[
+                { name: 'Lead Qualifier', icon: '🎯', status: 'Active', platform: 'Groq AI + Vercel', schedule: '24/7 on demand', description: 'Qualifies visitors, scores HOT/WARM/COLD, triggers Telegram alerts for hot leads.' },
+                { name: 'Video Generator', icon: '🎬', status: 'Active', platform: 'n8n + HeyGen', schedule: 'On demand', description: 'Generates Gurpreet avatar property tour videos in ~90 seconds from listing data.' },
+                { name: 'YouTube Publisher', icon: '▶️', status: 'Active', platform: 'n8n + YouTube API', schedule: 'On demand', description: 'Auto-uploads completed videos to @GSBRealtorUtah with title, description, tags.' },
+                { name: 'Daily Lead Report', icon: '📋', status: 'Active', platform: 'Vercel Cron', schedule: 'Daily 5:30 AM MT', description: "Sends yesterday's lead summary to Telegram every morning." },
+                { name: 'Site Health Monitor', icon: '🏥', status: 'Active', platform: 'Vercel Cron', schedule: 'Daily 6:00 AM MT', description: 'Checks all 11 pages/APIs and sends green/red Telegram report.' },
+                { name: 'Social Content Agent', icon: '📱', status: 'Active', platform: 'Groq + Vercel Cron', schedule: 'Daily 7:00 AM MT', description: 'Generates platform-specific posts for FB, IG, X, TikTok, LinkedIn.' },
+                { name: 'Property Search Agent', icon: '🔍', status: 'Active', platform: 'Groq + WFRMLS', schedule: 'On demand', description: 'Parses natural language queries and returns live WFRMLS listings in chat.' },
+                { name: 'Email Drip Agent', icon: '✉️', status: 'Active', platform: 'Resend + Vercel', schedule: 'Day 1/3/7/14', description: 'Sends 14-day automated follow-up email sequences to every new lead.' },
+              ].map((agent) => (
+                <div key={agent.name} style={{
+                  padding: '28px',
+                  background: '#0D0D0D',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: '16px',
+                  transition: 'border-color 0.2s',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                    <div style={{
+                      width: '48px', height: '48px', borderRadius: '12px',
+                      background: 'rgba(201,168,76,0.08)',
+                      border: '1px solid rgba(201,168,76,0.18)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '22px', flexShrink: 0,
+                    }}>
+                      {agent.icon}
+                    </div>
+                    <div>
+                      <div style={{ color: '#F5F3EE', fontWeight: '600', fontSize: '15px' }}>{agent.name}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+                        <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10B981' }} />
+                        <span style={{ fontSize: '11px', color: '#10B981', fontWeight: '600' }}>{agent.status}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '13px', color: '#666', lineHeight: '1.7', marginBottom: '18px' }}>
+                    {agent.description}
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{
+                      background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)',
+                      color: '#C9A84C', fontSize: '10px', padding: '3px 10px', borderRadius: '20px',
+                      letterSpacing: '0.03em',
+                    }}>
+                      {agent.platform}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#444' }}>{agent.schedule}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Leads tab */}
+        {activeTab === 'leads' && <div>
 
         {/* Stats row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px', marginBottom: '32px' }}>
@@ -473,6 +567,9 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+      </div>}
+
       </div>
     </div>
   )
