@@ -52,7 +52,7 @@ export default function Navbar() {
     { href: '/testimonials',   label: 'Reviews' },
     { href: '/market-reports', label: 'Market Reports',  hideBelow1280: true },
     { href: '/blog',           label: 'Blog',            hideBelow1280: true },
-    { href: '/team',           label: 'Team',            hideBelow1280: true },
+    { href: '/team',           label: 'Team' },
     { href: '/about',          label: 'About',           hideBelow1280: true },
     { href: '/contact',        label: 'Contact' },
     { href: '/saved',          label: '❤️ Saved' },
