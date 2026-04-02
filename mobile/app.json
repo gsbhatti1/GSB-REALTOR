@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "GSB Realtor",
+    "slug": "gsb-realtor",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "gsbrealtor",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#060606"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.gsbrealtor.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "GSB Realtor uses your location to show nearby Utah listings."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#060606"
+      },
+      "package": "com.gsbrealtor.app",
+      "versionCode": 1,
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [],
+    "extra": {
+      "supabaseUrl":  "https://hgsxndnxyczhudhsbddo.supabase.co",
+      "siteUrl":      "https://www.gsbrealtor.com"
+    }
+  }
+}
