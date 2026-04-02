@@ -5,12 +5,13 @@ import Image from 'next/image'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '犹他州房地产 | GSB Realtor — Gurpreet Bhatti',
-  description: '在犹他州买房、卖房、投资房产，联系Gurpreet Bhatti，持牌REALTOR®及美国海军陆战队退伍军人。提供中文服务。电话：801-635-8462。',
-  alternates: { canonical: 'https://gsbrealtor.com/zh' },
+  title: 'Bất Động Sản Utah | GSB Realtor — Gurpreet Bhatti',
+  description:
+    'Gurpreet Bhatti, Môi Giới Bất Động Sản được cấp phép tại Utah, Nevada và Wyoming. Cựu chiến binh Thủy Quân Lục Chiến Hoa Kỳ. Gọi ngay: 801-635-8462.',
+  alternates: { canonical: 'https://gsbrealtor.com/vi' },
 }
 
-async function submitChineseLead(formData: FormData) {
+async function submitVietnameseLead(formData: FormData) {
   'use server'
   const body = {
     first_name: formData.get('firstName') as string,
@@ -19,7 +20,7 @@ async function submitChineseLead(formData: FormData) {
     email: formData.get('email') as string,
     message: formData.get('message') as string,
     lead_type: 'contact_form',
-    source: 'zh-page',
+    source: 'vi-page',
   }
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.gsbrealtor.com'
   try {
@@ -31,7 +32,7 @@ async function submitChineseLead(formData: FormData) {
   } catch { /* silent */ }
 }
 
-export default function ChinesePage() {
+export default function VietnamesePage() {
   return (
     <>
       <Navbar />
@@ -45,13 +46,13 @@ export default function ChinesePage() {
           textAlign: 'center',
         }}>
           <span style={{ fontSize: '13px', color: '#888', marginRight: '12px' }}>
-            您正在查看中文版本
+            Bạn đang xem phiên bản tiếng Việt
           </span>
           <Link href="/" style={{
             fontSize: '13px', color: '#C9A84C',
             textDecoration: 'none', fontWeight: '600',
           }}>
-            Switch to English →
+            🇺🇸 Xem bằng tiếng Anh →
           </Link>
         </div>
 
@@ -70,8 +71,12 @@ export default function ChinesePage() {
             pointerEvents: 'none',
           }} />
           <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '24px' }}>
-              犹他州房地产
+            <div style={{
+              fontSize: '11px', letterSpacing: '0.16em',
+              textTransform: 'uppercase', color: '#C9A84C', marginBottom: '24px',
+              fontFamily: 'DM Sans, sans-serif',
+            }}>
+              Bất Động Sản Utah
             </div>
             <h1 style={{
               fontFamily: 'Cormorant Garamond, serif',
@@ -82,7 +87,7 @@ export default function ChinesePage() {
               letterSpacing: '-0.02em',
               marginBottom: '8px',
             }}>
-              犹他州房地产
+              Bất Động Sản Utah
             </h1>
             <h2 style={{
               fontFamily: 'Cormorant Garamond, serif',
@@ -97,7 +102,7 @@ export default function ChinesePage() {
               letterSpacing: '-0.02em',
               marginBottom: '32px',
             }}>
-              与众不同。
+              Khác Biệt.
             </h2>
             <p style={{
               fontSize: 'clamp(15px, 1.6vw, 18px)',
@@ -106,9 +111,9 @@ export default function ChinesePage() {
               lineHeight: '1.75',
               marginBottom: '48px',
             }}>
-              美国海军陆战队退伍军人。专注住宅及商业房产。
-              犹他州唯一将您的投资视为使命的经纪人——
-              以军人的纪律为您完成每一笔交易。
+              Gurpreet Bhatti, Môi Giới Bất Động Sản được cấp phép tại Utah,
+              Nevada và Wyoming. Cựu chiến binh Thủy Quân Lục Chiến Hoa Kỳ.
+              Chuyên gia về nhà ở và bất động sản thương mại.
             </p>
 
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '56px' }}>
@@ -119,7 +124,7 @@ export default function ChinesePage() {
                 padding: '16px 32px', borderRadius: '8px',
                 textDecoration: 'none', letterSpacing: '0.04em',
               }}>
-                搜索犹他州房产 →
+                Tìm Nhà Ngay →
               </Link>
               <a href="tel:8016358462" style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
@@ -129,23 +134,28 @@ export default function ChinesePage() {
                 textDecoration: 'none', letterSpacing: '0.04em',
                 border: '1px solid rgba(255,255,255,0.15)',
               }}>
-                立即致电：801.635.8462
+                Gọi Ngay: 801-635-8462
               </a>
             </div>
 
             {/* Stats */}
             <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
               {[
-                { value: '17K+', label: '在售房源' },
-                { value: 'UT·WY·NV', label: '持牌州' },
-                { value: '< 1小时', label: '响应时间' },
-                { value: '100%', label: '个性化服务' },
+                { value: '17,000+', label: 'Căn Nhà Đang Bán' },
+                { value: 'UT · NV · WY', label: 'Phục Vụ 3 Tiểu Bang' },
+                { value: '< 1 Giờ', label: 'Thời Gian Phản Hồi' },
               ].map(s => (
                 <div key={s.label}>
-                  <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', fontWeight: '600', color: '#C9A84C', lineHeight: '1' }}>
+                  <div style={{
+                    fontFamily: 'Cormorant Garamond, serif',
+                    fontSize: '28px', fontWeight: '600', color: '#C9A84C', lineHeight: '1',
+                  }}>
                     {s.value}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '4px' }}>
+                  <div style={{
+                    fontSize: '11px', color: '#555', textTransform: 'uppercase',
+                    letterSpacing: '0.08em', marginTop: '4px',
+                  }}>
                     {s.label}
                   </div>
                 </div>
@@ -154,50 +164,53 @@ export default function ChinesePage() {
           </div>
         </section>
 
-        {/* 服务 */}
+        {/* Services */}
         <section style={{ padding: '96px 32px', background: '#0A0A0A' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-              <div style={{ fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '16px' }}>
-                我们的服务
+              <div style={{
+                fontSize: '11px', letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: '#C9A84C', marginBottom: '16px',
+              }}>
+                Những Gì Chúng Tôi Cung Cấp
               </div>
               <h2 style={{
                 fontFamily: 'Cormorant Garamond, serif',
                 fontSize: 'clamp(28px, 3.5vw, 48px)',
                 fontWeight: '400', color: '#F5F3EE',
               }}>
-                我能为您做什么？
+                Dịch Vụ Của Chúng Tôi
               </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
               {[
                 {
                   icon: '🏠',
-                  title: '购买',
-                  body: '在犹他州找到理想房产。提供超过17,000套在售房源。Gurpreet从搜房到过户全程陪同，无任何压力。',
+                  title: 'Mua Nhà',
+                  body: 'Tìm ngôi nhà mơ ước của bạn tại Utah. Hơn 17,000 căn nhà đang bán. Gurpreet đồng hành cùng bạn từ tìm kiếm đến ký hợp đồng.',
                   href: '/search',
-                  cta: '搜索房产 →',
+                  cta: 'Tìm Kiếm Nhà →',
                 },
                 {
                   icon: '💰',
-                  title: '出售',
-                  body: '以市场最优价格出售您的房产。免费评估、AI专业营销，以及每次报价的专业谈判。',
+                  title: 'Bán Nhà',
+                  body: 'Bán nhà của bạn với giá tốt nhất thị trường. Định giá miễn phí, tiếp thị chuyên nghiệp và đàm phán từng đề nghị.',
                   href: '/sell',
-                  cta: '出售我的房产 →',
+                  cta: 'Bán Nhà Của Tôi →',
                 },
                 {
                   icon: '📈',
-                  title: '投资',
-                  body: '机构级投资工具：资本化率计算器、现金流分析及NNN租约分析——完全免费。',
+                  title: 'Đầu Tư',
+                  body: 'Công cụ đầu tư chuyên nghiệp: máy tính cap rate, phân tích dòng tiền và phân tích hợp đồng NNN — hoàn toàn miễn phí.',
                   href: '/investor',
-                  cta: '查看工具 →',
+                  cta: 'Xem Công Cụ →',
                 },
                 {
                   icon: '🏢',
-                  title: '商业地产',
-                  body: '犹他州购物中心、办公楼、工业厂房及综合用途物业。在Intermountain West三个州均持有执照。',
+                  title: 'Thương Mại',
+                  body: 'Trung tâm mua sắm, văn phòng, kho xưởng và bất động sản đa năng tại Utah. Được cấp phép tại ba tiểu bang.',
                   href: '/commercial',
-                  cta: '商业房产 →',
+                  cta: 'Bất Động Sản Thương Mại →',
                 },
               ].map(service => (
                 <div key={service.title} style={{
@@ -214,7 +227,10 @@ export default function ChinesePage() {
                   }}>
                     {service.title}
                   </h3>
-                  <p style={{ fontSize: '14px', color: '#777', lineHeight: '1.8', marginBottom: '24px', flex: 1 }}>
+                  <p style={{
+                    fontSize: '14px', color: '#777', lineHeight: '1.8',
+                    marginBottom: '24px', flex: 1,
+                  }}>
                     {service.body}
                   </p>
                   <Link href={service.href} style={{
@@ -231,13 +247,16 @@ export default function ChinesePage() {
           </div>
         </section>
 
-        {/* 关于 Gurpreet */}
+        {/* About Gurpreet */}
         <section style={{ padding: '96px 32px', background: '#0D0D0D' }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '64px', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '16px' }}>
-                  您的经纪人
+                <div style={{
+                  fontSize: '11px', letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: '#C9A84C', marginBottom: '16px',
+                }}>
+                  Môi Giới Của Bạn
                 </div>
                 <h2 style={{
                   fontFamily: 'Cormorant Garamond, serif',
@@ -245,27 +264,27 @@ export default function ChinesePage() {
                   fontWeight: '400', color: '#F5F3EE',
                   lineHeight: '1.05', marginBottom: '24px',
                 }}>
-                  Gurpreet Bhatti，<br />
-                  <span style={{ fontStyle: 'italic', color: '#C9A84C' }}>REALTOR®</span>
+                  Về Gurpreet
                 </h2>
                 <p style={{ fontSize: '15px', color: '#888', lineHeight: '1.85', marginBottom: '20px' }}>
-                  Gurpreet Bhatti 是持牌犹他州、内华达州和怀俄明州的REALTOR®，
-                  专注于住宅、商业地产及投资领域。作为美国海军陆战队退伍军人，
-                  他将纪律、诚信和全力以赴的精神带入每一笔房产交易。
+                  Gurpreet Bhatti là Môi Giới Bất Động Sản được cấp phép tại Utah, Nevada và Wyoming,
+                  chuyên về nhà ở, bất động sản thương mại và đầu tư.
+                  Là cựu chiến binh Thủy Quân Lục Chiến Hoa Kỳ, ông mang đến sự kỷ luật,
+                  trung thực và cam kết trong từng giao dịch.
                 </p>
                 <p style={{ fontSize: '15px', color: '#888', lineHeight: '1.85', marginBottom: '32px' }}>
-                  无论是在盐湖城购买您的第一套住宅、在西乔丹出售商业地产，
-                  还是寻找犹他州的下一个投资机会，Gurpreet 都将为您提供
-                  专业指导和个性化服务——无中间商，无借口。
+                  Dù bạn đang mua ngôi nhà đầu tiên ở West Valley City, bán nhà ở Taylorsville,
+                  hay tìm kiếm cơ hội đầu tư tại Utah — Gurpreet sẽ hướng dẫn bạn
+                  với dịch vụ chuyên nghiệp và cá nhân hóa. Không trung gian, không lý do.
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {[
-                    '持牌犹他州、内华达州和怀俄明州',
-                    '住宅及商业地产专家',
-                    '美国海军陆战队退伍军人（USMC）',
-                    '1小时内回复保证',
-                    '无压力销售——始终诚信服务',
+                    'Được cấp phép tại Utah, Nevada và Wyoming',
+                    'Chuyên gia nhà ở và thương mại',
+                    'Cựu chiến binh Thủy Quân Lục Chiến Hoa Kỳ (USMC)',
+                    'Đảm bảo phản hồi trong 1 giờ',
+                    'Không áp lực — luôn trung thực',
                   ].map(item => (
                     <div key={item} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                       <span style={{ color: '#C9A84C', fontSize: '16px' }}>✓</span>
@@ -278,7 +297,7 @@ export default function ChinesePage() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                 <Image
                   src="/images/gurpreet-headshot-smile.jpg"
-                  alt="Gurpreet Bhatti — 犹他州REALTOR®"
+                  alt="Gurpreet Bhatti — REALTOR® Utah"
                   width={280}
                   height={280}
                   style={{ borderRadius: '16px', border: '2px solid rgba(201,168,76,0.3)', objectFit: 'cover' }}
@@ -294,7 +313,7 @@ export default function ChinesePage() {
                     Gurpreet Bhatti
                   </div>
                   <div style={{ fontSize: '12px', color: '#C9A84C', letterSpacing: '0.08em', marginBottom: '8px' }}>
-                    REALTOR® · 退伍军人
+                    REALTOR® · Cựu Chiến Binh
                   </div>
                   <div style={{ fontSize: '11px', color: '#555' }}>Dynasty Point Referral Group</div>
                   <div style={{ fontSize: '11px', color: '#555' }}>UT Lic# 12907042-SA00</div>
@@ -311,7 +330,7 @@ export default function ChinesePage() {
           </div>
         </section>
 
-        {/* 联系我们 */}
+        {/* Contact */}
         <section style={{
           padding: '96px 32px',
           background: 'linear-gradient(135deg, #0A0A0A 0%, #111 50%, #0A0A0A 100%)',
@@ -329,8 +348,11 @@ export default function ChinesePage() {
           <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '64px', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '16px' }}>
-                  联系我们
+                <div style={{
+                  fontSize: '11px', letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: '#C9A84C', marginBottom: '16px',
+                }}>
+                  Liên Hệ
                 </div>
                 <h2 style={{
                   fontFamily: 'Cormorant Garamond, serif',
@@ -338,12 +360,12 @@ export default function ChinesePage() {
                   fontWeight: '300', color: '#F5F3EE',
                   lineHeight: '1.05', marginBottom: '24px',
                 }}>
-                  准备好开始了吗？<br />
-                  <span style={{ fontStyle: 'italic', color: '#C9A84C' }}>让我们谈谈。</span>
+                  Sẵn Sàng Chưa?<br />
+                  <span style={{ fontStyle: 'italic', color: '#C9A84C' }}>Hãy Nói Chuyện.</span>
                 </h2>
                 <p style={{ fontSize: '15px', color: '#888', lineHeight: '1.8', marginBottom: '28px' }}>
-                  无机器人，无助理，无延迟。当您来电或发信息时，
-                  直接与Gurpreet本人交流。每一次都如此。这是承诺。
+                  Không robot, không trợ lý, không chậm trễ. Khi bạn gọi hoặc nhắn tin,
+                  bạn nói chuyện trực tiếp với Gurpreet. Mọi lúc. Đây là cam kết.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <a href="tel:8016358462" style={{
@@ -365,7 +387,7 @@ export default function ChinesePage() {
                     display: 'inline-flex', alignItems: 'center', gap: '8px',
                     color: '#888', textDecoration: 'none', fontSize: '13px',
                   }}>
-                    🇺🇸 See in English →
+                    🇺🇸 Xem bằng tiếng Anh →
                   </Link>
                 </div>
               </div>
@@ -377,41 +399,44 @@ export default function ChinesePage() {
                 borderRadius: '16px',
               }}>
                 <div style={{ marginBottom: '24px' }}>
-                  <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', fontWeight: '400', color: '#F5F3EE', marginBottom: '4px' }}>
-                    发送消息
+                  <h3 style={{
+                    fontFamily: 'Cormorant Garamond, serif',
+                    fontSize: '28px', fontWeight: '400', color: '#F5F3EE', marginBottom: '4px',
+                  }}>
+                    Gửi Tin Nhắn
                   </h3>
-                  <p style={{ fontSize: '13px', color: '#666' }}>Gurpreet 将在一小时内回复您。</p>
+                  <p style={{ fontSize: '13px', color: '#666' }}>Gurpreet sẽ phản hồi trong vòng một giờ.</p>
                 </div>
-                <form action={submitChineseLead} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <form action={submitVietnameseLead} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <input
-                      placeholder="名字"
+                      placeholder="Tên"
                       name="firstName"
                       required
                       style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                     />
                     <input
-                      placeholder="姓氏"
+                      placeholder="Họ"
                       name="lastName"
                       required
                       style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                     />
                   </div>
                   <input
-                    placeholder="电话"
+                    placeholder="Số điện thoại"
                     name="phone"
                     type="tel"
                     required
                     style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                   />
                   <input
-                    placeholder="电子邮件"
+                    placeholder="Email"
                     name="email"
                     type="email"
                     style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                   />
                   <textarea
-                    placeholder="我能为您做什么？"
+                    placeholder="Tôi có thể giúp gì cho bạn?"
                     name="message"
                     rows={3}
                     style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#F5F3EE', outline: 'none', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }}
@@ -420,7 +445,7 @@ export default function ChinesePage() {
                     type="submit"
                     style={{ background: 'linear-gradient(135deg, #C9A84C, #E2C070)', border: 'none', borderRadius: '8px', padding: '14px 28px', fontSize: '14px', fontWeight: '600', color: '#0A0A0A', cursor: 'pointer', fontFamily: 'inherit', letterSpacing: '0.04em' }}
                   >
-                    发送消息 →
+                    Gửi Tin Nhắn →
                   </button>
                 </form>
               </div>
@@ -428,17 +453,20 @@ export default function ChinesePage() {
           </div>
         </section>
 
-        {/* 城市列表 */}
+        {/* Cities */}
         <section style={{ padding: '64px 32px', background: '#0A0A0A' }}>
           <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
-            <div style={{ fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '20px' }}>
-              服务整个犹他州
+            <div style={{
+              fontSize: '11px', letterSpacing: '0.14em',
+              textTransform: 'uppercase', color: '#C9A84C', marginBottom: '20px',
+            }}>
+              Phục Vụ Toàn Utah — Cộng Đồng Việt Nam
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
               {[
-                'Draper', 'Sandy', 'Lehi', 'Millcreek',
-                'Salt Lake City', 'West Jordan', 'South Jordan', 'Taylorsville',
-                'Murray', 'Herriman', 'Riverton', 'Provo',
+                'West Valley City', 'Taylorsville', 'Kearns', 'Murray',
+                'Salt Lake City', 'West Jordan', 'Sandy', 'South Jordan',
+                'Millcreek', 'Herriman', 'Riverton', 'Draper',
               ].map(city => (
                 <Link
                   key={city}
@@ -459,23 +487,23 @@ export default function ChinesePage() {
           </div>
         </section>
 
-        {/* 中文迷你页脚 */}
+        {/* Mini Footer */}
         <section style={{ padding: '40px 32px', background: '#080808', borderTop: '1px solid rgba(201,168,76,0.12)' }}>
           <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '32px', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ color: '#C9A84C', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>搜索</div>
+              <div style={{ color: '#C9A84C', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Tìm Kiếm</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <a href="/search" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>所有房产</a>
-                <a href="/sell" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>出售房产</a>
-                <a href="/commercial" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>商业地产</a>
-                <a href="/investor" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>投资工具</a>
+                <a href="/search" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Tất Cả Bất Động Sản</a>
+                <a href="/sell" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Bán Nhà</a>
+                <a href="/commercial" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Thương Mại</a>
+                <a href="/investor" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Công Cụ Đầu Tư</a>
               </div>
             </div>
             <div>
-              <div style={{ color: '#C9A84C', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>联系方式</div>
+              <div style={{ color: '#C9A84C', fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Liên Hệ</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <a href="tel:8016358462" style={{ color: '#C9A84C', fontSize: '14px', textDecoration: 'none' }}>📞 801-635-8462</a>
-                <a href="/contact" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>联系表单</a>
+                <a href="/contact" style={{ color: '#888', fontSize: '13px', textDecoration: 'none' }}>Biểu Mẫu Liên Hệ</a>
                 <span style={{ color: '#555', fontSize: '12px' }}>UT Lic# 12907042-SA00</span>
               </div>
             </div>

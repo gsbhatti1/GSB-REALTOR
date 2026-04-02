@@ -4,9 +4,12 @@ import { useRouter, usePathname } from 'next/navigation'
 import Image from 'next/image'
 
 const LANGUAGES = [
-  { flag: '🇺🇸', name: 'English', href: '/', code: 'en' },
-  { flag: '🇲🇽', name: 'Español', href: '/es', code: 'es' },
-  { flag: '🇮🇳', name: 'ਪੰਜਾਬੀ', href: '/pa', code: 'pa', subtitle: 'Punjabi' },
+  { flag: '🇺🇸', name: 'English', native: 'English', href: '/', code: 'en' },
+  { flag: '🇲🇽', name: 'Spanish', native: 'Español', href: '/es', code: 'es' },
+  { flag: '🇮🇳', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', href: '/pa', code: 'pa' },
+  { flag: '🇸🇦', name: 'Arabic', native: 'العربية', href: '/ar', code: 'ar' },
+  { flag: '🇨🇳', name: 'Chinese', native: '中文', href: '/zh', code: 'zh' },
+  { flag: '🇻🇳', name: 'Vietnamese', native: 'Tiếng Việt', href: '/vi', code: 'vi' },
 ]
 
 const QUOTES = [
@@ -28,7 +31,7 @@ export default function LanguageSelector() {
 
   useEffect(() => {
     const selected = localStorage.getItem('gsb_lang')
-    const isLangPage = ['/es', '/pt', '/zh', '/ar', '/fa', '/pa'].some(p =>
+    const isLangPage = ['/es', '/pt', '/zh', '/ar', '/fa', '/pa', '/vi'].some(p =>
       pathname.startsWith(p)
     )
     if (!selected && !isLangPage) {
@@ -178,33 +181,39 @@ export default function LanguageSelector() {
           </h1>
         </div>
 
-        {/* Language heading — trilingual */}
+        {/* Language heading — hexalingual */}
         <div
           style={{
             fontSize: '11px',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.08em',
             color: 'rgba(255,255,255,0.3)',
-            textTransform: 'uppercase',
             marginBottom: '20px',
             display: 'flex',
-            gap: '8px',
+            gap: '6px',
             flexWrap: 'wrap',
+            alignItems: 'center',
           }}
         >
           <span>Choose Your Language</span>
-          <span style={{ color: 'rgba(201,168,76,0.3)' }}>/</span>
+          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
           <span>Elige tu idioma</span>
-          <span style={{ color: 'rgba(201,168,76,0.3)' }}>/</span>
+          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
           <span>ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ</span>
+          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
+          <span>اختر لغتك</span>
+          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
+          <span>选择语言</span>
+          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
+          <span>Chọn ngôn ngữ</span>
         </div>
 
-        {/* Flag Buttons */}
+        {/* Flag Buttons — 2×3 grid */}
         <div
           style={{
-            display: 'flex',
-            gap: '16px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '12px',
             marginBottom: '40px',
-            flexWrap: 'wrap',
           }}
         >
           {LANGUAGES.map(lang => (
@@ -223,28 +232,25 @@ export default function LanguageSelector() {
                     ? '1px solid rgba(201,168,76,0.7)'
                     : '1px solid rgba(255,255,255,0.08)',
                 borderRadius: '16px',
-                padding: '24px 28px',
+                padding: '20px 16px',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '8px',
                 transform:
                   hoveredLang === lang.code ? 'scale(1.05)' : 'scale(1)',
                 color: '#F5F3EE',
                 textAlign: 'center',
-                minWidth: '120px',
-                flex: '1 1 auto',
-                maxWidth: '160px',
               }}
             >
-              <span style={{ fontSize: '48px', lineHeight: 1 }}>
+              <span style={{ fontSize: '36px', lineHeight: 1 }}>
                 {lang.flag}
               </span>
               <span
                 style={{
-                  fontSize: '17px',
+                  fontSize: '15px',
                   fontWeight: '700',
                   color:
                     hoveredLang === lang.code ? '#C9A84C' : '#F5F3EE',
@@ -252,19 +258,17 @@ export default function LanguageSelector() {
                   fontFamily: 'DM Sans, sans-serif',
                 }}
               >
+                {lang.native}
+              </span>
+              <span
+                style={{
+                  fontSize: '10px',
+                  color: 'rgba(255,255,255,0.35)',
+                  letterSpacing: '0.06em',
+                }}
+              >
                 {lang.name}
               </span>
-              {'subtitle' in lang && lang.subtitle && (
-                <span
-                  style={{
-                    fontSize: '11px',
-                    color: 'rgba(255,255,255,0.35)',
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  {lang.subtitle}
-                </span>
-              )}
             </button>
           ))}
         </div>

@@ -23,15 +23,19 @@ const NAV_LINKS = [
 ]
 
 const FLAG_LANGS = [
-  { flag: '🇺🇸', label: 'EN', href: '/', title: 'English' },
-  { flag: '🇲🇽', label: 'ES', href: '/es', title: 'Español' },
-  { flag: '🇧🇷', label: 'PT', href: '/pt', title: 'Português' },
+  { flag: '🇺🇸', label: 'English', href: '/' },
+  { flag: '🇲🇽', label: 'Español', href: '/es' },
+  { flag: '🇮🇳', label: 'ਪੰਜਾਬੀ', href: '/pa' },
+  { flag: '🇸🇦', label: 'العربية', href: '/ar' },
+  { flag: '🇨🇳', label: '中文', href: '/zh' },
+  { flag: '🇻🇳', label: 'Tiếng Việt', href: '/vi' },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [resourcesOpen, setResourcesOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
 
   const resourcesRef = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -190,46 +194,64 @@ export default function Navbar() {
       {/* Right: Language flags + Sign In + Phone */}
       <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
-        {/* Language flags - clean and simple */}
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-          {FLAG_LANGS.map(lang => (
-            <Link
-              key={lang.label}
-              href={lang.href}
-              title={lang.title}
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  localStorage.setItem('gsb_language_selected', lang.label.toLowerCase())
-                }
-              }}
+        {/* Language dropdown */}
+        <div
+          style={{ position: 'relative' }}
+          onMouseEnter={() => setLangOpen(true)}
+          onMouseLeave={() => setTimeout(() => setLangOpen(false), 150)}
+        >
+          <button style={{
+            background: 'none', border: '1px solid rgba(201,168,76,0.3)',
+            borderRadius: '6px', padding: '5px 10px', cursor: 'pointer',
+            color: '#C9A84C', fontSize: '12px', fontWeight: '600',
+            display: 'flex', alignItems: 'center', gap: '4px',
+          }}>
+            🌐 <span style={{ fontSize: '11px' }}>LANG</span>
+          </button>
+          {langOpen && (
+            <div
               style={{
-                display: 'flex', alignItems: 'center', gap: '3px',
-                padding: '4px 8px', borderRadius: '6px',
-                fontSize: '11px', fontWeight: '600',
-                color: pathname === lang.href || (lang.href !== '/' && pathname.startsWith(lang.href))
-                  ? '#C9A84C'
-                  : 'rgba(245,243,238,0.6)',
-                textDecoration: 'none',
-                transition: 'all 0.15s',
-                background: 'transparent',
-                border: pathname === lang.href || (lang.href !== '/' && pathname.startsWith(lang.href))
-                  ? '1px solid rgba(201,168,76,0.3)'
-                  : '1px solid transparent',
+                position: 'absolute', top: 'calc(100% + 4px)', right: 0,
+                background: '#111', border: '1px solid rgba(201,168,76,0.2)',
+                borderRadius: '10px', padding: '8px', minWidth: '160px',
+                zIndex: 200, display: 'grid', gridTemplateColumns: '1fr 1fr',
+                gap: '4px', boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
               }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.color = '#C9A84C'
-                e.currentTarget.style.borderColor = 'rgba(201,168,76,0.3)'
-              }}
-              onMouseOut={(e) => {
-                const isActive = pathname === lang.href || (lang.href !== '/' && pathname.startsWith(lang.href))
-                e.currentTarget.style.color = isActive ? '#C9A84C' : 'rgba(245,243,238,0.6)'
-                e.currentTarget.style.borderColor = isActive ? 'rgba(201,168,76,0.3)' : 'transparent'
-              }}
+              onMouseEnter={() => setLangOpen(true)}
+              onMouseLeave={() => setLangOpen(false)}
             >
-              <span style={{ fontSize: '14px' }}>{lang.flag}</span>
-              <span>{lang.label}</span>
-            </Link>
-          ))}
+              {FLAG_LANGS.map(l => (
+                <Link key={l.href} href={l.href}
+                  onClick={() => {
+                    setLangOpen(false)
+                    if (typeof window !== 'undefined') {
+                      localStorage.setItem('gsb_lang', l.href === '/' ? 'en' : l.href.slice(1))
+                    }
+                  }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '7px 10px', borderRadius: '6px',
+                    color: pathname === l.href || (l.href !== '/' && pathname.startsWith(l.href)) ? '#C9A84C' : '#888',
+                    fontSize: '12px', textDecoration: 'none',
+                    transition: 'all 0.15s',
+                    background: pathname === l.href || (l.href !== '/' && pathname.startsWith(l.href)) ? 'rgba(201,168,76,0.1)' : 'transparent',
+                  }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.background = 'rgba(201,168,76,0.1)'
+                    e.currentTarget.style.color = '#C9A84C'
+                  }}
+                  onMouseOut={e => {
+                    const isActive = pathname === l.href || (l.href !== '/' && pathname.startsWith(l.href))
+                    e.currentTarget.style.background = isActive ? 'rgba(201,168,76,0.1)' : 'transparent'
+                    e.currentTarget.style.color = isActive ? '#C9A84C' : '#888'
+                  }}
+                >
+                  <span style={{ fontSize: '16px' }}>{l.flag}</span>
+                  <span>{l.label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Sign In button */}
