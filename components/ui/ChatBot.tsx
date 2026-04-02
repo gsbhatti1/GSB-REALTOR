@@ -7,19 +7,64 @@ interface Message {
   content: string
 }
 
-const GREETING: Message = {
-  role: 'assistant',
-  content: "Hey — I'm Gurpreet Bhatti, Utah REALTOR® and USMC Veteran. Buying, selling, investing, or just curious about the market? I'm here 24/7.",
+function getLanguage() {
+  if (typeof window === 'undefined') return 'en'
+  const path = window.location.pathname
+  if (path.startsWith('/es')) return 'es'
+  if (path.startsWith('/pt')) return 'pt'
+  return 'en'
+}
+
+function getWelcomeMessage(lang: string): Message {
+  if (lang === 'es') {
+    return {
+      role: 'assistant',
+      content: '¡Hola! Soy Gurpreet Bhatti, REALTOR® y Veterano del USMC. ¿Buscas comprar, vender o invertir en Utah? Estoy aquí 24/7.',
+    }
+  }
+  if (lang === 'pt') {
+    return {
+      role: 'assistant',
+      content: 'Olá! Sou Gurpreet Bhatti, REALTOR® e Veterano do USMC. Procurando comprar, vender ou investir em Utah? Estou aqui 24/7.',
+    }
+  }
+  return {
+    role: 'assistant',
+    content: "Hey — I'm Gurpreet Bhatti, Utah REALTOR® and USMC Veteran. Buying, selling, investing, or just curious about the market? I'm here 24/7.",
+  }
+}
+
+function getQuickReplies(lang: string): string[] {
+  if (lang === 'es') {
+    return ['¿Cuánto vale mi casa?', 'Mostrarme casas en West Jordan', '¿Cómo funciona la compra?', 'Propiedades de inversión']
+  }
+  if (lang === 'pt') {
+    return ['Quanto vale minha casa?', 'Mostrar casas em West Jordan', 'Como funciona a compra?', 'Propriedades de investimento']
+  }
+  return ["What's my home worth?", 'Show me homes in West Jordan', 'How does buying work?', 'Investment properties']
+}
+
+function getSubtitle(lang: string): string {
+  if (lang === 'es') return 'REALTOR® · Responde al instante'
+  if (lang === 'pt') return 'REALTOR® · Responde instantaneamente'
+  return 'REALTOR® · Usually replies instantly'
 }
 
 export default function ChatBot() {
+  const [lang, setLang] = useState('en')
   const [open, setOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([GREETING])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [unread, setUnread] = useState(1)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const detectedLang = getLanguage()
+    setLang(detectedLang)
+    setMessages([getWelcomeMessage(detectedLang)])
+  }, [])
 
   useEffect(() => {
     if (open) {
@@ -52,11 +97,14 @@ export default function ChatBot() {
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }])
       if (!open) setUnread(prev => prev + 1)
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, had a connection issue. Call me directly — 801-635-8462." }])
+      setMessages(prev => [...prev, { role: 'assistant', content: lang === 'es' ? 'Lo siento, hubo un error. Llámame directamente — 801-635-8462.' : lang === 'pt' ? 'Desculpe, houve um erro. Ligue diretamente — 801-635-8462.' : "Sorry, had a connection issue. Call me directly — 801-635-8462." }])
     } finally {
       setLoading(false)
     }
   }
+
+  const quickReplies = getQuickReplies(lang)
+  const subtitle = getSubtitle(lang)
 
   return (
     <>
@@ -146,7 +194,7 @@ export default function ChatBot() {
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: '14px', fontWeight: '600', color: '#F5F3EE', lineHeight: '1.2' }}>Gurpreet Bhatti</div>
-              <div style={{ fontSize: '11px', color: '#C9A84C', letterSpacing: '0.04em' }}>REALTOR® · Usually replies instantly</div>
+              <div style={{ fontSize: '11px', color: '#C9A84C', letterSpacing: '0.04em' }}>{subtitle}</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80' }} />
@@ -209,12 +257,7 @@ export default function ChatBot() {
           {/* Quick questions */}
           {messages.length <= 1 && (
             <div style={{ padding: '0 16px 8px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              {[
-                "What's my home worth?",
-                "Show me homes in West Jordan",
-                "How does buying work?",
-                "Investment properties",
-              ].map(q => (
+              {quickReplies.map(q => (
                 <button
                   key={q}
                   onClick={() => { setInput(q); setTimeout(send, 50) }}
@@ -244,7 +287,7 @@ export default function ChatBot() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
-              placeholder="Ask Gurpreet anything..."
+              placeholder={lang === 'es' ? 'Pregunta a Gurpreet...' : lang === 'pt' ? 'Pergunte a Gurpreet...' : 'Ask Gurpreet anything...'}
               style={{
                 flex: 1, background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px',

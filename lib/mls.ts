@@ -223,7 +223,7 @@ export async function searchProperties(filters: SearchFilters = {}): Promise<Sea
   }
 
   const filterStr = buildFilter(filters)
-  const orderBy = filters.orderBy || 'OnMarketDate desc'
+  const orderBy = filters.orderBy || 'ListPrice desc'
 
   const params: Record<string, string> = {
     '$filter': filterStr,

@@ -27,7 +27,7 @@ function SearchContent() {
     beds:     searchParams.get('beds')     || '',
     baths:    searchParams.get('baths')    || '',
     type:     searchParams.get('type')     || '',
-    orderBy:  searchParams.get('orderBy')  || 'ModificationTimestamp desc',
+    orderBy:  searchParams.get('orderBy')  || 'ListPrice desc',
   })
 
   const [properties, setProperties] = useState<any[]>([])
@@ -231,9 +231,9 @@ function SearchContent() {
             <div style={{ flex: '1 1 140px' }}>
               <label style={{ display: 'block', fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>Sort</label>
               <select value={filters.orderBy} onChange={e => update('orderBy', e.target.value)} style={inputStyle}>
-                <option value="ModificationTimestamp desc">Newest</option>
-                <option value="ListPrice asc">Price: Low to High</option>
                 <option value="ListPrice desc">Price: High to Low</option>
+                <option value="ListPrice asc">Price: Low to High</option>
+                <option value="ModificationTimestamp desc">Newest</option>
               </select>
             </div>
             <button onClick={applyFilters} style={{ background: 'linear-gradient(135deg, #C9A84C, #E2C070)', border: 'none', borderRadius: '8px', padding: '0 28px', height: '42px', fontSize: '14px', fontWeight: '600', color: '#0A0A0A', cursor: 'pointer', fontFamily: 'inherit', alignSelf: 'flex-end' }}>

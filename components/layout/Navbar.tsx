@@ -5,13 +5,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
-const LANG_OPTIONS = [
-  { code: 'en', flag: '🇺🇸', label: 'EN', path: '/' },
-  { code: 'es', flag: '🇲🇽', label: 'ES', path: '/es' },
-  { code: 'pt', flag: '🇧🇷', label: 'PT', path: '/pt' },
-  { code: 'zh', flag: '🇨🇳', label: 'ZH', path: '/zh' },
-]
-
 const RESOURCES_LINKS = [
   { href: '/blog', label: 'Blog' },
   { href: '/market-reports', label: 'Market Reports' },
@@ -28,24 +21,21 @@ const NAV_LINKS = [
   { href: '/contact', label: 'Contact' },
 ]
 
-function getCurrentLang(pathname: string) {
-  if (pathname.startsWith('/es')) return 'ES'
-  if (pathname.startsWith('/pt')) return 'PT'
-  if (pathname.startsWith('/zh')) return 'ZH'
-  return 'EN'
-}
+const FLAG_LANGS = [
+  { flag: '🇺🇸', label: 'EN', href: '/', title: 'English' },
+  { flag: '🇲🇽', label: 'ES', href: '/es', title: 'Español' },
+  { flag: '🇧🇷', label: 'PT', href: '/pt', title: 'Português' },
+]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [langOpen, setLangOpen] = useState(false)
   const [resourcesOpen, setResourcesOpen] = useState(false)
 
-  const langRef = useRef<HTMLDivElement>(null)
   const resourcesRef = useRef<HTMLDivElement>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const pathname = usePathname()
-  const currentLang = getCurrentLang(pathname)
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40)
@@ -53,12 +43,9 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  // Close dropdowns on outside click
+  // Close resources dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) {
-        setLangOpen(false)
-      }
       if (resourcesRef.current && !resourcesRef.current.contains(e.target as Node)) {
         setResourcesOpen(false)
       }
@@ -66,6 +53,23 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
+
+  const handleTriggerMouseEnter = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setResourcesOpen(true)
+  }
+
+  const handleTriggerMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setResourcesOpen(false), 150)
+  }
+
+  const handleDropdownMouseEnter = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+  }
+
+  const handleDropdownMouseLeave = () => {
+    setResourcesOpen(false)
+  }
 
   return (
     <nav style={{
@@ -104,12 +108,12 @@ export default function Navbar() {
           </Link>
         ))}
 
-        {/* Resources dropdown */}
+        {/* Resources dropdown — hover with bridge to prevent gap */}
         <div
           ref={resourcesRef}
           style={{ position: 'relative' }}
-          onMouseEnter={() => setResourcesOpen(true)}
-          onMouseLeave={() => setResourcesOpen(false)}
+          onMouseEnter={handleTriggerMouseEnter}
+          onMouseLeave={handleTriggerMouseLeave}
         >
           <button
             onClick={() => setResourcesOpen(!resourcesOpen)}
@@ -135,102 +139,96 @@ export default function Navbar() {
 
           {/* Dropdown */}
           {resourcesOpen && (
-            <div style={{
-              position: 'absolute', top: 'calc(100% + 4px)', left: '50%',
-              transform: 'translateX(-50%)',
-              background: '#111',
-              border: '1px solid rgba(201,168,76,0.2)',
-              borderRadius: '12px',
-              padding: '8px',
-              minWidth: '180px',
-              boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
-              zIndex: 200,
-            }}>
-              {RESOURCES_LINKS.map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setResourcesOpen(false)}
-                  className="dropdown-item"
-                  style={{
-                    display: 'flex', alignItems: 'center',
-                    padding: '10px 14px',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    color: '#AAA',
-                    fontSize: '13px',
-                    transition: 'all 0.15s',
-                    borderLeft: '2px solid transparent',
-                  }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+            <>
+              {/* Invisible bridge to prevent gap between trigger and dropdown */}
+              <div
+                style={{ position: 'absolute', top: '100%', left: 0, right: 0, height: '8px', zIndex: 199 }}
+                onMouseEnter={handleDropdownMouseEnter}
+              />
+              <div
+                style={{
+                  position: 'absolute', top: 'calc(100% + 8px)', left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: '#111',
+                  border: '1px solid rgba(201,168,76,0.2)',
+                  borderRadius: '12px',
+                  padding: '8px',
+                  minWidth: '180px',
+                  boxShadow: '0 16px 48px rgba(0,0,0,0.7)',
+                  zIndex: 200,
+                }}
+                onMouseEnter={handleDropdownMouseEnter}
+                onMouseLeave={handleDropdownMouseLeave}
+              >
+                {RESOURCES_LINKS.map(item => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setResourcesOpen(false)}
+                    className="dropdown-item"
+                    style={{
+                      display: 'flex', alignItems: 'center',
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      textDecoration: 'none',
+                      color: '#AAA',
+                      fontSize: '13px',
+                      transition: 'all 0.15s',
+                      borderLeft: '2px solid transparent',
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
 
-      {/* Right: Sign In + Lang + Phone */}
+      {/* Right: Language flags + Sign In + Phone */}
       <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
-        {/* Language globe */}
-        <div ref={langRef} style={{ position: 'relative' }}>
-          <button
-            onClick={() => setLangOpen(!langOpen)}
-            title="Language / Idioma"
-            style={{
-              background: 'none',
-              border: '1px solid rgba(201,168,76,0.25)',
-              borderRadius: '6px',
-              padding: '5px 8px',
-              color: '#C9A84C',
-              fontSize: '15px',
-              cursor: 'pointer',
-              display: 'flex', alignItems: 'center',
-              lineHeight: 1,
-            }}
-          >
-            🌐
-          </button>
-          {langOpen && (
-            <div style={{
-              position: 'absolute', top: 'calc(100% + 8px)', right: 0,
-              background: '#0f0f0f',
-              border: '1px solid rgba(201,168,76,0.25)',
-              borderRadius: '10px',
-              padding: '8px',
-              display: 'flex', flexDirection: 'column', gap: '4px',
-              minWidth: '130px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
-              zIndex: 200,
-            }}>
-              {LANG_OPTIONS.map(lang => (
-                <Link
-                  key={lang.code}
-                  href={lang.path}
-                  onClick={() => {
-                    setLangOpen(false)
-                    if (typeof window !== 'undefined') {
-                      localStorage.setItem('gsb_language_selected', lang.code)
-                    }
-                  }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 12px', borderRadius: '7px',
-                    textDecoration: 'none',
-                    color: currentLang === lang.label ? '#C9A84C' : '#888',
-                    fontSize: '13px',
-                    background: currentLang === lang.label ? 'rgba(201,168,76,0.08)' : 'transparent',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  <span style={{ fontSize: '16px' }}>{lang.flag}</span>
-                  <span>{lang.label}</span>
-                </Link>
-              ))}
-            </div>
-          )}
+        {/* Language flags - clean and simple */}
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          {FLAG_LANGS.map(lang => (
+            <Link
+              key={lang.label}
+              href={lang.href}
+              title={lang.title}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('gsb_language_selected', lang.label.toLowerCase())
+                }
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '3px',
+                padding: '4px 8px', borderRadius: '6px',
+                fontSize: '11px', fontWeight: '600',
+                color: pathname === lang.href || (lang.href !== '/' && pathname.startsWith(lang.href))
+                  ? '#C9A84C'
+                  : 'rgba(245,243,238,0.6)',
+                textDecoration: 'none',
+                transition: 'all 0.15s',
+                background: 'transparent',
+                border: pathname === lang.href || (lang.href !== '/' && pathname.startsWith(lang.href))
+                  ? '1px solid rgba(201,168,76,0.3)'
+                  : '1px solid transparent',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.color = '#C9A84C'
+                e.currentTarget.style.borderColor = 'rgba(201,168,76,0.3)'
+              }}
+              onMouseOut={(e) => {
+                const isActive = pathname === lang.href || (lang.href !== '/' && pathname.startsWith(lang.href))
+                e.currentTarget.style.color = isActive ? '#C9A84C' : 'rgba(245,243,238,0.6)'
+                e.currentTarget.style.borderColor = isActive ? 'rgba(201,168,76,0.3)' : 'transparent'
+              }}
+            >
+              <span style={{ fontSize: '14px' }}>{lang.flag}</span>
+              <span>{lang.label}</span>
+            </Link>
+          ))}
         </div>
 
         {/* Sign In button */}
@@ -316,19 +314,18 @@ export default function Navbar() {
           }}>
             Create Account
           </Link>
-          {/* Language toggle */}
+          {/* Language toggle on mobile */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', paddingTop: '8px' }}>
-            {LANG_OPTIONS.map(lang => (
-              <Link key={lang.code} href={lang.path} onClick={() => {
+            {FLAG_LANGS.map(lang => (
+              <Link key={lang.label} href={lang.href} onClick={() => {
                 setMenuOpen(false)
                 if (typeof window !== 'undefined') {
-                  localStorage.setItem('gsb_language_selected', lang.code)
+                  localStorage.setItem('gsb_language_selected', lang.label.toLowerCase())
                 }
               }} style={{
                 padding: '7px 12px', border: '1px solid rgba(201,168,76,0.4)',
                 borderRadius: '6px', fontSize: '12px', fontWeight: '600',
                 color: '#C9A84C', textDecoration: 'none',
-                background: currentLang === lang.label ? 'rgba(201,168,76,0.08)' : 'transparent',
                 display: 'flex', alignItems: 'center', gap: '5px',
               }}>
                 <span>{lang.flag}</span>
