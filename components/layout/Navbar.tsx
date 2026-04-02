@@ -11,6 +11,7 @@ const RESOURCES_LINKS = [
   { href: '/testimonials', label: 'Reviews' },
   { href: '/about', label: 'About' },
   { href: '/team', label: 'Team' },
+  { href: '/track-record', label: 'Track Record' },
 ]
 
 const NAV_LINKS = [
