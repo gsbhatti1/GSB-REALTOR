@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/listings/PropertyCard'
+import PropertyMap from '@/components/listings/PropertyMap'
 
 const UTAH_CITIES = [
   'Salt Lake City','West Jordan','Sandy','South Jordan','Taylorsville','Murray',
@@ -45,6 +46,7 @@ function SearchContent() {
   const [loading, setLoading]       = useState(true)
   const [page, setPage]             = useState(0)
   const [hasMore, setHasMore]       = useState(false)
+  const [viewMode, setViewMode]       = useState<'list' | 'map'>('list')
   const PER_PAGE = 24
 
   // Alert modal state
@@ -344,6 +346,22 @@ function SearchContent() {
         {/* Results */}
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 24px' }}>
           <div style={{ marginBottom: '24px' }}>
+            {/* Map / List toggle */}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '20px' }}>
+              <button onClick={() => setViewMode('list')} style={{
+                padding: '8px 20px', borderRadius: '8px', fontWeight: '600', fontSize: '13px',
+                background: viewMode === 'list' ? '#C9A84C' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'list' ? '#0A0A0A' : '#888',
+                border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+              }}>☰ List</button>
+              <button onClick={() => setViewMode('map')} style={{
+                padding: '8px 20px', borderRadius: '8px', fontWeight: '600', fontSize: '13px',
+                background: viewMode === 'map' ? '#C9A84C' : 'rgba(255,255,255,0.06)',
+                color: viewMode === 'map' ? '#0A0A0A' : '#888',
+                border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+              }}>🗺️ Map</button>
+            </div>
+
             {loading && properties.length === 0 ? (
               <span style={{ color: '#555', fontSize: '14px' }}>Searching Utah MLS...</span>
             ) : (
@@ -377,39 +395,47 @@ function SearchContent() {
             </button>
           </div>
 
-          {loading && properties.length === 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} style={{ background: '#111', borderRadius: '16px', overflow: 'hidden' }}>
-                  <div className="skeleton" style={{ height: '220px' }} />
-                  <div style={{ padding: '20px' }}>
-                    <div className="skeleton" style={{ height: '20px', borderRadius: '4px', marginBottom: '12px' }} />
-                    <div className="skeleton" style={{ height: '14px', borderRadius: '4px', width: '60%' }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : properties.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '96px 32px', color: '#555' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏠</div>
-              <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', color: '#888', marginBottom: '8px' }}>No listings found</h3>
-              <p style={{ fontSize: '14px' }}>Try adjusting your filters or searching a different city.</p>
-            </div>
-          ) : (
-            <>
+          {/* Map view */}
+          {viewMode === 'map' && (
+            <PropertyMap properties={properties} />
+          )}
+
+          {/* List view */}
+          {viewMode === 'list' && (
+            loading && properties.length === 0 ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
-                {properties.map((property, i) => (
-                  <PropertyCard key={property.ListingKey} property={property} priority={i < 6} />
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div key={i} style={{ background: '#111', borderRadius: '16px', overflow: 'hidden' }}>
+                    <div className="skeleton" style={{ height: '220px' }} />
+                    <div style={{ padding: '20px' }}>
+                      <div className="skeleton" style={{ height: '20px', borderRadius: '4px', marginBottom: '12px' }} />
+                      <div className="skeleton" style={{ height: '14px', borderRadius: '4px', width: '60%' }} />
+                    </div>
+                  </div>
                 ))}
               </div>
-              {hasMore && (
-                <div style={{ textAlign: 'center', marginTop: '48px' }}>
-                  <button onClick={() => { const next = page + 1; setPage(next); fetchListings(filters, next, true) }} disabled={loading} style={{ background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', borderRadius: '8px', padding: '14px 40px', color: '#C9A84C', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}>
-                    {loading ? 'Loading...' : `Load More (${total - properties.length} remaining)`}
-                  </button>
+            ) : properties.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '96px 32px', color: '#555' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏠</div>
+                <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', color: '#888', marginBottom: '8px' }}>No listings found</h3>
+                <p style={{ fontSize: '14px' }}>Try adjusting your filters or searching a different city.</p>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+                  {properties.map((property, i) => (
+                    <PropertyCard key={property.ListingKey} property={property} priority={i < 6} />
+                  ))}
                 </div>
-              )}
-            </>
+                {hasMore && (
+                  <div style={{ textAlign: 'center', marginTop: '48px' }}>
+                    <button onClick={() => { const next = page + 1; setPage(next); fetchListings(filters, next, true) }} disabled={loading} style={{ background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', borderRadius: '8px', padding: '14px 40px', color: '#C9A84C', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}>
+                      {loading ? 'Loading...' : `Load More (${total - properties.length} remaining)`}
+                    </button>
+                  </div>
+                )}
+              </>
+            )
           )}
         </div>
       </main>

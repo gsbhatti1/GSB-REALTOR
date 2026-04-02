@@ -3,6 +3,21 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+interface SavedProp {
+  id: string
+  session_id?: string
+  user_id?: string
+  listing_key: string
+  address?: string
+  city?: string
+  list_price?: number
+  bedrooms?: number
+  bathrooms?: number
+  photo_url?: string
+  property_type?: string
+  saved_at: string
+}
+
 interface Lead {
   id: string
   first_name: string
@@ -103,7 +118,9 @@ export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false)
   const [password, setPassword] = useState('')
   const [authError, setAuthError] = useState('')
-  const [activeTab, setActiveTab] = useState<'leads' | 'agents'>('leads')
+  const [activeTab, setActiveTab] = useState<'leads' | 'agents' | 'saved'>('leads')
+  const [savedProps, setSavedProps] = useState<SavedProp[]>([])
+  const [savedLoading, setSavedLoading] = useState(false)
 
   const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'gsbrealtor2024'
 
@@ -112,8 +129,24 @@ export default function AdminPage() {
     if (password === ADMIN_PASSWORD) {
       setAuthorized(true)
       fetchLeads()
+      fetchSaved()
     } else {
       setAuthError('Wrong password')
+    }
+  }
+
+  const fetchSaved = async () => {
+    setSavedLoading(true)
+    try {
+      const res = await fetch('/api/admin/saved-properties')
+      if (res.ok) {
+        const data = await res.json()
+        setSavedProps(data.saved || [])
+      }
+    } catch (err) {
+      console.error('Failed to fetch saved properties:', err)
+    } finally {
+      setSavedLoading(false)
     }
   }
 
@@ -211,7 +244,7 @@ export default function AdminPage() {
 
         {/* Tab navigation */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0' }}>
-          {([{ key: 'leads', label: '📋 Leads' }, { key: 'agents', label: '🤖 AI Agents' }] as { key: 'leads' | 'agents', label: string }[]).map(tab => (
+          {([{ key: 'leads', label: '📋 Leads' }, { key: 'agents', label: '🤖 AI Agents' }, { key: 'saved', label: '❤️ Saved' }] as { key: 'leads' | 'agents' | 'saved', label: string }[]).map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
@@ -232,6 +265,89 @@ export default function AdminPage() {
             </button>
           ))}
         </div>
+
+        {/* Saved Properties tab */}
+        {activeTab === 'saved' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+              <div>
+                <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', fontWeight: '300', color: '#F5F3EE', marginBottom: '6px' }}>Saved Properties</h2>
+                <p style={{ color: '#555', fontSize: '13px' }}>Properties saved by visitors across all sessions</p>
+              </div>
+              <button
+                onClick={fetchSaved}
+                style={{ padding: '8px 16px', borderRadius: '8px', fontSize: '13px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: '#888', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                ↻ Refresh
+              </button>
+            </div>
+
+            {savedLoading ? (
+              <div style={{ padding: '64px', textAlign: 'center', color: '#555' }}>Loading saved properties...</div>
+            ) : savedProps.length === 0 ? (
+              <div style={{ padding: '64px', textAlign: 'center' }}>
+                <div style={{ fontSize: '40px', marginBottom: '16px' }}>💔</div>
+                <div style={{ color: '#555', fontSize: '15px' }}>No saved properties yet</div>
+              </div>
+            ) : (
+              <div style={{ background: '#0D0D0D', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', overflow: 'hidden' }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        {['Property', 'Price', 'Beds/Baths', 'Session', 'Saved At', 'Actions'].map(col => (
+                          <th key={col} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '500', whiteSpace: 'nowrap' }}>
+                            {col}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {savedProps.map((sp, i) => (
+                        <tr
+                          key={sp.id}
+                          style={{
+                            borderBottom: '1px solid rgba(255,255,255,0.04)',
+                            background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)',
+                          }}
+                        >
+                          <td style={{ padding: '14px 16px' }}>
+                            <div style={{ fontSize: '14px', fontWeight: '500', color: '#F5F3EE' }}>{sp.address || sp.listing_key}</div>
+                            {sp.city && <div style={{ fontSize: '12px', color: '#555' }}>{sp.city}, UT</div>}
+                          </td>
+                          <td style={{ padding: '14px 16px', fontSize: '14px', color: '#C9A84C', whiteSpace: 'nowrap' }}>
+                            {sp.list_price ? `$${sp.list_price.toLocaleString()}` : '—'}
+                          </td>
+                          <td style={{ padding: '14px 16px', fontSize: '13px', color: '#888', whiteSpace: 'nowrap' }}>
+                            {sp.bedrooms ? `${sp.bedrooms}bd / ${sp.bathrooms || '?'}ba` : '—'}
+                          </td>
+                          <td style={{ padding: '14px 16px', fontSize: '11px', color: '#555', maxWidth: '140px' }}>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {sp.session_id || sp.user_id || '—'}
+                            </div>
+                          </td>
+                          <td style={{ padding: '14px 16px', fontSize: '12px', color: '#555', whiteSpace: 'nowrap' }}>
+                            {new Date(sp.saved_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td style={{ padding: '14px 16px' }}>
+                            <a
+                              href={`/listing/${sp.listing_key}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ padding: '5px 10px', background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: '6px', color: '#C9A84C', textDecoration: 'none', fontSize: '12px', whiteSpace: 'nowrap' }}
+                            >
+                              View →
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* AI Agents tab */}
         {activeTab === 'agents' && (
