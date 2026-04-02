@@ -1,27 +1,26 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import {
   View, Text, StyleSheet, TouchableOpacity,
   ScrollView, Linking, StatusBar, SafeAreaView,
+  Animated,
 } from 'react-native'
-import { colors, spacing, radius } from '../lib/theme'
+import { colors, spacing, radius, shadow } from '../lib/theme'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 type Props = { navigation: NativeStackNavigationProp<any> }
 
 const LANES = [
   {
-    icon: '🏠',
-    title: 'Buy a Home',
-    subtitle: 'Search 17K+ Utah listings',
-    action: 'Search',
+    icon: '🔍',
+    title: 'Search Homes',
+    subtitle: '17,000+ active Utah listings',
     screen: 'Search',
     gold: true,
   },
   {
     icon: '💰',
     title: 'Sell Your Home',
-    subtitle: 'Free market valuation — no pressure',
-    action: 'Get Value',
+    subtitle: 'Free CMA — no pressure, no obligation',
     screen: 'Lead',
     params: { type: 'seller' },
     gold: false,
@@ -29,41 +28,64 @@ const LANES = [
   {
     icon: '🏢',
     title: 'Commercial / Invest',
-    subtitle: 'NNN, multi-family, land, retail',
-    action: 'Inquire',
+    subtitle: 'NNN · Multi-family · Land · Retail',
     screen: 'Lead',
     params: { type: 'commercial' },
+    gold: false,
+  },
+  {
+    icon: '📋',
+    title: 'Free Consultation',
+    subtitle: 'Talk to Gurpreet — responds within 1 hr',
+    screen: 'Lead',
+    params: { type: 'contact' },
     gold: false,
   },
 ]
 
 const STATS = [
-  { value: '17K+',  label: 'Listings' },
-  { value: '$7.3M+',label: 'Volume' },
-  { value: '3',     label: 'States' },
-  { value: '< 1hr', label: 'Response' },
+  { value: '17K+',   label: 'Listings' },
+  { value: '$7.3M+', label: 'Closed' },
+  { value: '3',      label: 'States' },
+  { value: '< 1hr',  label: 'Response' },
+]
+
+const CITIES = [
+  'Salt Lake City', 'West Jordan', 'Sandy', 'South Jordan',
+  'Draper', 'Murray', 'Lehi', 'Provo', 'Ogden', 'St. George',
 ]
 
 export default function HomeScreen({ navigation }: Props) {
+  const scrollY = useRef(new Animated.Value(0)).current
+
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  })
+
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="light-content" backgroundColor={colors.black} />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.topBar} />
 
-        {/* Gold top bar */}
-        <View style={styles.topBar} />
+      <Animated.ScrollView
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+        scrollEventThrottle={16}
+      >
+        {/* Hero header */}
+        <Animated.View style={[styles.hero, { opacity: headerOpacity }]}>
+          <Text style={styles.heroLabel}>GURPREET BHATTI · REALTOR® · USMC VETERAN</Text>
+          <Text style={styles.heroTitle}>Utah Real Estate</Text>
+          <Text style={styles.heroGold}>Done Different.</Text>
+        </Animated.View>
 
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerLabel}>GURPREET BHATTI · REALTOR® · USMC VETERAN</Text>
-          <Text style={styles.headerTitle}>Utah Real Estate</Text>
-          <Text style={styles.headerGold}>Done Different.</Text>
-        </View>
-
-        {/* Stats row */}
+        {/* Stats */}
         <View style={styles.statsRow}>
           {STATS.map(s => (
-            <View key={s.label} style={styles.stat}>
+            <View key={s.label} style={styles.statItem}>
               <Text style={styles.statValue}>{s.value}</Text>
               <Text style={styles.statLabel}>{s.label}</Text>
             </View>
@@ -71,208 +93,204 @@ export default function HomeScreen({ navigation }: Props) {
         </View>
 
         {/* Lane cards */}
-        <View style={styles.lanes}>
-          {LANES.map((lane) => (
+        <View style={styles.section}>
+          {LANES.map((lane, i) => (
             <TouchableOpacity
               key={lane.title}
               style={[styles.card, lane.gold && styles.cardGold]}
               onPress={() => navigation.navigate(lane.screen, lane.params)}
-              activeOpacity={0.8}
+              activeOpacity={0.82}
             >
               <View style={styles.cardLeft}>
                 <Text style={styles.cardIcon}>{lane.icon}</Text>
-                <View>
-                  <Text style={[styles.cardTitle, lane.gold && styles.cardTitleGold]}>
+                <View style={styles.cardText}>
+                  <Text style={[styles.cardTitle, lane.gold && styles.cardTitleDark]}>
                     {lane.title}
                   </Text>
-                  <Text style={styles.cardSub}>{lane.subtitle}</Text>
+                  <Text style={[styles.cardSub, lane.gold && styles.cardSubDark]}>
+                    {lane.subtitle}
+                  </Text>
                 </View>
               </View>
-              <View style={[styles.cardBtn, lane.gold && styles.cardBtnGold]}>
-                <Text style={[styles.cardBtnText, !lane.gold && styles.cardBtnTextGold]}>
-                  {lane.action} →
-                </Text>
-              </View>
+              <Text style={[styles.cardArrow, lane.gold && styles.cardArrowDark]}>›</Text>
             </TouchableOpacity>
           ))}
         </View>
 
+        {/* Quick city search */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>POPULAR CITIES</Text>
+          <View style={styles.cityGrid}>
+            {CITIES.map(city => (
+              <TouchableOpacity
+                key={city}
+                style={styles.cityChip}
+                onPress={() => navigation.navigate('Search', { city })}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.cityChipText}>{city}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         {/* Direct contact */}
-        <View style={styles.contact}>
-          <Text style={styles.contactTitle}>Talk to Gurpreet Directly</Text>
-          <Text style={styles.contactSub}>No bots. No assistants. You get Gurpreet every time.</Text>
+        <View style={[styles.section, styles.contactCard]}>
+          <View style={styles.contactTop}>
+            <View style={styles.avatarRing}>
+              <Text style={styles.avatarLetter}>G</Text>
+            </View>
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactName}>Gurpreet Bhatti</Text>
+              <Text style={styles.contactTitle}>REALTOR® · USMC Veteran</Text>
+              <Text style={styles.contactLicense}>UT #12907042-SA00</Text>
+            </View>
+          </View>
+          <Text style={styles.contactQuote}>
+            No bots. No assistants. When you call, you get Gurpreet. Every time.
+          </Text>
           <View style={styles.contactBtns}>
             <TouchableOpacity
               style={styles.btnCall}
               onPress={() => Linking.openURL('tel:8016358462')}
+              activeOpacity={0.85}
             >
               <Text style={styles.btnCallText}>📞  Call 801.635.8462</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.btnText}
+              style={styles.btnSMS}
               onPress={() => Linking.openURL('sms:8016358462')}
+              activeOpacity={0.85}
             >
-              <Text style={styles.btnTextText}>💬  Text Now</Text>
+              <Text style={styles.btnSMSText}>💬  Text Now</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Bottom spacer */}
         <View style={{ height: 100 }} />
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.black },
-  container: { flex: 1, backgroundColor: colors.black },
+  safe:   { flex: 1, backgroundColor: colors.black },
+  scroll: { flex: 1 },
   topBar: { height: 2, backgroundColor: colors.gold },
 
-  header: {
-    padding: spacing.xl,
+  hero: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xl,
     paddingBottom: spacing.lg,
   },
-  headerLabel: {
-    fontSize: 9,
-    letterSpacing: 2,
-    color: colors.gold,
-    textTransform: 'uppercase',
+  heroLabel: {
+    fontSize: 9, letterSpacing: 2,
+    color: colors.gold, textTransform: 'uppercase',
     marginBottom: 12,
   },
-  headerTitle: {
-    fontSize: 40,
-    fontWeight: '300',
-    color: colors.white,
-    lineHeight: 42,
+  heroTitle: {
+    fontSize: 38, fontWeight: '300',
+    color: colors.white, lineHeight: 40,
   },
-  headerGold: {
-    fontSize: 40,
-    fontWeight: '300',
-    fontStyle: 'italic',
-    color: colors.gold,
-    lineHeight: 44,
+  heroGold: {
+    fontSize: 38, fontWeight: '300',
+    fontStyle: 'italic', color: colors.gold,
+    lineHeight: 42,
   },
 
   statsRow: {
     flexDirection: 'row',
     paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xl,
+    paddingBottom: spacing.lg,
     gap: spacing.xl,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    marginBottom: spacing.lg,
   },
-  stat: { alignItems: 'flex-start' },
-  statValue: {
-    fontSize: 20,
-    color: colors.gold,
-    fontWeight: '300',
+  statItem:  { alignItems: 'flex-start' },
+  statValue: { fontSize: 20, color: colors.gold, fontWeight: '300' },
+  statLabel: { fontSize: 9, color: colors.grey, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
+
+  section: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
   },
-  statLabel: {
-    fontSize: 9,
-    color: colors.grey,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginTop: 2,
+  sectionLabel: {
+    fontSize: 10, letterSpacing: 1.5,
+    color: colors.grey, textTransform: 'uppercase',
+    marginBottom: 4,
   },
 
-  lanes: {
-    paddingHorizontal: spacing.lg,
-    gap: spacing.md,
-    marginBottom: spacing.xl,
-  },
   card: {
     backgroundColor: colors.bgCard,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.lg,
+    padding: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    ...shadow.card,
   },
   cardGold: {
     backgroundColor: colors.gold,
     borderColor: colors.gold,
+    ...shadow.gold,
   },
-  cardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    flex: 1,
-  },
-  cardIcon: { fontSize: 28 },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.white,
-    marginBottom: 2,
-  },
-  cardTitleGold: { color: colors.black },
-  cardSub: {
-    fontSize: 12,
-    color: colors.grey,
-  },
-  cardBtn: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: radius.sm,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  cardBtnGold: {
-    backgroundColor: colors.black,
-    borderColor: colors.black,
-  },
-  cardBtnText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.white,
-  },
-  cardBtnTextGold: { color: colors.gold },
+  cardLeft:  { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 },
+  cardIcon:  { fontSize: 26 },
+  cardText:  { flex: 1 },
+  cardTitle: { fontSize: 15, fontWeight: '600', color: colors.white, marginBottom: 2 },
+  cardTitleDark: { color: colors.black },
+  cardSub:   { fontSize: 12, color: colors.grey, lineHeight: 16 },
+  cardSubDark: { color: 'rgba(0,0,0,0.6)' },
+  cardArrow: { fontSize: 24, color: colors.grey, fontWeight: '300' },
+  cardArrowDark: { color: colors.black },
 
-  contact: {
-    marginHorizontal: spacing.lg,
-    padding: spacing.xl,
+  cityGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  cityChip: {
+    paddingHorizontal: 14, paddingVertical: 7,
+    borderRadius: radius.full,
+    backgroundColor: colors.bgInput,
+    borderWidth: 1, borderColor: colors.border,
+  },
+  cityChipText: { fontSize: 13, color: colors.greyLight },
+
+  contactCard: {
     backgroundColor: colors.bgCard,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.2)',
+    borderColor: colors.borderGold,
+    padding: spacing.xl,
+    gap: spacing.md,
+    ...shadow.card,
   },
-  contactTitle: {
-    fontSize: 20,
-    fontWeight: '300',
-    color: colors.white,
-    marginBottom: 6,
+  contactTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  avatarRing: {
+    width: 52, height: 52, borderRadius: 26,
+    borderWidth: 1.5, borderColor: colors.gold,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.goldFaded,
   },
-  contactSub: {
-    fontSize: 13,
-    color: colors.grey,
-    lineHeight: 20,
-    marginBottom: spacing.lg,
-  },
-  contactBtns: { gap: spacing.sm },
+  avatarLetter: { fontSize: 22, color: colors.gold, fontWeight: '300' },
+  contactInfo:   { flex: 1 },
+  contactName:   { fontSize: 17, fontWeight: '600', color: colors.white, marginBottom: 2 },
+  contactTitle:  { fontSize: 12, color: colors.gold, marginBottom: 1 },
+  contactLicense:{ fontSize: 10, color: colors.greyDark },
+  contactQuote:  { fontSize: 13, color: colors.grey, lineHeight: 20, fontStyle: 'italic' },
+  contactBtns:   { gap: spacing.sm },
+
   btnCall: {
     backgroundColor: colors.gold,
-    borderRadius: radius.sm,
-    paddingVertical: 14,
+    borderRadius: radius.sm, paddingVertical: 14,
+    alignItems: 'center', ...shadow.gold,
+  },
+  btnCallText: { color: colors.black, fontWeight: '700', fontSize: 15 },
+  btnSMS: {
+    borderWidth: 1, borderColor: colors.border,
+    borderRadius: radius.sm, paddingVertical: 14,
     alignItems: 'center',
   },
-  btnCallText: {
-    color: colors.black,
-    fontWeight: '700',
-    fontSize: 15,
-    letterSpacing: 0.5,
-  },
-  btnText: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  btnTextText: {
-    color: colors.white,
-    fontWeight: '600',
-    fontSize: 15,
-  },
+  btnSMSText: { color: colors.white, fontWeight: '600', fontSize: 15 },
 })

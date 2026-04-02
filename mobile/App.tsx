@@ -1,19 +1,25 @@
+import 'react-native-url-polyfill/auto'
 import React, { useState } from 'react'
-import { View, StatusBar } from 'react-native'
-import SplashScreen from './src/screens/SplashScreen'
-import AppNavigator from './src/navigation/AppNavigator'
+import { StatusBar } from 'expo-status-bar'
+import SplashScreen  from './src/screens/SplashScreen'
+import AppNavigator  from './src/navigation/AppNavigator'
 
 export default function App() {
-  const [splashDone, setSplashDone] = useState(false)
+  const [ready, setReady] = useState(false)
 
-  if (!splashDone) {
+  if (!ready) {
     return (
       <>
-        <StatusBar barStyle="light-content" backgroundColor="#060606" />
-        <SplashScreen onDone={() => setSplashDone(true)} />
+        <StatusBar style="light" />
+        <SplashScreen onDone={() => setReady(true)} />
       </>
     )
   }
 
-  return <AppNavigator />
+  return (
+    <>
+      <StatusBar style="light" />
+      <AppNavigator />
+    </>
+  )
 }

@@ -1,213 +1,369 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   TextInput, ActivityIndicator, SafeAreaView, StatusBar,
+  Modal, ScrollView, Keyboard,
 } from 'react-native'
 import { colors, spacing, radius } from '../lib/theme'
 import { searchProperties, Property } from '../lib/api'
 import PropertyCard from '../components/PropertyCard'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import type { RouteProp } from '@react-navigation/native'
 
 const UTAH_CITIES = [
   'Salt Lake City','West Jordan','Sandy','South Jordan','Taylorsville',
   'Murray','Draper','Herriman','Riverton','Lehi','West Valley City',
   'Millcreek','Provo','Orem','Ogden','Layton','St. George','Park City',
   'Bountiful','Midvale','American Fork','Saratoga Springs','Eagle Mountain',
+  'Cottonwood Heights','Holladay','North Salt Lake','Farmington','Kaysville',
+  'Roy','Clearfield','Springville','Spanish Fork','Highland','Alpine','Tooele',
+]
+
+const PROPERTY_TYPES = [
+  { label: 'All',        value: '' },
+  { label: 'Residential',value: 'Residential' },
+  { label: 'Commercial', value: 'Commercial Sale' },
+  { label: 'Multi-Unit', value: 'ResidentialIncome' },
+  { label: 'Land',       value: 'Land' },
 ]
 
 const SORT_OPTIONS = [
   { label: 'Price: High → Low', value: 'ListPrice desc' },
   { label: 'Price: Low → High', value: 'ListPrice asc' },
-  { label: 'Newest',            value: 'ModificationTimestamp desc' },
+  { label: 'Newest First',      value: 'ModificationTimestamp desc' },
 ]
 
-type Props = { navigation: NativeStackNavigationProp<any> }
+const PRICE_OPTIONS = [
+  { label: 'No min', value: '' },
+  { label: '$200K',  value: '200000' },
+  { label: '$300K',  value: '300000' },
+  { label: '$400K',  value: '400000' },
+  { label: '$500K',  value: '500000' },
+  { label: '$750K',  value: '750000' },
+  { label: '$1M',    value: '1000000' },
+]
 
-export default function SearchScreen({ navigation }: Props) {
-  const [city, setCity]         = useState('')
-  const [cityInput, setCityInput] = useState('')
-  const [showCities, setShowCities] = useState(false)
-  const [minPrice, setMinPrice] = useState('')
-  const [beds, setBeds]         = useState('')
-  const [orderBy, setOrderBy]   = useState('ListPrice desc')
-  const [properties, setProperties] = useState<Property[]>([])
-  const [total, setTotal]       = useState(0)
-  const [loading, setLoading]   = useState(false)
-  const [page, setPage]         = useState(0)
-  const [hasMore, setHasMore]   = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
+const MAX_PRICE_OPTIONS = [
+  { label: 'No max', value: '' },
+  { label: '$300K',  value: '300000' },
+  { label: '$400K',  value: '400000' },
+  { label: '$500K',  value: '500000' },
+  { label: '$750K',  value: '750000' },
+  { label: '$1M',    value: '1000000' },
+  { label: '$2M',    value: '2000000' },
+]
 
-  const filteredCities = UTAH_CITIES.filter(c =>
-    c.toLowerCase().includes(cityInput.toLowerCase())
-  )
+type Props = {
+  navigation: NativeStackNavigationProp<any>
+  route: RouteProp<any>
+}
 
-  const load = useCallback(async (reset = true) => {
-    setLoading(true)
+export default function SearchScreen({ navigation, route }: Props) {
+  const [city,         setCity]         = useState((route.params as any)?.city || '')
+  const [cityInput,    setCityInput]    = useState((route.params as any)?.city || '')
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [minPrice,     setMinPrice]     = useState('')
+  const [maxPrice,     setMaxPrice]     = useState('')
+  const [beds,         setBeds]         = useState('')
+  const [propType,     setPropType]     = useState('')
+  const [orderBy,      setOrderBy]      = useState('ListPrice desc')
+  const [showFilters,  setShowFilters]  = useState(false)
+
+  const [properties,   setProperties]   = useState<Property[]>([])
+  const [total,        setTotal]        = useState(0)
+  const [loading,      setLoading]      = useState(true)
+  const [loadingMore,  setLoadingMore]  = useState(false)
+  const [page,         setPage]         = useState(0)
+  const [hasMore,      setHasMore]      = useState(false)
+
+  const PER_PAGE = 20
+
+  const filteredCities = cityInput.length > 0
+    ? UTAH_CITIES.filter(c => c.toLowerCase().startsWith(cityInput.toLowerCase()))
+    : UTAH_CITIES.slice(0, 8)
+
+  const load = useCallback(async (reset = true, overrides?: Partial<{
+    city: string; minPrice: string; maxPrice: string
+    beds: string; propType: string; orderBy: string
+  }>) => {
+    const c = overrides?.city     ?? city
+    const mn= overrides?.minPrice ?? minPrice
+    const mx= overrides?.maxPrice ?? maxPrice
+    const b = overrides?.beds     ?? beds
+    const pt= overrides?.propType ?? propType
+    const ob= overrides?.orderBy  ?? orderBy
     const pageNum = reset ? 0 : page + 1
-    if (reset) setPage(0)
-    const result = await searchProperties({
-      city,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      beds:     beds     ? Number(beds)     : undefined,
-      orderBy,
-      top:  20,
-      skip: pageNum * 20,
-    })
-    if (reset) {
-      setProperties(result.properties)
-    } else {
-      setProperties(prev => [...prev, ...result.properties])
-      setPage(pageNum)
+
+    if (reset) setLoading(true)
+    else       setLoadingMore(true)
+
+    try {
+      const result = await searchProperties({
+        city:     c || undefined,
+        minPrice: mn ? Number(mn) : undefined,
+        maxPrice: mx ? Number(mx) : undefined,
+        beds:     b  ? Number(b)  : undefined,
+        type:     pt || undefined,
+        orderBy:  ob,
+        top:      PER_PAGE,
+        skip:     pageNum * PER_PAGE,
+      })
+      if (reset) {
+        setProperties(result.properties)
+        setPage(0)
+      } else {
+        setProperties(prev => [...prev, ...result.properties])
+        setPage(pageNum)
+      }
+      setTotal(result.total)
+      setHasMore(result.hasMore)
+    } catch (e) {
+      console.error('Search error', e)
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
     }
-    setTotal(result.total)
-    setHasMore(result.hasMore)
-    setLoading(false)
-  }, [city, minPrice, beds, orderBy, page])
+  }, [city, minPrice, maxPrice, beds, propType, orderBy, page])
 
-  useEffect(() => { load(true) }, [city, orderBy])
+  useEffect(() => { load(true) }, [])
 
-  const renderItem = ({ item }: { item: Property }) => (
-    <PropertyCard
-      property={item}
-      onPress={() => navigation.navigate('PropertyDetail', { property: item })}
-    />
-  )
+  // If navigated with a city param
+  useEffect(() => {
+    const newCity = (route.params as any)?.city
+    if (newCity && newCity !== city) {
+      setCity(newCity)
+      setCityInput(newCity)
+      load(true, { city: newCity })
+    }
+  }, [route.params])
 
-  const renderFooter = () => {
-    if (!hasMore) return null
-    return (
-      <TouchableOpacity style={styles.loadMore} onPress={() => load(false)}>
-        {loading
-          ? <ActivityIndicator color={colors.gold} />
-          : <Text style={styles.loadMoreText}>Load More ({total - properties.length} remaining)</Text>
-        }
-      </TouchableOpacity>
-    )
+  const applyFilters = () => {
+    setShowFilters(false)
+    load(true)
   }
+
+  const selectCity = (c: string) => {
+    setCity(c)
+    setCityInput(c)
+    setShowDropdown(false)
+    Keyboard.dismiss()
+    load(true, { city: c })
+  }
+
+  const clearCity = () => {
+    setCity('')
+    setCityInput('')
+    load(true, { city: '' })
+  }
+
+  const activeFilterCount = [minPrice, maxPrice, beds, propType].filter(Boolean).length
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.black} />
+      <StatusBar barStyle="light-content" backgroundColor="#111" />
 
-      {/* Search bar row */}
+      {/* Search bar */}
       <View style={styles.searchBar}>
-        <View style={styles.cityWrap}>
+        <View style={styles.inputWrap}>
+          <Text style={styles.inputIcon}>🔍</Text>
           <TextInput
-            style={styles.cityInput}
-            placeholder="Any city in Utah..."
+            style={styles.input}
+            placeholder="City or neighborhood..."
             placeholderTextColor={colors.grey}
             value={cityInput}
-            onFocus={() => setShowCities(true)}
-            onChangeText={v => { setCityInput(v); setShowCities(true) }}
+            onFocus={() => setShowDropdown(true)}
+            onChangeText={v => { setCityInput(v); setShowDropdown(true) }}
+            returnKeyType="search"
+            onSubmitEditing={() => {
+              const match = UTAH_CITIES.find(c => c.toLowerCase() === cityInput.toLowerCase())
+              if (match) selectCity(match)
+              else setShowDropdown(false)
+            }}
           />
-          {city ? (
-            <TouchableOpacity onPress={() => { setCity(''); setCityInput(''); }} style={styles.clearBtn}>
+          {cityInput.length > 0 && (
+            <TouchableOpacity onPress={clearCity} style={styles.clearBtn}>
               <Text style={styles.clearBtnText}>✕</Text>
             </TouchableOpacity>
-          ) : null}
+          )}
         </View>
         <TouchableOpacity
-          style={styles.filterBtn}
-          onPress={() => setShowFilters(f => !f)}
+          style={[styles.filterBtn, activeFilterCount > 0 && styles.filterBtnActive]}
+          onPress={() => setShowFilters(true)}
         >
-          <Text style={styles.filterBtnText}>⚙️</Text>
+          <Text style={styles.filterIcon}>⚙</Text>
+          {activeFilterCount > 0 && (
+            <View style={styles.filterBadge}>
+              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
       {/* City dropdown */}
-      {showCities && filteredCities.length > 0 && (
-        <View style={styles.cityDropdown}>
-          {filteredCities.slice(0, 6).map(c => (
-            <TouchableOpacity
-              key={c}
-              style={styles.cityOption}
-              onPress={() => {
-                setCity(c)
-                setCityInput(c)
-                setShowCities(false)
-              }}
-            >
-              <Text style={styles.cityOptionText}>{c}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-
-      {/* Filters panel */}
-      {showFilters && (
-        <View style={styles.filtersPanel}>
-          <Text style={styles.filterLabel}>MIN PRICE</Text>
-          <View style={styles.priceRow}>
-            {['', '200000', '300000', '400000', '500000', '750000'].map(p => (
-              <TouchableOpacity
-                key={p}
-                style={[styles.chip, minPrice === p && styles.chipActive]}
-                onPress={() => setMinPrice(p)}
-              >
-                <Text style={[styles.chipText, minPrice === p && styles.chipTextActive]}>
-                  {p ? `$${Number(p)/1000}K+` : 'Any'}
-                </Text>
+      {showDropdown && (
+        <View style={styles.dropdown}>
+          <ScrollView keyboardShouldPersistTaps="handled" style={{ maxHeight: 220 }}>
+            {filteredCities.slice(0, 8).map(c => (
+              <TouchableOpacity key={c} style={styles.dropdownItem} onPress={() => selectCity(c)}>
+                <Text style={styles.dropdownItemText}>📍  {c}</Text>
               </TouchableOpacity>
             ))}
-          </View>
-          <Text style={styles.filterLabel}>BEDS</Text>
-          <View style={styles.priceRow}>
-            {['', '1', '2', '3', '4', '5'].map(b => (
-              <TouchableOpacity
-                key={b}
-                style={[styles.chip, beds === b && styles.chipActive]}
-                onPress={() => setBeds(b)}
-              >
-                <Text style={[styles.chipText, beds === b && styles.chipTextActive]}>
-                  {b ? `${b}+` : 'Any'}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <Text style={styles.filterLabel}>SORT BY</Text>
-          <View style={styles.priceRow}>
-            {SORT_OPTIONS.map(o => (
-              <TouchableOpacity
-                key={o.value}
-                style={[styles.chip, orderBy === o.value && styles.chipActive]}
-                onPress={() => setOrderBy(o.value)}
-              >
-                <Text style={[styles.chipText, orderBy === o.value && styles.chipTextActive]}>
-                  {o.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <TouchableOpacity style={styles.applyBtn} onPress={() => { load(true); setShowFilters(false) }}>
-            <Text style={styles.applyBtnText}>Apply Filters</Text>
+          </ScrollView>
+          <TouchableOpacity style={styles.dropdownClose} onPress={() => setShowDropdown(false)}>
+            <Text style={styles.dropdownCloseText}>Show all Utah</Text>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* Result count */}
-      <View style={styles.resultBar}>
-        <Text style={styles.resultCount}>
-          <Text style={styles.resultNumber}>{total.toLocaleString()}</Text>
-          {' '}Utah properties{city ? ` in ${city}` : ''}
-        </Text>
+      {/* Results bar */}
+      <View style={styles.resultsBar}>
+        {loading ? (
+          <Text style={styles.resultsText}>Searching Utah MLS...</Text>
+        ) : (
+          <Text style={styles.resultsText}>
+            <Text style={styles.resultsCount}>{total.toLocaleString()}</Text>
+            {' '}properties{city ? ` in ${city}` : ' across Utah'}
+          </Text>
+        )}
+
+        {/* Sort quick toggle */}
+        <TouchableOpacity
+          style={styles.sortBtn}
+          onPress={() => {
+            const next = orderBy === 'ListPrice desc' ? 'ListPrice asc' : orderBy === 'ListPrice asc' ? 'ModificationTimestamp desc' : 'ListPrice desc'
+            setOrderBy(next)
+            load(true, { orderBy: next })
+          }}
+        >
+          <Text style={styles.sortBtnText}>
+            {orderBy === 'ListPrice desc' ? '↓ Price' : orderBy === 'ListPrice asc' ? '↑ Price' : '🆕 New'}
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Property list */}
+      {/* Property type tabs */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.typeTabs} contentContainerStyle={styles.typeTabsContent}>
+        {PROPERTY_TYPES.map(pt => (
+          <TouchableOpacity
+            key={pt.value}
+            style={[styles.typeTab, propType === pt.value && styles.typeTabActive]}
+            onPress={() => {
+              setPropType(pt.value)
+              load(true, { propType: pt.value })
+            }}
+          >
+            <Text style={[styles.typeTabText, propType === pt.value && styles.typeTabTextActive]}>
+              {pt.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      {/* List */}
       {loading && properties.length === 0 ? (
-        <View style={styles.loadingCenter}>
+        <View style={styles.loadingState}>
           <ActivityIndicator size="large" color={colors.gold} />
-          <Text style={styles.loadingText}>Searching Utah MLS...</Text>
+          <Text style={styles.loadingText}>Loading Utah listings...</Text>
+        </View>
+      ) : properties.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyIcon}>🔎</Text>
+          <Text style={styles.emptyTitle}>No results found</Text>
+          <Text style={styles.emptySub}>Try a different city or adjust your filters</Text>
+          <TouchableOpacity style={styles.emptyBtn} onPress={() => { clearCity(); setMinPrice(''); setMaxPrice(''); setBeds(''); setPropType(''); load(true, { city: '', minPrice: '', maxPrice: '', beds: '', propType: '' }) }}>
+            <Text style={styles.emptyBtnText}>Clear All Filters</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
           data={properties}
           keyExtractor={item => item.ListingKey}
-          renderItem={renderItem}
-          ListFooterComponent={renderFooter}
-          contentContainerStyle={{ padding: spacing.md, paddingBottom: 100 }}
-          onScrollBeginDrag={() => setShowCities(false)}
+          renderItem={({ item }) => (
+            <PropertyCard
+              property={item}
+              onPress={() => navigation.navigate('PropertyDetail', { property: item })}
+            />
+          )}
+          contentContainerStyle={styles.list}
+          onScrollBeginDrag={() => { setShowDropdown(false); Keyboard.dismiss() }}
+          ListFooterComponent={
+            hasMore ? (
+              <TouchableOpacity style={styles.loadMoreBtn} onPress={() => load(false)} disabled={loadingMore}>
+                {loadingMore
+                  ? <ActivityIndicator color={colors.gold} />
+                  : <Text style={styles.loadMoreText}>Load more · {(total - properties.length).toLocaleString()} remaining</Text>
+                }
+              </TouchableOpacity>
+            ) : null
+          }
         />
       )}
+
+      {/* Filter Modal */}
+      <Modal visible={showFilters} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowFilters(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Filters</Text>
+            <TouchableOpacity onPress={() => setShowFilters(false)}>
+              <Text style={styles.modalClose}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+
+            {/* Min price */}
+            <Text style={styles.filterLabel}>MIN PRICE</Text>
+            <View style={styles.chipRow}>
+              {PRICE_OPTIONS.map(o => (
+                <TouchableOpacity key={o.value} style={[styles.chip, minPrice === o.value && styles.chipActive]} onPress={() => setMinPrice(o.value)}>
+                  <Text style={[styles.chipText, minPrice === o.value && styles.chipTextActive]}>{o.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Max price */}
+            <Text style={styles.filterLabel}>MAX PRICE</Text>
+            <View style={styles.chipRow}>
+              {MAX_PRICE_OPTIONS.map(o => (
+                <TouchableOpacity key={o.value} style={[styles.chip, maxPrice === o.value && styles.chipActive]} onPress={() => setMaxPrice(o.value)}>
+                  <Text style={[styles.chipText, maxPrice === o.value && styles.chipTextActive]}>{o.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Beds */}
+            <Text style={styles.filterLabel}>MIN BEDROOMS</Text>
+            <View style={styles.chipRow}>
+              {['', '1', '2', '3', '4', '5'].map(b => (
+                <TouchableOpacity key={b} style={[styles.chip, beds === b && styles.chipActive]} onPress={() => setBeds(b)}>
+                  <Text style={[styles.chipText, beds === b && styles.chipTextActive]}>{b || 'Any'}{b ? '+' : ''}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Sort */}
+            <Text style={styles.filterLabel}>SORT BY</Text>
+            <View style={styles.chipRow}>
+              {SORT_OPTIONS.map(o => (
+                <TouchableOpacity key={o.value} style={[styles.chip, orderBy === o.value && styles.chipActive]} onPress={() => setOrderBy(o.value)}>
+                  <Text style={[styles.chipText, orderBy === o.value && styles.chipTextActive]}>{o.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={{ height: 40 }} />
+          </ScrollView>
+
+          <View style={styles.modalFooter}>
+            <TouchableOpacity style={styles.resetBtn} onPress={() => { setMinPrice(''); setMaxPrice(''); setBeds(''); setPropType(''); setOrderBy('ListPrice desc') }}>
+              <Text style={styles.resetBtnText}>Reset</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.applyBtn} onPress={applyFilters}>
+              <Text style={styles.applyBtnText}>Show Results</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   )
 }
@@ -216,115 +372,106 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.black },
 
   searchBar: {
-    flexDirection: 'row',
+    flexDirection: 'row', gap: spacing.sm,
     padding: spacing.md,
-    gap: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
     backgroundColor: '#111',
+    borderBottomWidth: 1, borderBottomColor: colors.border,
   },
-  cityWrap: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+  inputWrap: {
+    flex: 1, flexDirection: 'row', alignItems: 'center',
     backgroundColor: colors.bgInput,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
     paddingHorizontal: spacing.md,
   },
-  cityInput: {
-    flex: 1,
-    color: colors.white,
-    fontSize: 14,
-    paddingVertical: 10,
-  },
+  inputIcon: { fontSize: 15, marginRight: 8 },
+  input: { flex: 1, color: colors.white, fontSize: 14, paddingVertical: 11 },
   clearBtn: { padding: 4 },
-  clearBtnText: { color: colors.grey, fontSize: 14 },
-
+  clearBtnText: { color: colors.grey, fontSize: 16 },
   filterBtn: {
-    backgroundColor: colors.bgInput,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 44,
+    width: 46, backgroundColor: colors.bgInput,
+    borderRadius: radius.sm, borderWidth: 1, borderColor: colors.border,
+    alignItems: 'center', justifyContent: 'center', position: 'relative',
   },
-  filterBtnText: { fontSize: 18 },
+  filterBtnActive: { borderColor: colors.gold, backgroundColor: colors.goldFaded },
+  filterIcon: { fontSize: 18, color: colors.grey },
+  filterBadge: {
+    position: 'absolute', top: -4, right: -4,
+    backgroundColor: colors.gold, width: 16, height: 16,
+    borderRadius: 8, alignItems: 'center', justifyContent: 'center',
+  },
+  filterBadgeText: { fontSize: 9, color: colors.black, fontWeight: '700' },
 
-  cityDropdown: {
+  dropdown: {
     backgroundColor: '#1a1a1a',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    zIndex: 10,
+    borderBottomWidth: 1, borderBottomColor: colors.border,
   },
-  cityOption: {
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
-  },
-  cityOptionText: { color: colors.white, fontSize: 14 },
+  dropdownItem: { padding: spacing.md, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.04)' },
+  dropdownItemText: { color: colors.white, fontSize: 14 },
+  dropdownClose: { padding: spacing.md, alignItems: 'center' },
+  dropdownCloseText: { color: colors.gold, fontSize: 13 },
 
-  filtersPanel: {
-    backgroundColor: '#111',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  filterLabel: {
-    fontSize: 10,
-    letterSpacing: 1.5,
-    color: colors.grey,
-    marginBottom: 8,
-    marginTop: 12,
-  },
-  priceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: radius.full,
-    backgroundColor: colors.bgInput,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  chipActive: {
-    backgroundColor: colors.gold,
-    borderColor: colors.gold,
-  },
-  chipText: { fontSize: 12, color: colors.grey },
-  chipTextActive: { color: colors.black, fontWeight: '600' },
-
-  applyBtn: {
-    marginTop: spacing.md,
-    backgroundColor: colors.gold,
-    borderRadius: radius.sm,
-    padding: 12,
-    alignItems: 'center',
-  },
-  applyBtnText: { color: colors.black, fontWeight: '700', fontSize: 14 },
-
-  resultBar: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
+  resultsBar: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: spacing.lg, paddingVertical: spacing.sm,
     backgroundColor: colors.black,
   },
-  resultCount: { fontSize: 13, color: colors.grey },
-  resultNumber: { color: colors.gold, fontWeight: '700', fontSize: 16 },
-
-  loadingCenter: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md,
+  resultsText:  { fontSize: 13, color: colors.grey },
+  resultsCount: { color: colors.gold, fontWeight: '700', fontSize: 16 },
+  sortBtn: {
+    paddingHorizontal: 12, paddingVertical: 5,
+    borderRadius: radius.full, backgroundColor: colors.bgInput,
+    borderWidth: 1, borderColor: colors.border,
   },
-  loadingText: { color: colors.grey, fontSize: 14 },
+  sortBtnText: { fontSize: 12, color: colors.greyLight },
 
-  loadMore: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(201,168,76,0.3)',
-    borderRadius: radius.sm,
-    margin: spacing.md,
+  typeTabs: { backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: colors.border },
+  typeTabsContent: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, gap: 8 },
+  typeTab: {
+    paddingHorizontal: 14, paddingVertical: 6,
+    borderRadius: radius.full, backgroundColor: colors.bgInput,
+    borderWidth: 1, borderColor: colors.border,
+  },
+  typeTabActive: { backgroundColor: colors.gold, borderColor: colors.gold },
+  typeTabText:   { fontSize: 12, color: colors.grey, fontWeight: '600' },
+  typeTabTextActive: { color: colors.black },
+
+  list: { padding: spacing.md, paddingBottom: 100 },
+
+  loadingState: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md },
+  loadingText:  { color: colors.grey, fontSize: 14 },
+
+  emptyState: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xxl, gap: spacing.md },
+  emptyIcon:  { fontSize: 48 },
+  emptyTitle: { fontSize: 20, color: colors.white, fontWeight: '300' },
+  emptySub:   { fontSize: 14, color: colors.grey, textAlign: 'center' },
+  emptyBtn:   { marginTop: spacing.sm, borderWidth: 1, borderColor: colors.borderGold, borderRadius: radius.sm, paddingHorizontal: 24, paddingVertical: 11 },
+  emptyBtnText: { color: colors.gold, fontSize: 14 },
+
+  loadMoreBtn: {
+    margin: spacing.md, padding: spacing.lg,
+    borderWidth: 1, borderColor: colors.borderGold,
+    borderRadius: radius.sm, alignItems: 'center',
   },
   loadMoreText: { color: colors.gold, fontSize: 14 },
+
+  // Filter Modal
+  modalContainer: { flex: 1, backgroundColor: colors.bg },
+  modalHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    padding: spacing.xl, borderBottomWidth: 1, borderBottomColor: colors.border,
+  },
+  modalTitle: { fontSize: 20, fontWeight: '600', color: colors.white },
+  modalClose: { fontSize: 20, color: colors.grey, padding: 4 },
+  modalBody:  { flex: 1, padding: spacing.xl },
+  filterLabel:{ fontSize: 10, letterSpacing: 1.5, color: colors.grey, textTransform: 'uppercase', marginBottom: spacing.sm, marginTop: spacing.lg },
+  chipRow:    { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip:       { paddingHorizontal: 14, paddingVertical: 7, borderRadius: radius.full, backgroundColor: colors.bgInput, borderWidth: 1, borderColor: colors.border },
+  chipActive: { backgroundColor: colors.gold, borderColor: colors.gold },
+  chipText:   { fontSize: 13, color: colors.grey },
+  chipTextActive: { color: colors.black, fontWeight: '600' },
+  modalFooter:{ flexDirection: 'row', gap: spacing.md, padding: spacing.xl, borderTopWidth: 1, borderTopColor: colors.border },
+  resetBtn:   { flex: 1, padding: 14, borderWidth: 1, borderColor: colors.border, borderRadius: radius.sm, alignItems: 'center' },
+  resetBtnText:{ color: colors.grey, fontSize: 14 },
+  applyBtn:   { flex: 2, padding: 14, backgroundColor: colors.gold, borderRadius: radius.sm, alignItems: 'center' },
+  applyBtnText:{ color: colors.black, fontWeight: '700', fontSize: 15 },
 })
