@@ -3,7 +3,6 @@ import Script from 'next/script'
 import '../styles/globals.css'
 import '../styles/mobile.css'
 import ChatBot from '@/components/ui/ChatBot'
-import LanguageSelector from '@/components/ui/LanguageSelector'
 
 export const metadata: Metadata = {
   title: {
@@ -72,7 +71,6 @@ export default function RootLayout({
       <body>
         {children}
         <ChatBot />
-        <LanguageSelector />
         {/* Google Analytics GA4 — G-KVVK68CQXZ */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-KVVK68CQXZ"

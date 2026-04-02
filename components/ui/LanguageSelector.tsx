@@ -4,12 +4,12 @@ import { useRouter, usePathname } from 'next/navigation'
 import Image from 'next/image'
 
 const LANGUAGES = [
-  { flag: '🇺🇸', name: 'English', native: 'English', href: '/', code: 'en' },
-  { flag: '🇲🇽', name: 'Spanish', native: 'Español', href: '/es', code: 'es' },
-  { flag: '🇮🇳', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', href: '/pa', code: 'pa' },
-  { flag: '🇸🇦', name: 'Arabic', native: 'العربية', href: '/ar', code: 'ar' },
-  { flag: '🇨🇳', name: 'Chinese', native: '中文', href: '/zh', code: 'zh' },
-  { flag: '🇻🇳', name: 'Vietnamese', native: 'Tiếng Việt', href: '/vi', code: 'vi' },
+  { flag: '🇺🇸', name: 'English', native: 'English', href: '/search', code: 'en' },
+  { flag: '🇲🇽', name: 'Spanish', native: 'Español', href: '/search', code: 'es' },
+  { flag: '🇮🇳', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', href: '/search', code: 'pa' },
+  { flag: '🇸🇦', name: 'Arabic', native: 'العربية', href: '/search', code: 'ar' },
+  { flag: '🇨🇳', name: 'Chinese', native: '中文', href: '/search', code: 'zh' },
+  { flag: '🇻🇳', name: 'Vietnamese', native: 'Tiếng Việt', href: '/search', code: 'vi' },
 ]
 
 const QUOTES = [
@@ -71,8 +71,11 @@ export default function LanguageSelector() {
   const dismiss = useCallback(() => {
     localStorage.setItem('gsb_lang', 'en')
     setVisible(false)
-    setTimeout(() => setShow(false), 350)
-  }, [])
+    setTimeout(() => {
+      setShow(false)
+      router.push('/search')
+    }, 350)
+  }, [router])
 
   if (!show) return null
 
