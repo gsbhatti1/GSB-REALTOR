@@ -3,262 +3,337 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
+const SLIDES = [
+  { image: '/images/gurpreet-headshot-pro.jpg', position: 'center top' },
+  { image: '/images/gurpreet-standing.jpg',     position: 'center top' },
+  { image: '/images/gurpreet-headshot-smile.jpg', position: 'center top' },
+]
+
 const LANGUAGES = [
-  { flag: '🇺🇸', name: 'English',    native: 'English',       code: 'en' },
-  { flag: '🇲🇽', name: 'Spanish',    native: 'Español',       code: 'es' },
-  { flag: '🇮🇳', name: 'Punjabi',    native: 'ਪੰਜਾਬੀ',       code: 'pa' },
-  { flag: '🇸🇦', name: 'Arabic',     native: 'العربية',       code: 'ar' },
-  { flag: '🇨🇳', name: 'Chinese',    native: '中文',           code: 'zh' },
-  { flag: '🇻🇳', name: 'Vietnamese', native: 'Tiếng Việt',    code: 'vi' },
+  { flag: '🇺🇸', native: 'English',     name: 'English',    code: 'en' },
+  { flag: '🇲🇽', native: 'Español',     name: 'Spanish',    code: 'es' },
+  { flag: '🇮🇳', native: 'ਪੰਜਾਬੀ',     name: 'Punjabi',    code: 'pa' },
+  { flag: '🇸🇦', native: 'العربية',     name: 'Arabic',     code: 'ar' },
+  { flag: '🇨🇳', native: '中文',         name: 'Chinese',    code: 'zh' },
+  { flag: '🇻🇳', native: 'Tiếng Việt', name: 'Vietnamese', code: 'vi' },
 ]
 
 const QUOTES = [
-  'Your dream home in Utah starts here.',
-  'Real estate done different — with discipline, integrity, and purpose.',
-  'From the Marines to Main Street — I close deals with honor.',
-  'One call. Three states. Zero excuses.',
-  "Utah's market moves fast. So do I.",
+  { line1: 'Your Dream Home',      line2: 'Starts Here.' },
+  { line1: 'Utah Real Estate',     line2: 'Done Different.' },
+  { line1: 'One Call.',            line2: 'Three States.' },
+  { line1: "Utah's Market Moves",  line2: 'Fast. So Do I.' },
+  { line1: 'From Marines',         line2: 'To Main Street.' },
+]
+
+const STATS = [
+  { value: '17K+',  label: 'Active Listings' },
+  { value: '$7.3M+',label: 'Volume Closed' },
+  { value: '6',     label: 'Languages Served' },
+  { value: '< 1hr', label: 'Response Time' },
 ]
 
 export default function LanguageSelectorFull() {
-  const [quoteIndex, setQuoteIndex]   = useState(0)
+  const [slide, setSlide]             = useState(0)
+  const [quoteIdx, setQuoteIdx]       = useState(0)
   const [quoteFading, setQuoteFading] = useState(false)
-  const [hoveredLang, setHoveredLang] = useState<string | null>(null)
-  const [visible, setVisible]         = useState(true)
+  const [hovered, setHovered]         = useState<string | null>(null)
   const router = useRouter()
 
-  // Rotate quotes every 4 seconds with smooth fade
+  // Rotate slides every 5s
   useEffect(() => {
-    const interval = setInterval(() => {
+    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 5000)
+    return () => clearInterval(t)
+  }, [])
+
+  // Rotate quotes every 4s with fade
+  useEffect(() => {
+    const t = setInterval(() => {
       setQuoteFading(true)
       setTimeout(() => {
-        setQuoteIndex(i => (i + 1) % QUOTES.length)
+        setQuoteIdx(i => (i + 1) % QUOTES.length)
         setQuoteFading(false)
       }, 400)
     }, 4000)
-    return () => clearInterval(interval)
+    return () => clearInterval(t)
   }, [])
 
   const select = (code: string) => {
     localStorage.setItem('gsb_lang', code)
-    setVisible(false)
-    setTimeout(() => router.push('/search'), 350)
+    router.push('/search')
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'linear-gradient(160deg, #060606 0%, #0a0a0a 50%, #0f0a00 100%)',
-        display: 'flex',
-        alignItems: 'stretch',
-        opacity: visible ? 1 : 0,
-        transition: 'opacity 0.35s ease',
-        overflow: 'hidden',
-        zIndex: 1,
-      }}
-    >
-      {/* Subtle gold radial glow */}
-      <div style={{
-        position: 'absolute', top: '20%', left: '30%',
-        width: '600px', height: '600px',
-        background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: '10%', right: '25%',
-        width: '400px', height: '400px',
-        background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.04) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
-
-      {/* Top gold accent line */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-        background: 'linear-gradient(90deg, transparent, #C9A84C, #E2C070, #C9A84C, transparent)',
-      }} />
-
-      {/* LEFT CONTENT */}
-      <div style={{
-        flex: '1 1 55%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: 'clamp(40px, 6vw, 80px) clamp(32px, 5vw, 72px)',
-        maxWidth: '720px',
-        position: 'relative',
-        zIndex: 2,
-      }}>
-        {/* Label */}
-        <div style={{
-          fontSize: '11px', letterSpacing: '0.22em', textTransform: 'uppercase',
-          color: '#C9A84C', marginBottom: '36px', fontFamily: 'DM Sans, sans-serif',
-        }}>
-          Gurpreet Bhatti · Realtor® · USMC Veteran
-        </div>
-
-        {/* Rotating Quote */}
-        <div style={{ minHeight: 'clamp(72px, 12vw, 120px)', marginBottom: '48px' }}>
-          <h1 style={{
-            fontFamily: 'Cormorant Garamond, serif',
-            fontSize: 'clamp(28px, 4vw, 52px)',
-            fontWeight: '300', color: '#F5F3EE', lineHeight: '1.15',
-            margin: 0,
-            opacity: quoteFading ? 0 : 1,
-            transition: 'opacity 0.4s ease',
-            letterSpacing: '-0.01em',
-          }}>
-            {QUOTES[quoteIndex]}
-          </h1>
-        </div>
-
-        {/* Language heading — hexalingual */}
-        <div style={{
-          fontSize: '11px', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.3)',
-          marginBottom: '20px', display: 'flex', gap: '6px',
-          flexWrap: 'wrap', alignItems: 'center',
-        }}>
-          <span>Choose Your Language</span>
-          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
-          <span>Elige tu idioma</span>
-          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
-          <span>ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ</span>
-          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
-          <span>اختر لغتك</span>
-          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
-          <span>选择语言</span>
-          <span style={{ color: 'rgba(201,168,76,0.3)' }}>·</span>
-          <span>Chọn ngôn ngữ</span>
-        </div>
-
-        {/* Flag Buttons — 2×3 grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '12px',
-          marginBottom: '40px',
-        }}>
-          {LANGUAGES.map(lang => (
-            <button
-              key={lang.code}
-              onClick={() => select(lang.code)}
-              onMouseEnter={() => setHoveredLang(lang.code)}
-              onMouseLeave={() => setHoveredLang(null)}
-              style={{
-                background: hoveredLang === lang.code
-                  ? 'rgba(201,168,76,0.1)'
-                  : 'rgba(255,255,255,0.03)',
-                border: hoveredLang === lang.code
-                  ? '1px solid rgba(201,168,76,0.7)'
-                  : '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '16px',
-                padding: '20px 16px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '8px',
-                transform: hoveredLang === lang.code ? 'scale(1.05)' : 'scale(1)',
-                color: '#F5F3EE',
-                textAlign: 'center',
-              }}
-            >
-              <span style={{ fontSize: '36px', lineHeight: 1 }}>{lang.flag}</span>
-              <span style={{
-                fontSize: '15px', fontWeight: '700',
-                color: hoveredLang === lang.code ? '#C9A84C' : '#F5F3EE',
-                transition: 'color 0.2s', fontFamily: 'DM Sans, sans-serif',
-              }}>
-                {lang.native}
-              </span>
-              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em' }}>
-                {lang.name}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Continue in English CTA */}
-        <button
-          onClick={() => select('en')}
-          style={{
-            background: 'none', border: 'none',
-            color: 'rgba(255,255,255,0.25)', fontSize: '13px',
-            cursor: 'pointer', letterSpacing: '0.04em', padding: 0,
-            textAlign: 'left', transition: 'color 0.2s',
-            fontFamily: 'DM Sans, sans-serif',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
-        >
-          Continue in English →
-        </button>
-      </div>
-
-      {/* RIGHT — Gurpreet's photo (desktop only) */}
-      <div
-        className="welcome-photo-side"
-        style={{
-          flex: '0 0 42%',
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'flex-end',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Gradient fade on left edge */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, width: '120px', height: '100%',
-          background: 'linear-gradient(to right, #060606, transparent)', zIndex: 2,
-        }} />
-
-        <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 1 }}>
-          <Image
-            src="/images/gurpreet-standing.jpg"
-            alt="Gurpreet Bhatti — REALTOR® Utah"
-            fill
-            style={{ objectFit: 'cover', objectPosition: 'center top', filter: 'brightness(0.85)' }}
-            priority
-          />
-          {/* Gold overlay gradient at bottom */}
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, height: '200px',
-            background: 'linear-gradient(to top, rgba(6,6,6,0.9), transparent)', zIndex: 3,
-          }} />
-        </div>
-
-        {/* Gold badge */}
-        <div style={{
-          position: 'absolute', bottom: '48px', right: '32px', zIndex: 4,
-          background: 'linear-gradient(135deg, rgba(10,8,4,0.95), rgba(15,12,4,0.95))',
-          border: '1px solid rgba(201,168,76,0.5)', borderRadius: '12px',
-          padding: '14px 20px', textAlign: 'center', backdropFilter: 'blur(8px)',
-        }}>
-          <div style={{
-            fontFamily: 'Cormorant Garamond, serif', fontSize: '18px',
-            color: '#C9A84C', fontWeight: '600', lineHeight: '1.2',
-          }}>
-            Serving Utah
-          </div>
-          <div style={{
-            fontFamily: 'Cormorant Garamond, serif', fontSize: '14px',
-            color: 'rgba(201,168,76,0.7)', fontWeight: '400',
-          }}>
-            Since 2022
-          </div>
-        </div>
-      </div>
-
+    <>
       <style>{`
-        @media (max-width: 768px) {
-          .welcome-photo-side {
-            display: none !important;
-          }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { overflow: hidden; }
+
+        .lang-btn {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 14px;
+          padding: 14px 18px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          text-align: left;
+          color: #F5F3EE;
+        }
+        .lang-btn:hover {
+          background: rgba(201,168,76,0.12);
+          border-color: rgba(201,168,76,0.7);
+          transform: translateX(-4px);
+        }
+
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in { animation: slideIn 0.7s ease forwards; }
+
+        @media (max-width: 860px) {
+          .welcome-right { display: none !important; }
+          .welcome-left  { padding: 40px 28px !important; }
+          .welcome-quote { font-size: clamp(36px, 9vw, 64px) !important; }
+          .lang-panel    { position: static !important; width: 100% !important; margin-top: 28px; }
+          .stats-bar     { gap: 20px !important; }
         }
       `}</style>
-    </div>
+
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: '#060606',
+        display: 'flex',
+        fontFamily: 'DM Sans, sans-serif',
+      }}>
+
+        {/* ── BACKGROUND SLIDES ── */}
+        {SLIDES.map((s, i) => (
+          <div key={i} style={{
+            position: 'absolute', inset: 0,
+            opacity: slide === i ? 1 : 0,
+            transition: 'opacity 1.8s ease-in-out',
+            zIndex: 1,
+          }}>
+            <Image
+              src={s.image}
+              alt="Gurpreet Bhatti"
+              fill
+              priority={i === 0}
+              style={{
+                objectFit: 'cover',
+                objectPosition: s.position,
+                filter: 'brightness(0.28)',
+              }}
+            />
+          </div>
+        ))}
+
+        {/* Dark gradient: heavier on right so text stays readable */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 2,
+          background: 'linear-gradient(105deg, rgba(6,6,6,0.55) 0%, rgba(6,6,6,0.15) 55%, rgba(6,6,6,0.7) 100%)',
+        }} />
+
+        {/* Bottom fade to black */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%',
+          background: 'linear-gradient(to top, rgba(6,6,6,1) 0%, rgba(6,6,6,0.6) 50%, transparent 100%)',
+          zIndex: 2,
+        }} />
+
+        {/* Top gold accent line */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: '2px', zIndex: 5,
+          background: 'linear-gradient(90deg, transparent 0%, #C9A84C 30%, #E2C070 50%, #C9A84C 70%, transparent 100%)',
+        }} />
+
+        {/* Left gold rule */}
+        <div style={{
+          position: 'absolute', left: 0, top: '10%', bottom: '10%', width: '3px', zIndex: 5,
+          background: 'linear-gradient(to bottom, transparent, #C9A84C 30%, #C9A84C 70%, transparent)',
+        }} />
+
+        {/* ── MAIN CONTENT LAYER ── */}
+        <div style={{
+          position: 'relative', zIndex: 6,
+          width: '100%', height: '100%',
+          display: 'flex', alignItems: 'stretch',
+        }}>
+
+          {/* ── LEFT — quotes, stats, CTA ── */}
+          <div className="welcome-left" style={{
+            flex: '1 1 0',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: 'clamp(40px, 6vw, 80px) clamp(40px, 6vw, 80px) clamp(40px, 6vw, 80px) clamp(40px, 5vw, 64px)',
+          }}>
+
+            {/* Label */}
+            <div className="animate-in" style={{
+              fontSize: '11px', letterSpacing: '0.22em', textTransform: 'uppercase',
+              color: '#C9A84C', marginBottom: '32px',
+              animationDelay: '0.1s', opacity: 0,
+            }}>
+              Gurpreet Bhatti · Realtor® · USMC Veteran
+            </div>
+
+            {/* Accent label */}
+            <div className="animate-in" style={{
+              fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.35)', marginBottom: '16px',
+              animationDelay: '0.2s', opacity: 0,
+            }}>
+              17,000+ Active Utah Listings
+            </div>
+
+            {/* Big rotating quote */}
+            <div style={{ marginBottom: '48px', minHeight: 'clamp(100px, 16vw, 180px)' }}>
+              <h1 className="welcome-quote" style={{
+                fontFamily: 'Cormorant Garamond, serif',
+                fontSize: 'clamp(42px, 6.5vw, 96px)',
+                fontWeight: '300',
+                lineHeight: '0.95',
+                letterSpacing: '-0.02em',
+                opacity: quoteFading ? 0 : 1,
+                transition: 'opacity 0.4s ease',
+              }}>
+                <span style={{ color: '#F5F3EE', display: 'block' }}>
+                  {QUOTES[quoteIdx].line1}
+                </span>
+                <span style={{ color: '#C9A84C', fontStyle: 'italic', display: 'block' }}>
+                  {QUOTES[quoteIdx].line2}
+                </span>
+              </h1>
+            </div>
+
+            {/* Stats bar */}
+            <div className="stats-bar animate-in" style={{
+              display: 'flex', gap: '40px', flexWrap: 'wrap',
+              marginBottom: '40px',
+              animationDelay: '0.4s', opacity: 0,
+            }}>
+              {STATS.map(s => (
+                <div key={s.label}>
+                  <div style={{
+                    fontFamily: 'Cormorant Garamond, serif',
+                    fontSize: 'clamp(22px, 2.5vw, 30px)',
+                    color: '#C9A84C', fontWeight: '300', lineHeight: 1,
+                  }}>{s.value}</div>
+                  <div style={{
+                    fontSize: '10px', color: '#888',
+                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                    marginTop: '4px',
+                  }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Search Homes CTA */}
+            <div className="animate-in" style={{ animationDelay: '0.5s', opacity: 0 }}>
+              <button
+                onClick={() => select('en')}
+                style={{
+                  background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
+                  border: 'none', borderRadius: '4px',
+                  padding: '16px 40px', fontSize: '13px',
+                  fontWeight: '700', color: '#0A0A0A',
+                  cursor: 'pointer', letterSpacing: '0.1em',
+                  textTransform: 'uppercase', fontFamily: 'inherit',
+                  transition: 'opacity 0.2s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                Search Homes →
+              </button>
+            </div>
+          </div>
+
+          {/* ── RIGHT — language panel ── */}
+          <div className="welcome-right" style={{
+            flex: '0 0 clamp(220px, 22vw, 300px)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            padding: '40px 32px 40px 0',
+            gap: '10px',
+          }}>
+
+            {/* Panel label */}
+            <div style={{
+              fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.25)', marginBottom: '12px', textAlign: 'right',
+            }}>
+              Choose Your Language
+            </div>
+
+            {/* Language buttons — vertical stack */}
+            {LANGUAGES.map((lang, i) => (
+              <button
+                key={lang.code}
+                className="lang-btn animate-in"
+                onClick={() => select(lang.code)}
+                onMouseEnter={() => setHovered(lang.code)}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  background: hovered === lang.code ? 'rgba(201,168,76,0.12)' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${hovered === lang.code ? 'rgba(201,168,76,0.7)' : 'rgba(255,255,255,0.1)'}`,
+                  borderRadius: '14px',
+                  padding: '14px 18px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  textAlign: 'left',
+                  color: '#F5F3EE',
+                  transform: hovered === lang.code ? 'translateX(-4px)' : 'translateX(0)',
+                  animationDelay: `${0.15 + i * 0.07}s`,
+                  opacity: 0,
+                  fontFamily: 'inherit',
+                }}
+              >
+                <span style={{ fontSize: '26px', lineHeight: 1, flexShrink: 0 }}>{lang.flag}</span>
+                <div>
+                  <div style={{
+                    fontSize: '14px', fontWeight: '700',
+                    color: hovered === lang.code ? '#C9A84C' : '#F5F3EE',
+                    transition: 'color 0.2s', lineHeight: 1.2,
+                  }}>{lang.native}</div>
+                  <div style={{
+                    fontSize: '10px', color: 'rgba(255,255,255,0.3)',
+                    letterSpacing: '0.05em', marginTop: '2px',
+                  }}>{lang.name}</div>
+                </div>
+              </button>
+            ))}
+
+            {/* Slide dots */}
+            <div style={{
+              display: 'flex', gap: '6px', justifyContent: 'flex-end',
+              marginTop: '16px',
+            }}>
+              {SLIDES.map((_, i) => (
+                <button key={i} onClick={() => setSlide(i)} style={{
+                  width: i === slide ? '24px' : '6px',
+                  height: '3px',
+                  background: i === slide ? '#C9A84C' : 'rgba(255,255,255,0.25)',
+                  border: 'none', cursor: 'pointer', borderRadius: '2px',
+                  transition: 'all 0.4s ease', padding: 0,
+                }} />
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </>
   )
 }
