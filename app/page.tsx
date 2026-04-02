@@ -4,237 +4,25 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import PropertyCard from '@/components/listings/PropertyCard'
 import LeadForm from '@/components/ui/LeadForm'
-import { getFeaturedListings, getMarketStats, formatPrice } from '@/lib/mls'
+import HeroCinematic from '@/components/ui/HeroCinematic'
+import { getFeaturedListings } from '@/lib/mls'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function HomePage() {
-  const [featuredListings, slcStats] = await Promise.allSettled([
+  const [featuredListings] = await Promise.allSettled([
     getFeaturedListings(),
-    getMarketStats('Salt Lake City'),
   ])
 
   const listings = featuredListings.status === 'fulfilled' ? featuredListings.value : []
-  const stats    = slcStats.status    === 'fulfilled' ? slcStats.value    : null
 
   return (
     <>
       <Navbar />
       <main>
 
-        {/* ── CINEMATIC HERO ── */}
-        <style>{`
-          @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr !important; min-height: auto !important; }
-            .hero-image { display: none !important; }
-            .hero-content {
-              padding: 96px 20px 52px !important;
-              text-align: center;
-              align-items: center;
-            }
-            .hero-content h1 { font-size: clamp(34px, 8vw, 52px) !important; }
-            .hero-content p { font-size: 15px !important; max-width: 100% !important; }
-            .hero-cta-row {
-              flex-direction: column !important;
-              align-items: stretch !important;
-              gap: 12px !important;
-            }
-            .hero-cta-row a {
-              justify-content: center !important;
-              text-align: center !important;
-              padding: 14px 20px !important;
-            }
-            .hero-stats-row {
-              justify-content: center !important;
-              gap: 20px !important;
-            }
-            .hero-stats-row > div {
-              text-align: center;
-              min-width: 70px;
-            }
-          }
-          @media (max-width: 480px) {
-            .hero-content { padding: 88px 16px 44px !important; }
-            .hero-stats-row { gap: 14px !important; }
-            .hero-stats-row > div { min-width: 60px; }
-          }
-        `}</style>
-        <section className="hero-grid" style={{
-          minHeight: '100vh',
-          background: '#0A0A0A',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* Left: Content */}
-          <div className="hero-content" style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: 'clamp(80px, 8vw, 120px) clamp(32px, 5vw, 80px)',
-            position: 'relative',
-            zIndex: 2,
-          }}>
-            {/* Status badge */}
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '32px',
-              width: 'fit-content',
-            }}>
-              <span style={{
-                width: '6px', height: '6px',
-                background: '#4ade80',
-                borderRadius: '50%',
-                display: 'inline-block',
-                boxShadow: '0 0 8px #4ade80',
-              }} />
-              <span style={{
-                fontSize: '11px',
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: '#C9A84C',
-              }}>
-                {stats?.activeCount?.toLocaleString() || '17,000+'} Active Utah Listings
-              </span>
-            </div>
-
-            {/* Main headline */}
-            <h1 style={{
-              fontFamily: 'Cormorant Garamond, serif',
-              fontSize: 'clamp(40px, 5.5vw, 80px)',
-              fontWeight: '300',
-              color: '#F5F3EE',
-              lineHeight: '1.0',
-              letterSpacing: '-0.02em',
-              marginBottom: '8px',
-            }}>
-              Utah Real Estate
-            </h1>
-            <h1 style={{
-              fontFamily: 'Cormorant Garamond, serif',
-              fontSize: 'clamp(40px, 5.5vw, 80px)',
-              fontWeight: '600',
-              fontStyle: 'italic',
-              background: 'linear-gradient(135deg, #C9A84C, #E2C070, #A8863A)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              lineHeight: '1.0',
-              letterSpacing: '-0.02em',
-              marginBottom: '32px',
-            }}>
-              Done Different.
-            </h1>
-
-            <p style={{
-              fontSize: 'clamp(15px, 1.6vw, 18px)',
-              color: 'rgba(245,243,238,0.65)',
-              maxWidth: '460px',
-              lineHeight: '1.75',
-              marginBottom: '48px',
-            }}>
-              USMC Veteran. Commercial & residential specialist.
-              The only Utah agent who treats your investment
-              like a mission — with the discipline to close it.
-            </p>
-
-            {/* CTA row */}
-            <div className="hero-cta-row" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '56px' }}>
-              <Link href="/search" style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-                background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
-                color: '#0A0A0A', fontWeight: '600', fontSize: '14px',
-                padding: '16px 32px', borderRadius: '8px',
-                textDecoration: 'none', letterSpacing: '0.04em',
-              }}>
-                Search All Utah Homes →
-              </Link>
-              <Link href="/contact" style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-                background: 'transparent',
-                color: 'rgba(245,243,238,0.8)', fontSize: '14px',
-                padding: '16px 32px', borderRadius: '8px',
-                textDecoration: 'none', letterSpacing: '0.04em',
-                border: '1px solid rgba(255,255,255,0.15)',
-              }}>
-                Talk to Gurpreet
-              </Link>
-            </div>
-
-            {/* Stats row */}
-            <div className="hero-stats-row" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
-              {[
-                { value: stats?.activeCount?.toLocaleString() || '17K+', label: 'Active Listings' },
-                { value: formatPrice(stats?.avgPrice || 520000), label: 'Avg SLC Price' },
-                { value: 'UT · WY · NV', label: 'Licensed In' },
-                { value: '< 1 hr', label: 'Response Time' },
-              ].map(s => (
-                <div key={s.label}>
-                  <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', fontWeight: '600', color: '#C9A84C', lineHeight: '1' }}>
-                    {s.value}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#555', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '4px' }}>
-                    {s.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: Gurpreet's photo */}
-          <div className="hero-image" style={{
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-            <Image
-              src="/images/gurpreet-hero.jpg"
-              alt="Gurpreet Bhatti — Utah REALTOR®"
-              fill
-              style={{ objectFit: 'cover', objectPosition: 'center top' }}
-              priority
-            />
-            {/* Dark overlay on left edge for blend */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: 'linear-gradient(to right, #0A0A0A 0%, transparent 30%)',
-              zIndex: 1,
-            }} />
-            {/* Bottom overlay */}
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              height: '40%',
-              background: 'linear-gradient(to top, #0A0A0A 0%, transparent 100%)',
-              zIndex: 1,
-            }} />
-
-            {/* Floating credential card */}
-            <div style={{
-              position: 'absolute', bottom: '48px', right: '32px',
-              background: 'rgba(10,10,10,0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(201,168,76,0.3)',
-              borderRadius: '16px',
-              padding: '20px 24px',
-              zIndex: 2,
-            }}>
-              <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '20px', color: '#F5F3EE', marginBottom: '4px' }}>
-                Gurpreet Bhatti
-              </div>
-              <div style={{ fontSize: '12px', color: '#C9A84C', letterSpacing: '0.08em', marginBottom: '8px' }}>
-                REALTOR® · USMC Veteran
-              </div>
-              <div style={{ fontSize: '11px', color: '#555' }}>Dynasty Point Referral Group</div>
-              <div style={{ fontSize: '11px', color: '#555' }}>UT Lic# 12907042-SA00</div>
-            </div>
-          </div>
-
-          {/* Mobile: show photo as background */}
-
-        </section>
+        <HeroCinematic />
 
         {/* ── QUICK SEARCH BAR ── */}
         <section style={{ background: '#111', borderTop: '1px solid rgba(201,168,76,0.15)', padding: '24px 32px' }}>
