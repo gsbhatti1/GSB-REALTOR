@@ -24,15 +24,8 @@ export default function LanguageSelectorFull() {
   const [quoteIndex, setQuoteIndex]   = useState(0)
   const [quoteFading, setQuoteFading] = useState(false)
   const [hoveredLang, setHoveredLang] = useState<string | null>(null)
-  const [visible, setVisible]         = useState(false)
+  const [visible, setVisible]         = useState(true)
   const router = useRouter()
-
-  // Fade in on mount
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => setVisible(true))
-    })
-  }, [])
 
   // Rotate quotes every 4 seconds with smooth fade
   useEffect(() => {
@@ -61,7 +54,7 @@ export default function LanguageSelectorFull() {
         display: 'flex',
         alignItems: 'stretch',
         opacity: visible ? 1 : 0,
-        transition: 'opacity 0.5s ease',
+        transition: 'opacity 0.35s ease',
         overflow: 'hidden',
         zIndex: 1,
       }}
