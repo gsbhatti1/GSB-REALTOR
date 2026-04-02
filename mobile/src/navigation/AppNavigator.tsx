@@ -5,20 +5,22 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { colors } from '../lib/theme'
 
-import HomeScreen          from '../screens/HomeScreen'
-import SearchScreen        from '../screens/SearchScreen'
-import LeadScreen          from '../screens/LeadScreen'
-import SavedScreen         from '../screens/SavedScreen'
+import HomeScreen           from '../screens/HomeScreen'
+import SearchScreen         from '../screens/SearchScreen'
+import LeadScreen           from '../screens/LeadScreen'
+import SavedScreen          from '../screens/SavedScreen'
 import PropertyDetailScreen from '../screens/PropertyDetailScreen'
+import ProfileScreen        from '../screens/ProfileScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab   = createBottomTabNavigator()
 
 const TAB_ICONS: Record<string, string> = {
-  Home:   '🏠',
-  Search: '🔍',
-  Saved:  '♡',
-  Contact:'📞',
+  Home:    '🏠',
+  Search:  '🔍',
+  Saved:   '♡',
+  Contact: '📞',
+  Profile: '👤',
 }
 
 function TabNavigator() {
@@ -53,6 +55,11 @@ function TabNavigator() {
         component={LeadScreen}
         options={{ title: 'Contact' }}
         initialParams={{ type: 'contact' }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ title: 'Profile' }}
       />
     </Tab.Navigator>
   )

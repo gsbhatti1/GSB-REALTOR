@@ -3,6 +3,9 @@
     "name": "GSB Realtor",
     "slug": "gsb-realtor",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -12,12 +15,21 @@
       "resizeMode": "contain",
       "backgroundColor": "#060606"
     },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.gsbrealtor.app",
       "buildNumber": "1",
+      "requireFullScreen": true,
+      "usesAppleSignIn": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "GSB Realtor uses your location to show nearby Utah listings."
+        "NSLocationWhenInUseUsageDescription": "GSB Realtor uses your location to show nearby Utah listings.",
+        "NSLocationAlwaysUsageDescription": "GSB Realtor uses your location to show nearby Utah listings.",
+        "CFBundleDisplayName": "GSB Realtor",
+        "CFBundleShortVersionString": "1.0.0"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
@@ -27,15 +39,42 @@
       },
       "package": "com.gsbrealtor.app",
       "versionCode": 1,
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "INTERNET",
+        "VIBRATE"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
-    "plugins": [],
+    "plugins": [
+      "expo-location",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          },
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "minSdkVersion": 24
+          }
+        }
+      ]
+    ],
     "extra": {
-      "supabaseUrl":  "https://hgsxndnxyczhudhsbddo.supabase.co",
-      "siteUrl":      "https://www.gsbrealtor.com"
-    }
+      "eas": {
+        "projectId": "gsb-realtor-app"
+      },
+      "supabaseUrl": "https://hgsxndnxyczhudhsbddo.supabase.co",
+      "siteUrl": "https://www.gsbrealtor.com"
+    },
+    "owner": "gsbhatti1"
   }
 }

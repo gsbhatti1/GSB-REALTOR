@@ -4,9 +4,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import PropertyCard from '@/components/listings/PropertyCard'
 import LeadForm from '@/components/ui/LeadForm'
-import { searchProperties, formatPrice } from '@/lib/mls'
+import CityListings from '@/components/market/CityListings'
 import type { Metadata } from 'next'
 
 // All 50 Utah cities for SEO pages
@@ -320,21 +319,6 @@ export default async function CityPage({ params }: { params: Params }) {
   const cityData = UTAH_CITIES[params.city]
   if (!cityData) notFound()
 
-  // Fetch live listings for this city
-  const result = await searchProperties({
-    city: cityData.name,
-    status: 'Active',
-    top: 12,
-    orderBy: 'OnMarketDate desc',
-  }).catch(() => ({ properties: [], total: 0, hasMore: false }))
-
-  const { properties, total } = result
-
-  // Calculate quick stats
-  const prices = properties.map(p => p.ListPrice).filter(Boolean)
-  const avgPrice = prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0
-  const medianPrice = prices.length ? [...prices].sort((a, b) => a - b)[Math.floor(prices.length / 2)] : 0
-
   const otherCities = Object.entries(UTAH_CITIES)
     .filter(([slug]) => slug !== params.city)
     .slice(0, 12)
@@ -398,70 +382,13 @@ export default async function CityPage({ params }: { params: Params }) {
                 </div>
               </div>
 
-              {/* Stats */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                {[
-                  { val: total.toLocaleString() || '—', label: 'Active Listings', sub: 'Live from WFRMLS' },
-                  { val: avgPrice ? formatPrice(avgPrice) : '—', label: 'Average Price', sub: 'Active listings' },
-                  { val: medianPrice ? formatPrice(medianPrice) : '—', label: 'Median Price', sub: 'Current market' },
-                  { val: cityData.county, label: 'County', sub: 'Utah' },
-                ].map(s => (
-                  <div key={s.label} style={{
-                    padding: '24px',
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    borderRadius: '12px',
-                  }}>
-                    <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '28px', fontWeight: '600', color: '#C9A84C', lineHeight: '1', marginBottom: '6px' }}>
-                      {s.val}
-                    </div>
-                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#F5F3EE', marginBottom: '2px' }}>{s.label}</div>
-                    <div style={{ fontSize: '11px', color: '#555' }}>{s.sub}</div>
-                  </div>
-                ))}
-              </div>
+              {/* Stats + listings — client component fetches via /api/search */}
+              <CityListings cityName={cityData.name} citySlug={params.city} />
             </div>
           </div>
         </section>
 
-        {/* Featured Listings */}
-        <section style={{ padding: '80px 32px', background: '#0A0A0A' }}>
-          <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px', flexWrap: 'wrap', gap: '16px' }}>
-              <div>
-                <div style={{ fontSize: '11px', color: '#C9A84C', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Live from WFRMLS</div>
-                <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: '400', color: '#F5F3EE' }}>
-                  {properties.length > 0 ? `${properties.length} Featured ${cityData.name} Homes` : `${cityData.name} Listings`}
-                </h2>
-              </div>
-              <Link href={`/search?city=${encodeURIComponent(cityData.name)}`} style={{
-                padding: '10px 24px', background: 'transparent', fontSize: '13px',
-                border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px',
-                color: 'rgba(245,243,238,0.7)', textDecoration: 'none',
-              }}>
-                View All {total}+ Listings →
-              </Link>
-            </div>
-
-            {properties.length > 0 ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
-                {properties.map((property, i) => (
-                  <PropertyCard key={property.ListingKey} property={property} priority={i < 4} />
-                ))}
-              </div>
-            ) : (
-              <div style={{ padding: '64px 40px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px dashed rgba(201,168,76,0.15)' }}>
-                <div style={{ fontSize: '40px', marginBottom: '16px' }}>🏠</div>
-                <p style={{ color: '#555', fontSize: '15px', marginBottom: '8px' }}>
-                  No active listings found in {cityData.name} right now. The market moves fast — check back soon or browse all Utah listings.
-                </p>
-                <Link href={`/search?city=${encodeURIComponent(cityData.name)}`} style={{ color: '#C9A84C', textDecoration: 'none', fontSize: '14px' }}>
-                  Search {cityData.name} Listings →
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
+        {/* Listings section handled inside CityListings client component above */}
 
         {/* About this city + Lead capture */}
         <section style={{ padding: '80px 32px', background: '#0D0D0D', borderTop: '1px solid rgba(255,255,255,0.04)' }}>

@@ -8,10 +8,10 @@
  */
 
 const BASE_URL = 'https://resoapi.utahrealestate.com/reso/odata'
-const BEARER_TOKEN = process.env.WFRMLS_BEARER_TOKEN
+const BEARER_TOKEN = process.env.WFRMLS_BEARER_TOKEN || '45d62db98f00d4ba2d3b80507f9c5811'
 
-if (!BEARER_TOKEN) {
-  console.warn('26a0Fe0f  WFRMLS_BEARER_TOKEN not set')
+if (!process.env.WFRMLS_BEARER_TOKEN) {
+  console.warn('WFRMLS_BEARER_TOKEN not in env — using hardcoded fallback')
 }
 
 // -----------------------------------------------
