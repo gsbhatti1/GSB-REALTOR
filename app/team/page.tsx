@@ -11,7 +11,7 @@ const TEAM = [
     title: 'Founder & Lead REALTOR®',
     dept: 'Leadership',
     bio: 'USMC Veteran and licensed REALTOR® in Utah, Nevada & Wyoming. Built GSB Realtor from the ground up. Commercial specialist: NNN leases, tenant placement, strip malls. Buyer and seller representation across the Wasatch Front.',
-    photo: '/images/gurpreet-headshot.jpg',
+    photo: '/images/gurpreet-headshot-smile.jpg',
     tags: ['Founder', 'REALTOR®', 'USMC Veteran', 'Commercial', 'NNN Specialist', 'UT · NV · WY'],
     badge: '⭐ Founder',
     badgeColor: '#C9A84C',

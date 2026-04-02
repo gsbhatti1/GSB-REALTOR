@@ -40,7 +40,7 @@ export default function ContactPage() {
               {/* Photo */}
               <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '20px' }}>
                 <Image
-                  src="/images/gurpreet-headshot.jpg"
+                  src="/images/gurpreet-headshot-pro.jpg"
                   alt="Gurpreet Bhatti"
                   width={80} height={80}
                   style={{ borderRadius: '50%', border: '3px solid rgba(201,168,76,0.4)', objectFit: 'cover' }}

@@ -86,7 +86,7 @@ export default function Navbar() {
       {/* Left: Logo */}
       <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
         <Image
-          src="/images/gurpreet-headshot.jpg"
+          src="/images/gurpreet-headshot-smile.jpg"
           alt="Gurpreet Bhatti"
           width={36} height={36}
           style={{ borderRadius: '50%', border: '2px solid rgba(201,168,76,0.5)', objectFit: 'cover' }}

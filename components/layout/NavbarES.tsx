@@ -34,7 +34,7 @@ export default function NavbarES() {
       borderBottom: scrolled ? '1px solid rgba(201,168,76,0.15)' : '1px solid transparent',
     }}>
       <Link href="/es" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-        <Image src="/images/gurpreet-headshot.jpg" alt="Gurpreet Bhatti" width={36} height={36}
+        <Image src="/images/gurpreet-headshot-smile.jpg" alt="Gurpreet Bhatti" width={36} height={36}
           style={{ borderRadius: '50%', border: '2px solid rgba(201,168,76,0.5)', objectFit: 'cover' }} />
         <div>
           <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '18px', fontWeight: '600', color: '#F5F3EE', lineHeight: '1.1' }}>

@@ -496,7 +496,7 @@ export default async function HomePage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '64px', alignItems: 'center' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '24px' }}>
                 <Image
-                  src="/images/gurpreet-headshot.jpg"
+                  src="/images/gurpreet-standing.jpg"
                   alt="Gurpreet Bhatti"
                   width={96}
                   height={96}

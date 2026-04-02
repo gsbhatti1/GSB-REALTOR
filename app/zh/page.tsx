@@ -277,7 +277,7 @@ export default function ChinesePage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                 <Image
-                  src="/images/gurpreet-headshot.jpg"
+                  src="/images/gurpreet-headshot-smile.jpg"
                   alt="Gurpreet Bhatti — 犹他州REALTOR®"
                   width={280}
                   height={280}
