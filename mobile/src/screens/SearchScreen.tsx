@@ -21,11 +21,11 @@ const UTAH_CITIES = [
 ]
 
 const PROPERTY_TYPES = [
-  { label: 'All',        value: '' },
-  { label: 'Residential',value: 'Residential' },
-  { label: 'Commercial', value: 'Commercial Sale' },
-  { label: 'Multi-Unit', value: 'ResidentialIncome' },
-  { label: 'Land',       value: 'Land' },
+  { label: 'All',         value: '' },
+  { label: 'Residential', value: 'Residential' },
+  { label: 'Commercial',  value: 'Commercial Sale' },
+  { label: 'Multi-Unit',  value: 'ResidentialIncome' },
+  { label: 'Land',        value: 'Land' },
 ]
 
 const SORT_OPTIONS = [
@@ -218,16 +218,14 @@ export default function SearchScreen({ navigation, route }: Props) {
 
       {/* Results bar */}
       <View style={styles.resultsBar}>
-        {loading ? (
-          <Text style={styles.resultsText}>Searching Utah MLS...</Text>
-        ) : (
-          <Text style={styles.resultsText}>
-            <Text style={styles.resultsCount}>{total.toLocaleString()}</Text>
-            {' '}properties{city ? ` in ${city}` : ' across Utah'}
-          </Text>
-        )}
-
-        {/* Sort quick toggle */}
+        <Text style={styles.resultsText} numberOfLines={1}>
+          {loading ? 'Searching...' : (
+            <>
+              <Text style={styles.resultsCount}>{total.toLocaleString()}</Text>
+              <Text>{city ? ` in ${city}` : ' Utah listings'}</Text>
+            </>
+          )}
+        </Text>
         <TouchableOpacity
           style={styles.sortBtn}
           onPress={() => {
@@ -426,14 +424,15 @@ const styles = StyleSheet.create({
   sortBtnText: { fontSize: 12, color: colors.greyLight },
 
   typeTabs: { backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: colors.border },
-  typeTabsContent: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, gap: 8 },
+  typeTabsContent: { paddingHorizontal: spacing.md, paddingVertical: 10, gap: 8, alignItems: 'center' },
   typeTab: {
-    paddingHorizontal: 14, paddingVertical: 6,
+    paddingHorizontal: 16, paddingVertical: 7,
     borderRadius: radius.full, backgroundColor: colors.bgInput,
     borderWidth: 1, borderColor: colors.border,
+    flexShrink: 0,
   },
   typeTabActive: { backgroundColor: colors.gold, borderColor: colors.gold },
-  typeTabText:   { fontSize: 12, color: colors.grey, fontWeight: '600' },
+  typeTabText:   { fontSize: 13, color: colors.grey, fontWeight: '600' },
   typeTabTextActive: { color: colors.black },
 
   list: { padding: spacing.md, paddingBottom: 100 },

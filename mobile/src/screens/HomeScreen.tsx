@@ -1,46 +1,52 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ScrollView, Linking, StatusBar,
-  Animated,
+  ScrollView, Linking, StatusBar, Dimensions,
+  Animated, Image,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { colors, spacing, radius, shadow } from '../lib/theme'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { colors, spacing, radius } from '../lib/theme'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
+const { width: W, height: H } = Dimensions.get('window')
+
 type Props = { navigation: NativeStackNavigationProp<any> }
+
+// Gurpreet's photos — rotate as background
+const BG_PHOTOS = [
+  'https://www.gsbrealtor.com/images/gurpreet-headshot-pro.jpg',
+  'https://www.gsbrealtor.com/images/gurpreet-standing.jpg',
+  'https://www.gsbrealtor.com/images/gurpreet-headshot-smile.jpg',
+]
 
 const LANES = [
   {
     icon: '🔍',
     title: 'Search Homes',
-    subtitle: '17,000+ active Utah listings',
+    subtitle: '17,379 active Utah listings — search by city, price, beds',
     screen: 'Search',
     gold: true,
   },
   {
     icon: '💰',
     title: 'Sell Your Home',
-    subtitle: 'Free CMA — no pressure, no obligation',
+    subtitle: 'Free comparative market analysis. No pressure, no obligation. Know your home\'s real value before you decide.',
     screen: 'Lead',
     params: { type: 'seller' },
-    gold: false,
   },
   {
     icon: '🏢',
     title: 'Commercial / Invest',
-    subtitle: 'NNN · Multi-family · Land · Retail',
+    subtitle: 'NNN leases, multi-family, retail, land & industrial. Gurpreet has closed commercial deals across Utah, Nevada & Wyoming.',
     screen: 'Lead',
     params: { type: 'commercial' },
-    gold: false,
   },
   {
     icon: '📋',
     title: 'Free Consultation',
-    subtitle: 'Talk to Gurpreet — responds within 1 hr',
+    subtitle: 'Buying, selling or just have questions? Gurpreet responds personally within the hour — no bots, no assistants.',
     screen: 'Lead',
     params: { type: 'contact' },
-    gold: false,
   },
 ]
 
@@ -57,68 +63,96 @@ const CITIES = [
 ]
 
 export default function HomeScreen({ navigation }: Props) {
-  const scrollY = useRef(new Animated.Value(0)).current
+  const insets = useSafeAreaInsets()
+  const [photoIdx, setPhotoIdx] = useState(0)
+  const fadeAnim = useRef(new Animated.Value(1)).current
 
-  const headerOpacity = scrollY.interpolate({
-    inputRange: [0, 80],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  })
+  // Crossfade between photos every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Animated.sequence([
+        Animated.timing(fadeAnim, { toValue: 0, duration: 800, useNativeDriver: true }),
+        Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+      ]).start()
+      setTimeout(() => {
+        setPhotoIdx(i => (i + 1) % BG_PHOTOS.length)
+      }, 800)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.black} />
-      <View style={styles.topBar} />
+    <View style={styles.root}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
-      <Animated.ScrollView
-        style={styles.scroll}
-        showsVerticalScrollIndicator={false}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
-        scrollEventThrottle={16}
-      >
-        {/* Hero header */}
-        <Animated.View style={[styles.hero, { opacity: headerOpacity }]}>
+      {/* ── CINEMATIC HERO ── */}
+      <View style={[styles.heroContainer, { height: H * 0.52 }]}>
+        <Animated.Image
+          source={{ uri: BG_PHOTOS[photoIdx] }}
+          style={[styles.heroBg, { opacity: fadeAnim }]}
+          resizeMode="cover"
+        />
+        {/* Dark overlays */}
+        <View style={styles.heroOverlay1} />
+        <View style={styles.heroOverlay2} />
+        {/* Top gold bar */}
+        <View style={[styles.topBar, { top: insets.top }]} />
+
+        {/* Hero content */}
+        <View style={[styles.heroContent, { paddingTop: insets.top + 20 }]}>
           <Text style={styles.heroLabel}>GURPREET BHATTI · REALTOR® · USMC VETERAN</Text>
           <Text style={styles.heroTitle}>Utah Real Estate</Text>
           <Text style={styles.heroGold}>Done Different.</Text>
-        </Animated.View>
 
-        {/* Stats */}
-        <View style={styles.statsRow}>
-          {STATS.map(s => (
-            <View key={s.label} style={styles.statItem}>
-              <Text style={styles.statValue}>{s.value}</Text>
-              <Text style={styles.statLabel}>{s.label}</Text>
-            </View>
-          ))}
+          {/* Stats row */}
+          <View style={styles.statsRow}>
+            {STATS.map(s => (
+              <View key={s.label} style={styles.statItem}>
+                <Text style={styles.statValue}>{s.value}</Text>
+                <Text style={styles.statLabel}>{s.label}</Text>
+              </View>
+            ))}
+          </View>
         </View>
 
+        {/* Photo dots */}
+        <View style={styles.photoDots}>
+          {BG_PHOTOS.map((_, i) => (
+            <View key={i} style={[styles.dot, i === photoIdx && styles.dotActive]} />
+          ))}
+        </View>
+      </View>
+
+      {/* ── SCROLLABLE CONTENT ── */}
+      <ScrollView
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+      >
         {/* Lane cards */}
-        <View style={styles.section}>
-          {LANES.map((lane, i) => (
+        <View style={styles.lanes}>
+          {LANES.map((lane) => (
             <TouchableOpacity
               key={lane.title}
               style={[styles.card, lane.gold && styles.cardGold]}
-              onPress={() => navigation.navigate(lane.screen, lane.params)}
+              onPress={() => navigation.navigate(lane.screen, (lane as any).params)}
               activeOpacity={0.82}
             >
-              <View style={styles.cardLeft}>
+              <View style={styles.cardHeader}>
                 <Text style={styles.cardIcon}>{lane.icon}</Text>
-                <View style={styles.cardText}>
-                  <Text style={[styles.cardTitle, lane.gold && styles.cardTitleDark]}>
-                    {lane.title}
-                  </Text>
-                  <Text style={[styles.cardSub, lane.gold && styles.cardSubDark]}>
-                    {lane.subtitle}
-                  </Text>
-                </View>
+                <Text style={[styles.cardTitle, lane.gold && styles.cardTitleDark]}>
+                  {lane.title}
+                </Text>
+                <Text style={[styles.cardArrow, lane.gold && styles.cardArrowDark]}>›</Text>
               </View>
-              <Text style={[styles.cardArrow, lane.gold && styles.cardArrowDark]}>›</Text>
+              <Text style={[styles.cardSub, lane.gold && styles.cardSubDark]}>
+                {lane.subtitle}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Quick city search */}
+        {/* Popular cities */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>POPULAR CITIES</Text>
           <View style={styles.cityGrid}>
@@ -135,160 +169,213 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* Direct contact */}
-        <View style={[styles.section, styles.contactCard]}>
+        {/* Contact card */}
+        <View style={styles.contactCard}>
           <View style={styles.contactTop}>
             <View style={styles.avatarRing}>
               <Text style={styles.avatarLetter}>G</Text>
             </View>
-            <View style={styles.contactInfo}>
+            <View style={{ flex: 1 }}>
               <Text style={styles.contactName}>Gurpreet Bhatti</Text>
-              <Text style={styles.contactTitle}>REALTOR® · USMC Veteran</Text>
-              <Text style={styles.contactLicense}>UT #12907042-SA00</Text>
+              <Text style={styles.contactRole}>REALTOR® · USMC Veteran</Text>
+              <Text style={styles.contactLicense}>UT #12907042 · NV #S.0201351 · WY #RE-17041</Text>
             </View>
           </View>
           <Text style={styles.contactQuote}>
-            No bots. No assistants. When you call, you get Gurpreet. Every time.
+            "No bots. No assistants. When you call or text, you get Gurpreet — every single time."
           </Text>
-          <View style={styles.contactBtns}>
-            <TouchableOpacity
-              style={styles.btnCall}
-              onPress={() => Linking.openURL('tel:8016358462')}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.btnCallText}>📞  Call 801.635.8462</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.btnSMS}
-              onPress={() => Linking.openURL('sms:8016358462')}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.btnSMSText}>💬  Text Now</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.btnCall}
+            onPress={() => Linking.openURL('tel:8016358462')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.btnCallText}>📞  Call 801.635.8462</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btnText}
+            onPress={() => Linking.openURL('sms:8016358462')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.btnTextText}>💬  Text Now</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={{ height: 100 }} />
-      </Animated.ScrollView>
-    </SafeAreaView>
+      </ScrollView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: colors.black },
-  scroll: { flex: 1 },
-  topBar: { height: 2, backgroundColor: colors.gold },
+  root:  { flex: 1, backgroundColor: colors.black },
+  scroll:{ flex: 1 },
 
-  hero: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.lg,
+  // Hero
+  heroContainer: {
+    width: W,
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: '#111',
+  },
+  heroBg: {
+    position: 'absolute',
+    top: 0, left: 0,
+    width: W,
+    height: '100%' as any,
+  },
+  heroOverlay1: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(6,6,6,0.55)',
+  },
+  heroOverlay2: {
+    position: 'absolute',
+    bottom: 0, left: 0, right: 0,
+    height: 160,
+    // gradient from transparent to black at bottom
+    backgroundColor: 'transparent',
+  },
+  topBar: {
+    position: 'absolute',
+    left: 0, right: 0,
+    height: 2,
+    backgroundColor: colors.gold,
+    zIndex: 10,
+  },
+  heroContent: {
+    position: 'absolute',
+    bottom: 32,
+    left: spacing.xl,
+    right: spacing.xl,
   },
   heroLabel: {
     fontSize: 9, letterSpacing: 2,
     color: colors.gold, textTransform: 'uppercase',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   heroTitle: {
-    fontSize: 38, fontWeight: '300',
-    color: colors.white, lineHeight: 40,
+    fontSize: 36, fontWeight: '300',
+    color: colors.white, lineHeight: 38,
   },
   heroGold: {
-    fontSize: 38, fontWeight: '300',
+    fontSize: 36, fontWeight: '300',
     fontStyle: 'italic', color: colors.gold,
-    lineHeight: 42,
+    lineHeight: 42, marginBottom: 20,
   },
-
   statsRow: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.lg,
     gap: spacing.xl,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    marginBottom: spacing.lg,
   },
-  statItem:  { alignItems: 'flex-start' },
-  statValue: { fontSize: 20, color: colors.gold, fontWeight: '300' },
-  statLabel: { fontSize: 9, color: colors.grey, textTransform: 'uppercase', letterSpacing: 1, marginTop: 2 },
+  statItem: {},
+  statValue: {
+    fontSize: 18, color: colors.gold, fontWeight: '300',
+  },
+  statLabel: {
+    fontSize: 9, color: 'rgba(255,255,255,0.5)',
+    textTransform: 'uppercase', letterSpacing: 1,
+  },
+  photoDots: {
+    position: 'absolute',
+    bottom: 12, right: 20,
+    flexDirection: 'row', gap: 5,
+  },
+  dot: {
+    width: 5, height: 5, borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+  },
+  dotActive: {
+    width: 18, backgroundColor: colors.gold,
+  },
 
-  section: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
+  // Cards
+  lanes: {
+    padding: spacing.lg,
+    paddingTop: spacing.xl,
     gap: spacing.sm,
   },
-  sectionLabel: {
-    fontSize: 10, letterSpacing: 1.5,
-    color: colors.grey, textTransform: 'uppercase',
-    marginBottom: 4,
-  },
-
   card: {
     backgroundColor: colors.bgCard,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    padding: spacing.lg,
   },
   cardGold: {
     backgroundColor: colors.gold,
     borderColor: colors.gold,
   },
-  cardLeft:  { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 },
-  cardIcon:  { fontSize: 26 },
-  cardText:  { flex: 1 },
-  cardTitle: { fontSize: 15, fontWeight: '600', color: colors.white, marginBottom: 2 },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  cardIcon:  { fontSize: 22, marginRight: 10 },
+  cardTitle: {
+    flex: 1, fontSize: 16,
+    fontWeight: '700', color: colors.white,
+  },
   cardTitleDark: { color: colors.black },
-  cardSub:   { fontSize: 12, color: colors.grey, lineHeight: 16 },
-  cardSubDark: { color: 'rgba(0,0,0,0.6)' },
-  cardArrow: { fontSize: 24, color: colors.grey, fontWeight: '300' },
-  cardArrowDark: { color: colors.black },
+  cardArrow: { fontSize: 22, color: colors.grey },
+  cardArrowDark: { color: 'rgba(0,0,0,0.5)' },
+  cardSub: {
+    fontSize: 13, color: colors.grey,
+    lineHeight: 19,
+  },
+  cardSubDark: { color: 'rgba(0,0,0,0.65)' },
 
+  // Cities
+  section: {
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  sectionLabel: {
+    fontSize: 10, letterSpacing: 1.5,
+    color: colors.grey, textTransform: 'uppercase',
+    marginBottom: spacing.md,
+  },
   cityGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   cityChip: {
-    paddingHorizontal: 14, paddingVertical: 7,
+    paddingHorizontal: 14, paddingVertical: 8,
     borderRadius: radius.full,
-    backgroundColor: colors.bgInput,
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1, borderColor: colors.border,
   },
   cityChipText: { fontSize: 13, color: colors.greyLight },
 
+  // Contact
   contactCard: {
-    backgroundColor: colors.bgCard,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.borderGold,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
     padding: spacing.xl,
+    backgroundColor: colors.bgCard,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(201,168,76,0.25)',
     gap: spacing.md,
   },
-  contactTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  contactTop: { flexDirection: 'row', gap: spacing.md, alignItems: 'flex-start' },
   avatarRing: {
     width: 52, height: 52, borderRadius: 26,
     borderWidth: 1.5, borderColor: colors.gold,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: colors.goldFaded,
+    backgroundColor: 'rgba(201,168,76,0.12)',
   },
   avatarLetter: { fontSize: 22, color: colors.gold, fontWeight: '300' },
-  contactInfo:   { flex: 1 },
-  contactName:   { fontSize: 17, fontWeight: '600', color: colors.white, marginBottom: 2 },
-  contactTitle:  { fontSize: 12, color: colors.gold, marginBottom: 1 },
-  contactLicense:{ fontSize: 10, color: colors.greyDark },
-  contactQuote:  { fontSize: 13, color: colors.grey, lineHeight: 20, fontStyle: 'italic' },
-  contactBtns:   { gap: spacing.sm },
-
+  contactName:    { fontSize: 16, fontWeight: '700', color: colors.white, marginBottom: 2 },
+  contactRole:    { fontSize: 12, color: colors.gold, marginBottom: 1 },
+  contactLicense: { fontSize: 10, color: colors.greyDark },
+  contactQuote:   {
+    fontSize: 13, color: colors.grey,
+    lineHeight: 21, fontStyle: 'italic',
+  },
   btnCall: {
     backgroundColor: colors.gold,
-    borderRadius: radius.sm, paddingVertical: 14,
+    borderRadius: radius.sm, paddingVertical: 15,
     alignItems: 'center',
   },
   btnCallText: { color: colors.black, fontWeight: '700', fontSize: 15 },
-  btnSMS: {
+  btnText: {
     borderWidth: 1, borderColor: colors.border,
-    borderRadius: radius.sm, paddingVertical: 14,
+    borderRadius: radius.sm, paddingVertical: 15,
     alignItems: 'center',
   },
-  btnSMSText: { color: colors.white, fontWeight: '600', fontSize: 15 },
+  btnTextText: { color: colors.white, fontWeight: '600', fontSize: 15 },
 })
