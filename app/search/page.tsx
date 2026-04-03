@@ -91,48 +91,6 @@ function SearchContent() {
 
   useEffect(() => { fetchListings(filters, 0) }, [])
 
-  // Geolocation auto-detect on mount
-  useEffect(() => {
-    // Only auto-detect if no city is pre-selected
-    if (filters.city || searchParams.get('city')) return
-
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords
-
-          // Use OpenStreetMap Nominatim (free, no API key)
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-              { headers: { 'Accept-Language': 'en' } }
-            )
-            const data = await res.json()
-            const city = data.address?.city || data.address?.town || data.address?.village
-
-            if (city) {
-              // Check if this city is in our Utah cities list
-              const utahCity = UTAH_CITIES.find(c =>
-                c.toLowerCase() === city.toLowerCase()
-              )
-              if (utahCity) {
-                update('city', utahCity)
-                // Auto-search after setting city
-                setTimeout(() => applyFilters(), 200)
-              }
-            }
-          } catch {
-            // Geolocation failed silently — user stays on all listings
-          }
-        },
-        () => {
-          // User denied geolocation — just load all Utah listings
-        },
-        { timeout: 5000 }
-      )
-    }
-  }, []) // Run once on mount
-
   const applyFilters = () => {
     setPage(0)
     fetchListings(filters, 0)

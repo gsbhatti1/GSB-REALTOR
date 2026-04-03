@@ -124,7 +124,7 @@ async function fetchMLS(endpoint: string, params?: Record<string, string>): Prom
   const response = await fetch(url.toString(), {
     method: 'GET',
     headers: {
-      Authorization: BEARER_TOKEN || '',
+      Authorization: `Bearer ${BEARER_TOKEN}`,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
