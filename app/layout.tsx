@@ -1,25 +1,65 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import '../styles/globals.css'
 import '../styles/mobile.css'
 import ChatBot from '@/components/ui/ChatBot'
+import {
+  RealEstateAgentSchema,
+  LocalBusinessSchema,
+  WebsiteSchema,
+} from '@/components/seo/JsonLd'
+
+export const viewport: Viewport = {
+  themeColor: '#0A0A0A',
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://gsbrealtor.com'),
   title: {
     default: 'GSB Realtor | Gurpreet Bhatti | Utah Real Estate',
-    template: '%s | GSB Realtor'
+    template: '%s | GSB Realtor',
   },
-  description: 'Search all Utah homes, condos, and commercial properties for sale. Gurpreet Bhatti — REALTOR®, USMC Veteran, Dynasty Point Referral Group. Commercial & residential real estate across Utah.',
-  keywords: ['Utah real estate', 'homes for sale Utah', 'Salt Lake City homes', 'Utah MLS search', 'commercial real estate Utah', 'Gurpreet Bhatti realtor', 'GSB realtor'],
+  description:
+    'Search all Utah homes, condos, and commercial properties for sale. Gurpreet Bhatti — REALTOR®, USMC Veteran, Dynasty Point Referral Group. Commercial & residential real estate across Utah.',
+  keywords: [
+    'Utah real estate',
+    'homes for sale Utah',
+    'Salt Lake City homes',
+    'Utah MLS search',
+    'commercial real estate Utah',
+    'Gurpreet Bhatti realtor',
+    'GSB realtor',
+    'NNN lease Utah',
+    'Utah REALTOR',
+    'West Jordan real estate',
+    'Sandy Utah homes',
+    'South Jordan homes for sale',
+  ],
   authors: [{ name: 'Gurpreet Bhatti', url: 'https://gsbrealtor.com' }],
   creator: 'Gurpreet Bhatti',
+  alternates: {
+    canonical: 'https://gsbrealtor.com',
+    languages: {
+      'en-US': 'https://gsbrealtor.com',
+      'es': 'https://gsbrealtor.com/es',
+      'pa': 'https://gsbrealtor.com/pa',
+      'ar': 'https://gsbrealtor.com/ar',
+      'zh': 'https://gsbrealtor.com/zh',
+      'vi': 'https://gsbrealtor.com/vi',
+      'fa': 'https://gsbrealtor.com/fa',
+      'pt': 'https://gsbrealtor.com/pt',
+    },
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://gsbrealtor.com',
     siteName: 'GSB Realtor',
     title: 'GSB Realtor | Utah Real Estate | Gurpreet Bhatti',
-    description: 'Search all Utah homes and commercial properties. Expert local knowledge. Fast. Free.',
+    description:
+      'Search all Utah homes and commercial properties. Expert local knowledge. Fast. Free.',
     images: [
       {
         url: 'https://gsbrealtor.com/og-image.jpg',
@@ -32,7 +72,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'GSB Realtor | Utah Real Estate',
-    description: 'Search Utah homes and commercial properties with Gurpreet Bhatti, REALTOR®',
+    description:
+      'Search Utah homes and commercial properties with Gurpreet Bhatti, REALTOR®',
   },
   robots: {
     index: true,
@@ -48,6 +89,12 @@ export const metadata: Metadata = {
   verification: {
     google: 'NaXF_l7ss5Layf3j8Ba1tMtfmiwGr69E_UDGuP273XY',
   },
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  category: 'real estate',
 }
 
 export default function RootLayout({
@@ -58,20 +105,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#0A0A0A" />
+        {/* ── Fonts (single source — removed duplicate @import from globals.css) ── */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
           rel="stylesheet"
         />
+
+        {/* ── Structured Data (JSON-LD) ── */}
+        <RealEstateAgentSchema />
+        <LocalBusinessSchema />
+        <WebsiteSchema />
       </head>
       <body>
-        {children}
+        {/* ── Accessibility: Skip Navigation (CSS-only) ── */}
+        <a href="#main-content" className="skip-nav">
+          Skip to main content
+        </a>
+
+        <div id="main-content">{children}</div>
+
         <ChatBot />
-        {/* Google Analytics GA4 — G-KVVK68CQXZ */}
+
+        {/* ── Google Analytics GA4 ── */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-KVVK68CQXZ"
           strategy="afterInteractive"

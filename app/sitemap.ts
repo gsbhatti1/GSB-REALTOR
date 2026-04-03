@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { BLOG_POSTS } from '@/lib/blog-posts'
 
 const UTAH_CITY_SLUGS = [
   'salt-lake-city','west-jordan','sandy','south-jordan','taylorsville',
@@ -13,21 +14,65 @@ const UTAH_CITY_SLUGS = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://gsbrealtor.com'
+  const now = new Date().toISOString()
 
-  const staticPages = [
-    { url: baseUrl, changeFrequency: 'daily' as const, priority: 1.0 },
-    { url: `${baseUrl}/search`, changeFrequency: 'hourly' as const, priority: 0.9 },
-    { url: `${baseUrl}/contact`, changeFrequency: 'monthly' as const, priority: 0.8 },
-    { url: `${baseUrl}/about`, changeFrequency: 'monthly' as const, priority: 0.7 },
-    { url: `${baseUrl}/investor`, changeFrequency: 'weekly' as const, priority: 0.8 },
-    { url: `${baseUrl}/valuation`, changeFrequency: 'weekly' as const, priority: 0.9 },
+  // ── Core Pages ──────────────────────────────────────
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: baseUrl, changeFrequency: 'daily', priority: 1.0, lastModified: now },
+    { url: `${baseUrl}/search`, changeFrequency: 'hourly', priority: 0.9, lastModified: now },
+    { url: `${baseUrl}/contact`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/about`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/sell`, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/commercial`, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/investor`, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${baseUrl}/valuation`, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/testimonials`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/track-record`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/team`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/market`, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${baseUrl}/market-reports`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/blog`, changeFrequency: 'weekly', priority: 0.8 },
   ]
 
-  const cityPages = UTAH_CITY_SLUGS.map(slug => ({
+  // ── Language Pages ──────────────────────────────────
+  const langPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/es`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/pa`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/ar`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/zh`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/vi`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/fa`, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${baseUrl}/pt`, changeFrequency: 'monthly', priority: 0.6 },
+  ]
+
+  // ── City Market Pages (45+) ─────────────────────────
+  const cityPages: MetadataRoute.Sitemap = UTAH_CITY_SLUGS.map(slug => ({
     url: `${baseUrl}/market/${slug}`,
     changeFrequency: 'daily' as const,
     priority: 0.8,
+    lastModified: now,
   }))
 
-  return [...staticPages, ...cityPages]
+  // ── City Sell Pages ─────────────────────────────────
+  const sellPages: MetadataRoute.Sitemap = UTAH_CITY_SLUGS.map(slug => ({
+    url: `${baseUrl}/sell/${slug}`,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+
+  // ── Blog Posts ──────────────────────────────────────
+  const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+    lastModified: post.dateISO,
+  }))
+
+  return [
+    ...staticPages,
+    ...langPages,
+    ...cityPages,
+    ...sellPages,
+    ...blogPages,
+  ]
 }
