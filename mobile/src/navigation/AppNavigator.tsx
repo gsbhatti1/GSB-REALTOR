@@ -16,11 +16,10 @@ const Stack = createNativeStackNavigator()
 const Tab   = createBottomTabNavigator()
 
 const HEADER = {
-  headerStyle:       { backgroundColor: '#111' },
-  headerTintColor:   colors.white,
-  headerTitleStyle:  { color: colors.white, fontWeight: '400' as const, fontSize: 17 },
-  headerBackTitleVisible: false,
-  contentStyle:      { backgroundColor: colors.bg },
+  headerStyle:          { backgroundColor: '#111' },
+  headerTintColor:      colors.white,
+  headerTitleStyle:     { color: colors.white, fontWeight: '400' as const, fontSize: 17 },
+  headerBackTitleVisible: false as boolean,
 }
 
 function TabIcon({ name, focused }: { name: string; focused: boolean }) {

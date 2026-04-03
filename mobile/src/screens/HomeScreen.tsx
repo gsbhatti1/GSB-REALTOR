@@ -73,7 +73,7 @@ export default function HomeScreen({ navigation }: Props) {
       <Animated.ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
         scrollEventThrottle={16}
       >
         {/* Hero header */}
