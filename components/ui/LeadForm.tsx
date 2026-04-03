@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { isSignedIn } from '@/lib/auth-client'
+import SignInModal from '@/components/ui/SignInModal'
 
 interface LeadFormProps {
   leadType?: string
@@ -30,9 +32,16 @@ export default function LeadForm({
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [showAuth, setShowAuth] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!isSignedIn()) {
+      setShowAuth(true)
+      return
+    }
+
     setLoading(true)
     setError('')
 
@@ -219,6 +228,7 @@ export default function LeadForm({
           <a href="tel:8016358462" style={{ color: '#C9A84C' }}>801.635.8462</a>
         </p>
       </form>
+      <SignInModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
     </div>
   )
 }

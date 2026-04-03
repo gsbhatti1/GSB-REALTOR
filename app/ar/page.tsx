@@ -67,6 +67,14 @@ export default function ArabicPage() {
           position: 'relative',
           overflow: 'hidden',
         }}>
+          {/* Hero background photo */}
+          <Image
+            src="/images/gurpreet-standing.jpg"
+            alt="Gurpreet Bhatti"
+            fill
+            priority
+            style={{ objectFit: 'cover', objectPosition: 'center top', filter: 'brightness(0.18)' }}
+          />
           <div style={{
             position: 'absolute', inset: 0,
             backgroundImage: 'radial-gradient(rgba(201,168,76,0.04) 1px, transparent 1px)',

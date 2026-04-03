@@ -79,6 +79,14 @@ export default function PunjabiPage() {
             overflow: 'hidden',
           }}
         >
+          {/* Hero background photo */}
+          <Image
+            src="/images/gurpreet-standing.jpg"
+            alt="Gurpreet Bhatti"
+            fill
+            priority
+            style={{ objectFit: 'cover', objectPosition: 'center top', filter: 'brightness(0.18)' }}
+          />
           <div
             style={{
               position: 'absolute',

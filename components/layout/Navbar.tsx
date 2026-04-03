@@ -206,7 +206,7 @@ export default function Navbar() {
             color: '#C9A84C', fontSize: '12px', fontWeight: '600',
             display: 'flex', alignItems: 'center', gap: '4px',
           }}>
-            🌐 <span style={{ fontSize: '11px' }}>LANG</span>
+            🌐 <span style={{ fontSize: '11px' }}>Languages</span>
           </button>
           {langOpen && (
             <div
