@@ -241,22 +241,29 @@ export default function SearchScreen({ navigation, route }: Props) {
       </View>
 
       {/* Property type tabs */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.typeTabs} contentContainerStyle={styles.typeTabsContent}>
-        {PROPERTY_TYPES.map(pt => (
-          <TouchableOpacity
-            key={pt.value}
-            style={[styles.typeTab, propType === pt.value && styles.typeTabActive]}
-            onPress={() => {
-              setPropType(pt.value)
-              load(true, { propType: pt.value })
-            }}
-          >
-            <Text style={[styles.typeTabText, propType === pt.value && styles.typeTabTextActive]}>
-              {pt.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.typeTabs}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeTabsContent}>
+          {PROPERTY_TYPES.map(pt => (
+            <TouchableOpacity
+              key={pt.value}
+              style={[styles.typeTab, propType === pt.value && styles.typeTabActive]}
+              onPress={() => {
+                setPropType(pt.value)
+                load(true, { propType: pt.value })
+              }}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[styles.typeTabText, propType === pt.value && styles.typeTabTextActive]}
+                numberOfLines={1}
+                allowFontScaling={false}
+              >
+                {pt.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* List */}
       {loading && properties.length === 0 ? (
@@ -423,21 +430,38 @@ const styles = StyleSheet.create({
   },
   sortBtnText: { fontSize: 12, color: colors.greyLight },
 
-  typeTabs: { backgroundColor: '#1a1a1a', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.12)' },
-  typeTabsContent: { paddingHorizontal: spacing.md, paddingVertical: 12, gap: 8, flexDirection: 'row', alignItems: 'flex-start' },
+  typeTabs: {
+    backgroundColor: '#1a1a1a',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.12)',
+  },
+  typeTabsContent: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    flexDirection: 'row',
+  },
   typeTab: {
-    paddingHorizontal: 18, paddingVertical: 9,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 999,
     backgroundColor: '#2a2a2a',
-    borderWidth: 1.5, borderColor: '#666666',
-    flexShrink: 0,
-    minWidth: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#666666',
   },
-  typeTabActive: { backgroundColor: colors.gold, borderColor: colors.gold },
-  typeTabText:   { fontSize: 14, color: '#FFFFFF', fontWeight: '700', textAlign: 'center' },
-  typeTabTextActive: { color: '#000000', fontWeight: '800' },
+  typeTabActive: {
+    backgroundColor: '#C9A84C',
+    borderColor: '#C9A84C',
+  },
+  typeTabText: {
+    fontSize: 13,
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  typeTabTextActive: {
+    color: '#000000',
+    fontWeight: '800',
+  },
 
   list: { padding: spacing.md, paddingBottom: 100 },
 
