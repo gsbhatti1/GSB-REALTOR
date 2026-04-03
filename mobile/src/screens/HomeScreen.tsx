@@ -199,6 +199,32 @@ export default function HomeScreen({ navigation }: Props) {
             <Text style={styles.btnTextText}>💬  Text Now</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Language selector */}
+        <View style={styles.langSection}>
+          <Text style={styles.langLabel}>We Speak Your Language</Text>
+          <View style={styles.langGrid}>
+            {[
+              { flag: '🇺🇸', label: 'English',    url: 'https://gsbrealtor.com/search' },
+              { flag: '🇲🇽', label: 'Español',    url: 'https://gsbrealtor.com/es' },
+              { flag: '🇮🇳', label: 'ਪੰਜਾਬੀ',    url: 'https://gsbrealtor.com/pa' },
+              { flag: '🇸🇦', label: 'العربية',    url: 'https://gsbrealtor.com/ar' },
+              { flag: '🇨🇳', label: '中文',        url: 'https://gsbrealtor.com/zh' },
+              { flag: '🇻🇳', label: 'Tiếng Việt', url: 'https://gsbrealtor.com/vi' },
+            ].map(lang => (
+              <TouchableOpacity
+                key={lang.label}
+                style={styles.langChip}
+                onPress={() => Linking.openURL(lang.url)}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.langFlag}>{lang.flag}</Text>
+                <Text style={styles.langText}>{lang.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
       </ScrollView>
     </View>
   )
@@ -378,4 +404,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnTextText: { color: colors.white, fontWeight: '600', fontSize: 15 },
+
+  // Language section
+  langSection: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.xxl,
+    paddingTop: spacing.xl,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.06)',
+  },
+  langLabel: {
+    fontSize: 10, letterSpacing: 1.5,
+    color: colors.grey, textTransform: 'uppercase',
+    marginBottom: spacing.md, textAlign: 'center',
+  },
+  langGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'center',
+  },
+  langChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: radius.full,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  langFlag: { fontSize: 20 },
+  langText: { fontSize: 13, color: colors.greyLight, fontWeight: '600' },
 })

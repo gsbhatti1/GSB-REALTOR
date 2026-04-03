@@ -1,15 +1,20 @@
 import React, { useEffect, useRef } from 'react'
-import { View, Text, StyleSheet, Animated } from 'react-native'
+import { View, Text, StyleSheet, Animated, Image, Dimensions } from 'react-native'
 import { colors } from '../lib/theme'
+
+const { width, height } = Dimensions.get('window')
 
 export default function SplashScreen({ onDone }: { onDone: () => void }) {
   const opacity  = useRef(new Animated.Value(0)).current
   const scale    = useRef(new Animated.Value(0.88)).current
   const lineW    = useRef(new Animated.Value(0)).current
   const textFade = useRef(new Animated.Value(0)).current
+  const photoFade = useRef(new Animated.Value(0)).current
 
   useEffect(() => {
     Animated.sequence([
+      // Photo fades in first
+      Animated.timing(photoFade, { toValue: 1, duration: 800, useNativeDriver: true }),
       // Logo appears
       Animated.parallel([
         Animated.timing(opacity, { toValue: 1, duration: 600, useNativeDriver: true }),
@@ -21,14 +26,27 @@ export default function SplashScreen({ onDone }: { onDone: () => void }) {
       Animated.timing(textFade, { toValue: 1, duration: 400, useNativeDriver: true }),
     ]).start()
 
-    const timer = setTimeout(onDone, 2600)
+    const timer = setTimeout(onDone, 3000)
     return () => clearTimeout(timer)
   }, [])
 
   return (
     <View style={styles.container}>
+      {/* Gurpreet's smiling photo as background */}
+      <Animated.View style={[styles.photoContainer, { opacity: photoFade }]}>
+        <Image
+          source={require('../../assets/gurpreet-smile-small.jpg')}
+          style={styles.photo}
+          resizeMode="cover"
+        />
+        {/* Dark gradient overlay so text is readable */}
+        <View style={styles.overlay} />
+      </Animated.View>
+
+      {/* Gold top bar */}
       <View style={styles.topBar} />
 
+      {/* Logo content */}
       <Animated.View style={[styles.content, { opacity, transform: [{ scale }] }]}>
         {/* Monogram ring */}
         <View style={styles.ring}>
@@ -63,6 +81,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  photoContainer: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+  },
+  photo: {
+    width: width,
+    height: height,
+    position: 'absolute',
+    top: 0, left: 0,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(6,6,6,0.72)',
   },
   topBar: {
     position: 'absolute', top: 0, left: 0, right: 0,
@@ -111,7 +144,7 @@ const styles = StyleSheet.create({
   tagline: {
     fontSize: 11,
     letterSpacing: 1.2,
-    color: colors.grey,
+    color: 'rgba(245,243,238,0.85)',
     textTransform: 'uppercase',
     marginBottom: 8,
     textAlign: 'center',
@@ -119,7 +152,7 @@ const styles = StyleSheet.create({
   states: {
     fontSize: 10,
     letterSpacing: 2,
-    color: colors.greyDark,
+    color: 'rgba(201,168,76,0.7)',
     textTransform: 'uppercase',
   },
 })
