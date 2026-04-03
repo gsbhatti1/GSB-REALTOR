@@ -424,17 +424,20 @@ const styles = StyleSheet.create({
   sortBtnText: { fontSize: 12, color: colors.greyLight },
 
   typeTabs: { backgroundColor: '#1a1a1a', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.12)' },
-  typeTabsContent: { paddingHorizontal: spacing.md, paddingVertical: 12, gap: 8, alignItems: 'center' },
+  typeTabsContent: { paddingHorizontal: spacing.md, paddingVertical: 12, gap: 8, flexDirection: 'row', alignItems: 'flex-start' },
   typeTab: {
     paddingHorizontal: 18, paddingVertical: 9,
-    borderRadius: radius.full,
+    borderRadius: 999,
     backgroundColor: '#2a2a2a',
-    borderWidth: 1.5, borderColor: '#555555',
+    borderWidth: 1.5, borderColor: '#666666',
     flexShrink: 0,
+    minWidth: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   typeTabActive: { backgroundColor: colors.gold, borderColor: colors.gold },
-  typeTabText:   { fontSize: 13, color: '#FFFFFF', fontWeight: '600' },
-  typeTabTextActive: { color: '#000000', fontWeight: '700' },
+  typeTabText:   { fontSize: 14, color: '#FFFFFF', fontWeight: '700', textAlign: 'center' },
+  typeTabTextActive: { color: '#000000', fontWeight: '800' },
 
   list: { padding: spacing.md, paddingBottom: 100 },
 
