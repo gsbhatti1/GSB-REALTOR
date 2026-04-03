@@ -1,9 +1,10 @@
 import React, { useRef } from 'react'
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ScrollView, Linking, StatusBar, SafeAreaView,
+  ScrollView, Linking, StatusBar,
   Animated,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, spacing, radius, shadow } from '../lib/theme'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -231,12 +232,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    ...shadow.card,
   },
   cardGold: {
     backgroundColor: colors.gold,
     borderColor: colors.gold,
-    ...shadow.gold,
   },
   cardLeft:  { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1 },
   cardIcon:  { fontSize: 26 },
@@ -264,7 +263,6 @@ const styles = StyleSheet.create({
     borderColor: colors.borderGold,
     padding: spacing.xl,
     gap: spacing.md,
-    ...shadow.card,
   },
   contactTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   avatarRing: {
@@ -284,7 +282,7 @@ const styles = StyleSheet.create({
   btnCall: {
     backgroundColor: colors.gold,
     borderRadius: radius.sm, paddingVertical: 14,
-    alignItems: 'center', ...shadow.gold,
+    alignItems: 'center',
   },
   btnCallText: { color: colors.black, fontWeight: '700', fontSize: 15 },
   btnSMS: {

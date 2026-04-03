@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
-  ScrollView, SafeAreaView, StatusBar, Alert,
+  ScrollView, StatusBar, Alert,
   KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, spacing, radius, shadow } from '../lib/theme'
 import { submitLead } from '../lib/api'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
   submitBtn: {
     backgroundColor: colors.gold, borderRadius: radius.sm,
     paddingVertical: 16, alignItems: 'center',
-    marginTop: spacing.sm, ...shadow.gold,
+    marginTop: spacing.sm,
   },
   submitDisabled: { opacity: 0.6 },
   submitText:     { color: colors.black, fontWeight: '700', fontSize: 15 },
@@ -193,6 +194,7 @@ const styles = StyleSheet.create({
   successCheck: { fontSize: 60 },
   successTitle: { fontSize: 28, fontWeight: '300', color: colors.white, textAlign: 'center' },
   successSub:   { fontSize: 14, color: colors.grey, textAlign: 'center', lineHeight: 22 },
-  doneBtn:      { backgroundColor: colors.gold, borderRadius: radius.sm, paddingHorizontal: 40, paddingVertical: 14, ...shadow.gold },
+  doneBtn:      { backgroundColor: colors.gold, borderRadius: radius.sm, paddingHorizontal: 40, paddingVertical: 14,
+ },
   doneBtnText:  { color: colors.black, fontWeight: '700', fontSize: 15 },
 })

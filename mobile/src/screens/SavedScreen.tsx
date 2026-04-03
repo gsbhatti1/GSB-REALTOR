@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react'
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  SafeAreaView, StatusBar, Image, Alert,
+  StatusBar, Image, Alert,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useFocusEffect } from '@react-navigation/native'
 import { colors, spacing, radius, shadow } from '../lib/theme'
 import { getSavedProperties, unsaveProperty, SavedProperty } from '../lib/storage'
@@ -164,7 +165,6 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: colors.border,
     marginBottom: spacing.sm,
     overflow: 'hidden',
-    ...shadow.card,
   },
   cardPhoto: { width: 100, position: 'relative' },
   photo:     { width: 100, height: '100%' },

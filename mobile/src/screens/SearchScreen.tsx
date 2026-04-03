@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  TextInput, ActivityIndicator, SafeAreaView, StatusBar,
+  TextInput, ActivityIndicator, StatusBar,
   Modal, ScrollView, Keyboard,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, spacing, radius } from '../lib/theme'
 import { searchProperties, Property } from '../lib/api'
 import PropertyCard from '../components/PropertyCard'

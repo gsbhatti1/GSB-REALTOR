@@ -128,7 +128,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     marginBottom: spacing.md,
     overflow: 'hidden',
-    ...shadow.card,
   },
   photoWrap: {
     height: 200,

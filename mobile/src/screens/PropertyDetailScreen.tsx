@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Linking, SafeAreaView, StatusBar, Dimensions, ActivityIndicator,
+  Linking, StatusBar, Dimensions, ActivityIndicator,
   Image, FlatList, Share, Alert,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, spacing, radius, shadow } from '../lib/theme'
 import { getPropertyPhotos, Property, formatPrice } from '../lib/api'
 import { isPropertySaved, saveProperty, unsaveProperty } from '../lib/storage'
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
   ctas: { padding: spacing.xl, gap: spacing.sm },
   ctaPrimary: {
     backgroundColor: colors.gold, borderRadius: radius.sm,
-    paddingVertical: 16, alignItems: 'center', ...shadow.gold,
+    paddingVertical: 16, alignItems: 'center',
   },
   ctaPrimaryText: { color: colors.black, fontWeight: '700', fontSize: 15 },
   ctaRow:    { flexDirection: 'row', gap: spacing.sm },

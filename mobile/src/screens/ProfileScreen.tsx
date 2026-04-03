@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  SafeAreaView, StatusBar, Alert, Linking,
+  StatusBar, Alert, Linking,
   ScrollView, Platform,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, spacing, radius, shadow } from '../lib/theme'
 import { supabase } from '../lib/supabase'
 
@@ -217,7 +218,6 @@ const styles = StyleSheet.create({
   appleBtn: {
     backgroundColor: colors.white, borderRadius: radius.sm,
     height: 52, alignItems: 'center', justifyContent: 'center',
-    ...shadow.card,
   },
   appleBtnText: { color: colors.black, fontWeight: '600', fontSize: 16 },
 
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
 
   callBtn: {
     backgroundColor: colors.gold, borderRadius: radius.sm,
-    paddingVertical: 14, alignItems: 'center', ...shadow.gold,
+    paddingVertical: 14, alignItems: 'center',
   },
   callBtnText: { color: colors.black, fontWeight: '700', fontSize: 15 },
   smsBtn: {
