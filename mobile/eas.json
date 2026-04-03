@@ -46,7 +46,7 @@
     "production": {
       "ios": {
         "appleId": "gsbhatti1@gmail.com",
-        "ascAppId": "com.gsbrealtor.app",
+        "ascAppId": "REPLACE_WITH_ASC_APP_ID",
         "appleTeamId": "MFZGLC37WW"
       },
       "android": {
