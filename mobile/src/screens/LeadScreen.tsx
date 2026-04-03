@@ -7,6 +7,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, spacing, radius, shadow } from '../lib/theme'
 import { submitLead } from '../lib/api'
+import { autoEnrollAlert } from '../lib/auth'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import type { RouteProp } from '@react-navigation/native'
 
@@ -63,6 +64,10 @@ export default function LeadScreen({ navigation, route }: Props) {
     if (!phone.trim()){ Alert.alert('Required', 'Please enter your phone number.'); return }
     setLoading(true)
     const ok = await submitLead({ name, phone, email, type, message, source: 'mobile_app' })
+    // Auto-enroll in listing alerts if they gave an email
+    if (email.trim()) {
+      autoEnrollAlert({ email: email.trim(), name, source: 'mobile_lead_form' })
+    }
     setLoading(false)
     if (ok) {
       setDone(true)

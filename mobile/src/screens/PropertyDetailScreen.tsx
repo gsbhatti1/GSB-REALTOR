@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, spacing, radius, shadow } from '../lib/theme'
 import { getPropertyPhotos, Property, formatPrice } from '../lib/api'
 import { isPropertySaved, saveProperty, unsaveProperty } from '../lib/storage'
+import { getCurrentUser, autoEnrollAlert, submitLeadWithTracking } from '../lib/auth'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import type { RouteProp } from '@react-navigation/native'
 
@@ -60,20 +61,46 @@ export default function PropertyDetailScreen({ navigation, route }: Props) {
     if (saved) {
       await unsaveProperty(property.ListingKey)
       setSaved(false)
-    } else {
-      await saveProperty({
-        listingKey:   property.ListingKey,
-        address:      property.UnparsedAddress || '',
-        city:         property.City || '',
-        listPrice:    property.ListPrice,
-        bedrooms:     property.BedroomsTotal,
-        bathrooms:    property.BathroomsTotalInteger,
-        photoUrl:     photos[0] || '',
-        propertyType: property.PropertyType || '',
-        savedAt:      new Date().toISOString(),
-      })
-      setSaved(true)
+      return
     }
+    // Gate: must be signed in to save
+    const user = await getCurrentUser()
+    if (!user) {
+      Alert.alert(
+        'Sign In to Save',
+        'Create a free account to save properties and get alerts when similar homes hit the market.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Sign In', onPress: () => navigation.navigate('Tabs', { screen: 'Profile' }) },
+        ]
+      )
+      return
+    }
+    // Save the property
+    await saveProperty({
+      listingKey:   property.ListingKey,
+      address:      property.UnparsedAddress || '',
+      city:         property.City || '',
+      listPrice:    property.ListPrice,
+      bedrooms:     property.BedroomsTotal,
+      bathrooms:    property.BathroomsTotalInteger,
+      photoUrl:     photos[0] || '',
+      propertyType: property.PropertyType || '',
+      savedAt:      new Date().toISOString(),
+    })
+    setSaved(true)
+    // Auto-enroll in listing alerts for this city (silent)
+    const name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Customer'
+    autoEnrollAlert({ email: user.email!, name, city: property.City, source: 'mobile_save' })
+    // Track as lead (silent)
+    submitLeadWithTracking({
+      name,
+      email: user.email!,
+      message: `Saved property: ${property.UnparsedAddress || property.City} — $${property.ListPrice?.toLocaleString()}`,
+      type: 'saved_property',
+      city: property.City,
+      propertyAddress: property.UnparsedAddress,
+    })
   }
 
   const handleShare = async () => {
@@ -214,10 +241,24 @@ export default function PropertyDetailScreen({ navigation, route }: Props) {
         <View style={styles.ctas}>
           <TouchableOpacity
             style={styles.ctaPrimary}
-            onPress={() => navigation.navigate('Lead', {
-              type: 'buyer',
-              prefill: `I'm interested in the property at ${property.UnparsedAddress}, ${property.City} (MLS ${property.ListingKey}) listed at ${formatPrice(property.ListPrice)}.`,
-            })}
+            onPress={async () => {
+              const user = await getCurrentUser()
+              if (!user) {
+                Alert.alert(
+                  'Sign In to Request a Showing',
+                  'Create a free account so Gurpreet can follow up with you and you get updates on this property.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Sign In', onPress: () => navigation.navigate('Tabs', { screen: 'Profile' }) },
+                  ]
+                )
+                return
+              }
+              navigation.navigate('Lead', {
+                type: 'buyer',
+                prefill: `I'm interested in the property at ${property.UnparsedAddress}, ${property.City} (MLS ${property.ListingKey}) listed at ${formatPrice(property.ListPrice)}.`,
+              })
+            }}
             activeOpacity={0.85}
           >
             <Text style={styles.ctaPrimaryText}>📩  Request a Showing</Text>
