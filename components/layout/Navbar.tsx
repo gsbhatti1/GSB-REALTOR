@@ -201,12 +201,39 @@ export default function Navbar() {
           onMouseLeave={() => setTimeout(() => setLangOpen(false), 150)}
         >
           <button style={{
-            background: 'none', border: '1px solid rgba(201,168,76,0.3)',
-            borderRadius: '6px', padding: '5px 10px', cursor: 'pointer',
-            color: '#C9A84C', fontSize: '12px', fontWeight: '600',
-            display: 'flex', alignItems: 'center', gap: '4px',
+            background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.35)',
+            borderRadius: '8px', padding: '5px 12px', cursor: 'pointer',
+            color: '#F5F3EE', fontSize: '12px', fontWeight: '600',
+            display: 'flex', alignItems: 'center', gap: '7px',
+            transition: 'all 0.2s',
           }}>
-            🌐 <span style={{ fontSize: '11px' }}>Languages</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={
+                pathname.startsWith('/es') ? 'https://flagcdn.com/w40/mx.png' :
+                pathname.startsWith('/pa') ? 'https://flagcdn.com/w40/in.png' :
+                pathname.startsWith('/ar') ? 'https://flagcdn.com/w40/sa.png' :
+                pathname.startsWith('/zh') ? 'https://flagcdn.com/w40/cn.png' :
+                pathname.startsWith('/vi') ? 'https://flagcdn.com/w40/vn.png' :
+                'https://flagcdn.com/w40/us.png'
+              }
+              alt="Language"
+              width={20} height={15}
+              style={{ borderRadius: '2px', flexShrink: 0 }}
+            />
+            <span style={{ fontSize: '11px', color: '#C9A84C', letterSpacing: '0.04em' }}>
+              {
+                pathname.startsWith('/es') ? 'ES' :
+                pathname.startsWith('/pa') ? 'PA' :
+                pathname.startsWith('/ar') ? 'AR' :
+                pathname.startsWith('/zh') ? 'ZH' :
+                pathname.startsWith('/vi') ? 'VI' :
+                'EN'
+              }
+            </span>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ opacity: 0.5 }}>
+              <path d="M2 3.5L5 6.5L8 3.5" stroke="#C9A84C" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
           </button>
           {langOpen && (
             <div

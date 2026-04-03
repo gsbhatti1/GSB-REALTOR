@@ -139,10 +139,11 @@ function SearchContent() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px',
+    width: '100%', background: '#1a1a1a',
+    border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px',
     padding: '10px 14px', fontSize: '14px', color: '#F5F3EE',
     outline: 'none', fontFamily: 'inherit', height: '42px',
+    colorScheme: 'dark',
   }
 
   const modalInputStyle: React.CSSProperties = {

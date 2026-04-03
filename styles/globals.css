@@ -60,6 +60,22 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+/* Force dark theme on all native select dropdowns */
+select {
+  color-scheme: dark;
+  background-color: #1a1a1a;
+  color: #F5F3EE;
+}
+select option {
+  background-color: #1a1a1a;
+  color: #F5F3EE;
+}
+select option:checked,
+select option:hover {
+  background-color: #2a2a2a;
+  color: #C9A84C;
+}
+
 /* ─── Reduced Motion ────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
