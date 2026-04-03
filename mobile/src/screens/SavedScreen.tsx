@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardPhoto: { width: 100, position: 'relative' },
-  photo:     { width: 100, height: '100%' },
+  photo:     { width: 100, height: '100%' as any },
   photoFallback: {
     width: 100, flex: 1,
     backgroundColor: '#1a1a1a',

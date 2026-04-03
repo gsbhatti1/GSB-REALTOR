@@ -261,12 +261,12 @@ const styles = StyleSheet.create({
 
   photoArea: { height: 280, backgroundColor: '#111' },
   photoSlide:{ width, height: 280 },
-  photo:     { width: '100%', height: '100%' },
+  photo: { width: '100%' as any, height: '100%' as any },
   photoLoader:{
     flex: 1, alignItems: 'center', justifyContent: 'center', height: 280,
   },
   photoFallback: {
-    height: 280, width: '100%',
+    height: 280, width: '100%' as any,
     alignItems: 'center', justifyContent: 'center', backgroundColor: '#111',
   },
   photoCounter: {

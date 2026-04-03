@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   brandTitle:  { fontSize: 24, color: colors.white, fontWeight: '300', letterSpacing: 2 },
   brandSub:    { fontSize: 13, color: colors.grey, textAlign: 'center', lineHeight: 20 },
 
-  authBtns: { width: '100%', gap: spacing.md },
+  authBtns: { width: '100%' as any, gap: spacing.md },
   appleBtn: {
     backgroundColor: colors.white, borderRadius: radius.sm,
     height: 52, alignItems: 'center', justifyContent: 'center',
