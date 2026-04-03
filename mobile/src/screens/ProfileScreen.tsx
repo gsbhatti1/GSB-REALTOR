@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  StatusBar, Alert, Linking,
+  StatusBar, Alert, Linking, TextInput,
   ScrollView, Platform,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -88,10 +88,23 @@ export default function ProfileScreen() {
 
         {/* Sign in options */}
         <View style={styles.authBtns}>
+          {/* Google Sign In — all platforms */}
+          <GoogleSignInButton />
+
           {/* Apple Sign In — iOS only */}
           {Platform.OS === 'ios' && (
             <AppleSignInButton />
           )}
+
+          {/* OR divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          {/* Email / Password */}
+          <EmailAuthForm />
 
           {/* Guest options */}
           <View style={styles.divider}>
@@ -247,4 +260,154 @@ const styles = StyleSheet.create({
   agentLine: { fontSize: 11, color: colors.greyDark, textAlign: 'center' },
   agentLink: { fontSize: 12, color: colors.gold, marginTop: 4 },
   version:   { fontSize: 10, color: colors.greyDark, letterSpacing: 1 },
+})
+
+// ── Google Sign In ────────────────────────────────────────────────────────────
+function GoogleSignInButton() {
+  const [loading, setLoading] = useState(false)
+
+  const handleGoogle = async () => {
+    setLoading(true)
+    try {
+      const { supabase } = await import('../lib/supabase')
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'gsbrealtor://auth/callback',
+          skipBrowserRedirect: false,
+        },
+      })
+      if (error) Alert.alert('Sign In Error', error.message)
+      else if (data?.url) {
+        await Linking.openURL(data.url)
+      }
+    } catch (e: any) {
+      Alert.alert('Error', e.message || 'Could not sign in with Google')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <TouchableOpacity
+      style={googleStyles.btn}
+      onPress={handleGoogle}
+      disabled={loading}
+      activeOpacity={0.85}
+    >
+      <Text style={googleStyles.icon}>G</Text>
+      <Text style={googleStyles.text}>
+        {loading ? 'Opening Google...' : 'Continue with Google'}
+      </Text>
+    </TouchableOpacity>
+  )
+}
+
+const googleStyles = StyleSheet.create({
+  btn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 10, backgroundColor: '#FFFFFF',
+    borderRadius: radius.sm, paddingVertical: 14,
+    borderWidth: 1, borderColor: '#DDDDDD',
+  },
+  icon: {
+    fontSize: 18, fontWeight: '800', color: '#4285F4',
+    fontFamily: 'System',
+  },
+  text: { fontSize: 15, fontWeight: '600', color: '#333333' },
+})
+
+// ── Email / Password Form ─────────────────────────────────────────────────────
+function EmailAuthForm() {
+  const [email, setEmail]         = useState('')
+  const [password, setPassword]   = useState('')
+  const [mode, setMode]           = useState<'signin' | 'signup'>('signin')
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState('')
+
+  const handle = async () => {
+    if (!email.trim() || !password) {
+      setError('Enter your email and password')
+      return
+    }
+    setLoading(true)
+    setError('')
+    try {
+      const { supabase } = await import('../lib/supabase')
+      if (mode === 'signin') {
+        const { error: e } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+        if (e) setError(e.message)
+      } else {
+        const { error: e } = await supabase.auth.signUp({ email: email.trim(), password })
+        if (e) setError(e.message)
+        else setError('Check your email to confirm your account.')
+      }
+    } catch {
+      setError('Something went wrong. Try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <View style={emailStyles.container}>
+      <TextInput
+        style={emailStyles.input}
+        placeholder="Email address"
+        placeholderTextColor="#555"
+        value={email}
+        onChangeText={t => { setEmail(t); setError('') }}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        autoCorrect={false}
+      />
+      <TextInput
+        style={emailStyles.input}
+        placeholder="Password"
+        placeholderTextColor="#555"
+        value={password}
+        onChangeText={t => { setPassword(t); setError('') }}
+        secureTextEntry
+      />
+      {error ? (
+        <Text style={emailStyles.error}>{error}</Text>
+      ) : null}
+      <TouchableOpacity
+        style={emailStyles.btn}
+        onPress={handle}
+        disabled={loading}
+        activeOpacity={0.85}
+      >
+        <Text style={emailStyles.btnText}>
+          {loading ? 'Please wait...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => { setMode(m => m === 'signin' ? 'signup' : 'signin'); setError('') }}
+        style={{ marginTop: 8, alignItems: 'center' }}
+      >
+        <Text style={emailStyles.toggle}>
+          {mode === 'signin' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
+
+const emailStyles = StyleSheet.create({
+  container: { gap: 10, width: '100%' },
+  input: {
+    backgroundColor: '#1e1e1e',
+    borderWidth: 1.5, borderColor: '#444',
+    borderRadius: radius.sm, padding: 14,
+    color: '#FFFFFF', fontSize: 14,
+  },
+  error: { color: '#FF6B6B', fontSize: 13, textAlign: 'center' },
+  btn: {
+    backgroundColor: '#C9A84C',
+    borderRadius: radius.sm, paddingVertical: 14,
+    alignItems: 'center',
+  },
+  btnText: { color: '#000000', fontWeight: '700', fontSize: 15 },
+  toggle:  { color: '#888888', fontSize: 13 },
 })
