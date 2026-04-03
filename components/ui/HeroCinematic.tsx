@@ -55,13 +55,20 @@ export default function HeroCinematic() {
         display: 'flex',
         alignItems: 'center',
       }}>
-        {/* TODO: When video is ready, replace image slides with:
-          <video autoPlay muted loop playsInline style={{objectFit:'cover',width:'100%',height:'100%',filter:'brightness(0.35)'}}>
+        {/*
+          VIDEO INTEGRATION: When your video is ready:
+          1. Place it at /public/videos/gurpreet-hero.mp4
+          2. Uncomment the <video> block below
+          3. Comment out the photo slides below it
+
+          <video autoPlay muted loop playsInline
+            poster="/images/gurpreet-standing.jpg"
+            style={{position:'absolute',inset:0,objectFit:'cover',width:'100%',height:'100%',filter:'brightness(0.35)',zIndex:1}}>
             <source src="/videos/gurpreet-hero.mp4" type="video/mp4" />
           </video>
         */}
 
-        {/* Sliding background photos */}
+        {/* Sliding background photos (active until video is ready) */}
         {HERO_SLIDES.map((slide, i) => (
           <div key={i} style={{
             position: 'absolute',

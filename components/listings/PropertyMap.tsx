@@ -18,17 +18,78 @@ interface Props {
   onPropertySelect?: (key: string) => void
 }
 
+/**
+ * Extract lat/lng from a property — handles multiple API formats:
+ *  - Direct Latitude/Longitude fields
+ *  - GeoLocation as POINT string: "POINT(-111.8 40.7)"
+ *  - GeoLocation as GeoJSON object: { type: "Point", coordinates: [-111.8, 40.7] }
+ *  - GeoLocation with nested coordinates array
+ */
+function extractCoords(property: Property): { lng: number; lat: number } | null {
+  // 1. Try direct Latitude/Longitude first
+  if (
+    typeof property.Latitude === 'number' && !isNaN(property.Latitude) &&
+    typeof property.Longitude === 'number' && !isNaN(property.Longitude) &&
+    property.Latitude !== 0 && property.Longitude !== 0
+  ) {
+    return { lat: property.Latitude, lng: property.Longitude }
+  }
+
+  // 2. Try GeoLocation field
+  const geo = property.GeoLocation
+  if (!geo) return null
+
+  try {
+    // String: "POINT(-111.891 40.760)"
+    if (typeof geo === 'string') {
+      const match = geo.match(/POINT\s*\(\s*([^ ]+)\s+([^ ]+)\s*\)/)
+      if (match) {
+        const lng = parseFloat(match[1])
+        const lat = parseFloat(match[2])
+        if (!isNaN(lng) && !isNaN(lat)) return { lng, lat }
+      }
+    }
+
+    // Object: GeoJSON or { coordinates: [lng, lat] }
+    if (typeof geo === 'object' && geo !== null) {
+      const obj = geo as Record<string, unknown>
+
+      // GeoJSON: { type: "Point", coordinates: [-111.8, 40.7] }
+      if (Array.isArray(obj.coordinates) && obj.coordinates.length >= 2) {
+        const [lng, lat] = obj.coordinates as number[]
+        if (!isNaN(lng) && !isNaN(lat)) return { lng, lat }
+      }
+
+      // Nested: { Latitude: ..., Longitude: ... }
+      if (typeof obj.Latitude === 'number' && typeof obj.Longitude === 'number') {
+        return { lat: obj.Latitude as number, lng: obj.Longitude as number }
+      }
+    }
+  } catch {
+    // ignore parse errors
+  }
+
+  return null
+}
+
 export default function PropertyMap({ properties, onPropertySelect }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [, setSelectedProperty] = useState<string | null>(null)
+  const [mapError, setMapError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return
 
+    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+    if (!token || token === 'pk.your_mapbox_token_here') {
+      setMapError('Map unavailable — Mapbox token not configured')
+      return
+    }
+
     // Dynamic import to avoid SSR issues
     import('mapbox-gl').then((mapboxgl) => {
-      mapboxgl.default.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
+      mapboxgl.default.accessToken = token
 
       const map = new mapboxgl.default.Map({
         container: mapContainer.current!,
@@ -43,32 +104,9 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
         const validProperties: Array<{ property: Property; lng: number; lat: number }> = []
 
         for (const property of properties) {
-          let lng: number | undefined
-          let lat: number | undefined
-
-          try {
-            // Try Latitude/Longitude fields first
-            if (property.Latitude && property.Longitude) {
-              lat = property.Latitude
-              lng = property.Longitude
-            } else if (property.GeoLocation) {
-              const geo = property.GeoLocation as string | { coordinates?: [number, number] }
-              if (typeof geo === 'string' && geo.includes('POINT')) {
-                const match = geo.match(/POINT\(([^ ]+) ([^ ]+)\)/)
-                if (match) {
-                  lng = parseFloat(match[1])
-                  lat = parseFloat(match[2])
-                }
-              } else if (typeof geo === 'object' && geo !== null && 'coordinates' in geo && geo.coordinates) {
-                ;[lng, lat] = geo.coordinates
-              }
-            }
-          } catch {
-            // ignore parse errors
-          }
-
-          if (lng !== undefined && lat !== undefined && !isNaN(lng) && !isNaN(lat)) {
-            validProperties.push({ property, lng, lat })
+          const coords = extractCoords(property)
+          if (coords) {
+            validProperties.push({ property, ...coords })
           }
         }
 
@@ -122,6 +160,16 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
           }
         }
       })
+
+      map.on('error', (e) => {
+        console.error('Mapbox error:', e)
+        if (e.error?.message?.includes('access token')) {
+          setMapError('Map unavailable — invalid Mapbox token')
+        }
+      })
+    }).catch(err => {
+      console.error('Failed to load mapbox-gl:', err)
+      setMapError('Map unavailable — failed to load map library')
     })
 
     return () => {
@@ -132,11 +180,24 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
     }
   }, [properties, onPropertySelect])
 
-  const withCoords = properties.filter(p => {
-    if (p.Latitude && p.Longitude) return true
-    if (p.GeoLocation) return true
-    return false
-  }).length
+  const withCoords = properties.filter(p => extractCoords(p) !== null).length
+
+  if (mapError) {
+    return (
+      <div style={{
+        width: '100%', height: '400px', borderRadius: '12px',
+        background: '#111', border: '1px solid rgba(255,255,255,0.06)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        gap: '12px', color: '#888',
+      }}>
+        <div style={{ fontSize: '40px' }}>🗺️</div>
+        <p style={{ fontSize: '14px' }}>{mapError}</p>
+        <p style={{ fontSize: '12px', color: '#555' }}>
+          Switch to List view to browse properties
+        </p>
+      </div>
+    )
+  }
 
   return (
     <>

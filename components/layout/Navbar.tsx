@@ -23,12 +23,12 @@ const NAV_LINKS = [
 ]
 
 const FLAG_LANGS = [
-  { flag: '🇺🇸', label: 'English', href: '/' },
-  { flag: '🇲🇽', label: 'Español', href: '/es' },
-  { flag: '🇮🇳', label: 'ਪੰਜਾਬੀ', href: '/pa' },
-  { flag: '🇸🇦', label: 'العربية', href: '/ar' },
-  { flag: '🇨🇳', label: '中文', href: '/zh' },
-  { flag: '🇻🇳', label: 'Tiếng Việt', href: '/vi' },
+  { flag: 'https://flagcdn.com/w40/us.png', code: 'US', label: 'English', href: '/' },
+  { flag: 'https://flagcdn.com/w40/mx.png', code: 'MX', label: 'Español', href: '/es' },
+  { flag: 'https://flagcdn.com/w40/in.png', code: 'IN', label: 'ਪੰਜਾਬੀ', href: '/pa' },
+  { flag: 'https://flagcdn.com/w40/sa.png', code: 'SA', label: 'العربية', href: '/ar' },
+  { flag: 'https://flagcdn.com/w40/cn.png', code: 'CN', label: '中文', href: '/zh' },
+  { flag: 'https://flagcdn.com/w40/vn.png', code: 'VN', label: 'Tiếng Việt', href: '/vi' },
 ]
 
 export default function Navbar() {
@@ -246,8 +246,9 @@ export default function Navbar() {
                     e.currentTarget.style.color = isActive ? '#C9A84C' : '#888'
                   }}
                 >
-                  <span style={{ fontSize: '16px' }}>{l.flag}</span>
-                  <span>{l.label}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={l.flag} alt={l.label} width={20} height={15} style={{ borderRadius: '1px' }} />
+                  <span>{l.code}</span> <span>{l.label}</span>
                 </Link>
               ))}
             </div>
@@ -343,7 +344,7 @@ export default function Navbar() {
               <Link key={lang.label} href={lang.href} onClick={() => {
                 setMenuOpen(false)
                 if (typeof window !== 'undefined') {
-                  localStorage.setItem('gsb_language_selected', lang.label.toLowerCase())
+                  localStorage.setItem('gsb_lang', lang.href === '/' ? 'en' : lang.href.slice(1))
                 }
               }} style={{
                 padding: '7px 12px', border: '1px solid rgba(201,168,76,0.4)',
@@ -351,7 +352,8 @@ export default function Navbar() {
                 color: '#C9A84C', textDecoration: 'none',
                 display: 'flex', alignItems: 'center', gap: '5px',
               }}>
-                <span>{lang.flag}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={lang.flag} alt={lang.label} width={20} height={15} style={{ borderRadius: '1px' }} />
                 <span>{lang.label}</span>
               </Link>
             ))}

@@ -1,52 +1,101 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
+/* ── Photo slides for background ── */
 const SLIDES = [
-  { image: '/images/gurpreet-headshot-pro.jpg', position: 'center top' },
-  { image: '/images/gurpreet-standing.jpg',     position: 'center top' },
+  { image: '/images/gurpreet-standing.jpg',      position: 'center top' },
+  { image: '/images/gurpreet-headshot-pro.jpg',   position: 'center top' },
   { image: '/images/gurpreet-headshot-smile.jpg', position: 'center top' },
+  { image: '/images/gurpreet-snow.jpg',           position: 'center 30%' },
+  { image: '/images/gurpreet-fullbody.jpg',       position: 'center top' },
 ]
 
+/* ── Language config with SVG flag URLs ── */
 const LANGUAGES = [
-  { flag: '🇺🇸', native: 'English',     name: 'English',    code: 'en' },
-  { flag: '🇲🇽', native: 'Español',     name: 'Spanish',    code: 'es' },
-  { flag: '🇮🇳', native: 'ਪੰਜਾਬੀ',     name: 'Punjabi',    code: 'pa' },
-  { flag: '🇸🇦', native: 'العربية',     name: 'Arabic',     code: 'ar' },
-  { flag: '🇨🇳', native: '中文',         name: 'Chinese',    code: 'zh' },
-  { flag: '🇻🇳', native: 'Tiếng Việt', name: 'Vietnamese', code: 'vi' },
+  { code: 'en', native: 'English',     name: 'English',    country: 'US', flag: 'https://flagcdn.com/w40/us.png' },
+  { code: 'es', native: 'Español',     name: 'Spanish',    country: 'MX', flag: 'https://flagcdn.com/w40/mx.png' },
+  { code: 'pa', native: 'ਪੰਜਾਬੀ',      name: 'Punjabi',    country: 'IN', flag: 'https://flagcdn.com/w40/in.png' },
+  { code: 'ar', native: 'العربية',      name: 'Arabic',     country: 'SA', flag: 'https://flagcdn.com/w40/sa.png' },
+  { code: 'zh', native: '中文',          name: 'Chinese',    country: 'CN', flag: 'https://flagcdn.com/w40/cn.png' },
+  { code: 'vi', native: 'Tiếng Việt',  name: 'Vietnamese', country: 'VN', flag: 'https://flagcdn.com/w40/vn.png' },
 ]
 
+/* ── Rotating quotes ── */
 const QUOTES = [
-  { line1: 'Your Dream Home',      line2: 'Starts Here.' },
-  { line1: 'Utah Real Estate',     line2: 'Done Different.' },
-  { line1: 'One Call.',            line2: 'Three States.' },
-  { line1: "Utah's Market Moves",  line2: 'Fast. So Do I.' },
-  { line1: 'From Marines',         line2: 'To Main Street.' },
+  { line1: 'Your Dream Home',     line2: 'Starts Here.' },
+  { line1: 'Utah Real Estate',    line2: 'Done Different.' },
+  { line1: 'One Call.',           line2: 'Three States.' },
+  { line1: "Utah's Market Moves", line2: 'Fast. So Do I.' },
+  { line1: 'From Marines',        line2: 'To Main Street.' },
 ]
 
+/* ── Stats ── */
 const STATS = [
-  { value: '17K+',  label: 'Active Listings' },
-  { value: '$7.3M+',label: 'Volume Closed' },
-  { value: '6',     label: 'Languages Served' },
-  { value: '< 1hr', label: 'Response Time' },
+  { value: '17K+',   label: 'Listings' },
+  { value: '$7.3M+', label: 'Closed' },
+  { value: '3',      label: 'States' },
+  { value: '< 1hr',  label: 'Response' },
 ]
+
+/* ── Choose Your Language — in each language ── */
+const CHOOSE_LABELS = [
+  'Choose Your Language',
+  'Elige tu idioma',
+  'ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ',
+  'اختر لغتك',
+  '选择语言',
+  'Chọn ngôn ngữ',
+]
+
+/* ── Browser language → our code mapping ── */
+function detectLanguageCode(): string | null {
+  if (typeof navigator === 'undefined') return null
+  const browserLang = (navigator.language || '').toLowerCase()
+  if (browserLang.startsWith('es')) return 'es'
+  if (browserLang.startsWith('pa') || browserLang.startsWith('hi')) return 'pa'
+  if (browserLang.startsWith('ar')) return 'ar'
+  if (browserLang.startsWith('zh')) return 'zh'
+  if (browserLang.startsWith('vi')) return 'vi'
+  return 'en'
+}
 
 export default function LanguageSelectorFull() {
   const [slide, setSlide]             = useState(0)
   const [quoteIdx, setQuoteIdx]       = useState(0)
   const [quoteFading, setQuoteFading] = useState(false)
   const [hovered, setHovered]         = useState<string | null>(null)
+  const [highlighted, setHighlighted] = useState<string | null>(null)
+  const [chooseLabelIdx, setChooseLabelIdx] = useState(0)
+  const [chooseFade, setChooseFade]         = useState(false)
+  const [ready, setReady]             = useState(false)
   const router = useRouter()
 
-  // Rotate slides every 5s
+  // ── Check for returning visitor ──
+  useEffect(() => {
+    const saved = localStorage.getItem('gsb_lang')
+    if (saved) {
+      // Returning visitor — skip welcome, go to search
+      router.replace(saved === 'en' ? '/search' : `/${saved}`)
+      return
+    }
+
+    // Auto-detect device language and highlight that button
+    const detected = detectLanguageCode()
+    if (detected && detected !== 'en') {
+      setHighlighted(detected)
+    }
+    setReady(true)
+  }, [router])
+
+  // ── Rotate slides every 5s ──
   useEffect(() => {
     const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 5000)
     return () => clearInterval(t)
   }, [])
 
-  // Rotate quotes every 4s with fade
+  // ── Rotate quotes every 4s with fade ──
   useEffect(() => {
     const t = setInterval(() => {
       setQuoteFading(true)
@@ -58,15 +107,47 @@ export default function LanguageSelectorFull() {
     return () => clearInterval(t)
   }, [])
 
-  const select = (code: string) => {
+  // ── Rotate "Choose Your Language" label ──
+  useEffect(() => {
+    const t = setInterval(() => {
+      setChooseFade(true)
+      setTimeout(() => {
+        setChooseLabelIdx(i => (i + 1) % CHOOSE_LABELS.length)
+        setChooseFade(false)
+      }, 300)
+    }, 2500)
+    return () => clearInterval(t)
+  }, [])
+
+  const select = useCallback((code: string) => {
     localStorage.setItem('gsb_lang', code)
-    router.push('/search')
+    if (code === 'en') {
+      router.push('/search')
+    } else {
+      router.push(`/${code}`)
+    }
+  }, [router])
+
+  // Don't render until we know this isn't a returning visitor
+  if (!ready) {
+    return (
+      <div style={{
+        position: 'fixed', inset: 0, background: '#060606', zIndex: 9999,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div style={{
+          width: '32px', height: '32px', border: '2px solid rgba(201,168,76,0.3)',
+          borderTopColor: '#C9A84C', borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    )
   }
 
   return (
     <>
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { overflow: hidden; }
 
         .lang-btn {
@@ -75,15 +156,16 @@ export default function LanguageSelectorFull() {
           border-radius: 14px;
           padding: 14px 18px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.25s ease;
           display: flex;
           align-items: center;
           gap: 12px;
           width: 100%;
           text-align: left;
           color: #F5F3EE;
+          font-family: inherit;
         }
-        .lang-btn:hover {
+        .lang-btn:hover, .lang-btn.highlighted {
           background: rgba(201,168,76,0.12);
           border-color: rgba(201,168,76,0.7);
           transform: translateX(-4px);
@@ -95,12 +177,17 @@ export default function LanguageSelectorFull() {
         }
         .animate-in { animation: slideIn 0.7s ease forwards; }
 
+        /* ── Mobile layout: stack vertically ── */
         @media (max-width: 860px) {
           .welcome-right { display: none !important; }
-          .welcome-left  { padding: 40px 28px !important; }
+          .welcome-left  { padding: 40px 24px !important; }
           .welcome-quote { font-size: clamp(36px, 9vw, 64px) !important; }
           .lang-panel    { position: static !important; width: 100% !important; margin-top: 28px; }
           .stats-bar     { gap: 20px !important; }
+          .mobile-lang-grid { display: grid !important; }
+        }
+        @media (min-width: 861px) {
+          .mobile-lang-grid { display: none !important; }
         }
       `}</style>
 
@@ -111,35 +198,61 @@ export default function LanguageSelectorFull() {
         fontFamily: 'DM Sans, sans-serif',
       }}>
 
-        {/* ── BACKGROUND SLIDES ── */}
-        {SLIDES.map((s, i) => (
-          <div key={i} style={{
-            position: 'absolute', inset: 0,
-            opacity: slide === i ? 1 : 0,
-            transition: 'opacity 1.8s ease-in-out',
-            zIndex: 1,
-          }}>
-            <Image
-              src={s.image}
-              alt="Gurpreet Bhatti"
-              fill
-              priority={i === 0}
-              style={{
-                objectFit: 'cover',
-                objectPosition: s.position,
-                filter: 'brightness(0.28)',
-              }}
-            />
-          </div>
-        ))}
+        {/* ── BACKGROUND: Video (when available) or Photo Slides ── */}
+        {/*
+          To enable video: place your video at /public/videos/gurpreet-hero.mp4
+          The component will auto-detect it and use it instead of photo slides.
+          For HeyGen live avatar, replace the <video> with their embed widget.
+        */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 1,
+        }}>
+          {/* Video background — uncomment when video is ready:
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/images/gurpreet-standing.jpg"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              filter: 'brightness(0.25)',
+            }}
+          >
+            <source src="/videos/gurpreet-hero.mp4" type="video/mp4" />
+          </video>
+          */}
 
-        {/* Dark gradient: heavier on right so text stays readable */}
+          {/* Photo slides (active until video is ready) */}
+          {SLIDES.map((s, i) => (
+            <div key={i} style={{
+              position: 'absolute', inset: 0,
+              opacity: slide === i ? 1 : 0,
+              transition: 'opacity 1.8s ease-in-out',
+            }}>
+              <Image
+                src={s.image}
+                alt="Gurpreet Bhatti"
+                fill
+                priority={i === 0}
+                style={{
+                  objectFit: 'cover',
+                  objectPosition: s.position,
+                  filter: 'brightness(0.25)',
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Dark gradient overlays */}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 2,
           background: 'linear-gradient(105deg, rgba(6,6,6,0.55) 0%, rgba(6,6,6,0.15) 55%, rgba(6,6,6,0.7) 100%)',
         }} />
-
-        {/* Bottom fade to black */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%',
           background: 'linear-gradient(to top, rgba(6,6,6,1) 0%, rgba(6,6,6,0.6) 50%, transparent 100%)',
@@ -253,58 +366,125 @@ export default function LanguageSelectorFull() {
                 Search Homes →
               </button>
             </div>
+
+            {/* ── Mobile language grid (visible on small screens only) ── */}
+            <div className="mobile-lang-grid" style={{
+              display: 'none',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '8px',
+              marginTop: '32px',
+            }}>
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => select(lang.code)}
+                  style={{
+                    background: highlighted === lang.code ? 'rgba(201,168,76,0.12)' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${highlighted === lang.code ? 'rgba(201,168,76,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                    borderRadius: '12px',
+                    padding: '12px 8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={lang.flag}
+                    alt={lang.name}
+                    width={28}
+                    height={21}
+                    style={{ borderRadius: '2px' }}
+                  />
+                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#F5F3EE' }}>
+                    {lang.country}
+                  </span>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: highlighted === lang.code ? '#C9A84C' : '#F5F3EE' }}>
+                    {lang.native}
+                  </span>
+                  <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>
+                    {lang.name}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Continue in English (mobile) */}
+            <div className="mobile-lang-grid" style={{
+              display: 'none',
+              marginTop: '16px',
+            }}>
+              <button
+                onClick={() => select('en')}
+                style={{
+                  background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)',
+                  fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit',
+                  padding: '8px 0', gridColumn: '1 / -1',
+                }}
+              >
+                Continue in English →
+              </button>
+            </div>
           </div>
 
-          {/* ── RIGHT — language panel ── */}
+          {/* ── RIGHT — language panel (desktop) ── */}
           <div className="welcome-right" style={{
-            flex: '0 0 clamp(220px, 22vw, 300px)',
+            flex: '0 0 clamp(240px, 24vw, 320px)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            padding: '40px 32px 40px 0',
+            padding: '40px 36px 40px 0',
             gap: '10px',
           }}>
 
-            {/* Panel label */}
+            {/* Rotating "Choose Your Language" label */}
             <div style={{
               fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase',
               color: 'rgba(255,255,255,0.25)', marginBottom: '12px', textAlign: 'right',
+              minHeight: '16px',
+              opacity: chooseFade ? 0 : 1,
+              transition: 'opacity 0.3s ease',
             }}>
-              Choose Your Language
+              {CHOOSE_LABELS[chooseLabelIdx]}
             </div>
 
             {/* Language buttons — vertical stack */}
             {LANGUAGES.map((lang, i) => (
               <button
                 key={lang.code}
-                className="lang-btn animate-in"
+                className={`lang-btn animate-in ${highlighted === lang.code ? 'highlighted' : ''}`}
                 onClick={() => select(lang.code)}
                 onMouseEnter={() => setHovered(lang.code)}
                 onMouseLeave={() => setHovered(null)}
                 style={{
-                  background: hovered === lang.code ? 'rgba(201,168,76,0.12)' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${hovered === lang.code ? 'rgba(201,168,76,0.7)' : 'rgba(255,255,255,0.1)'}`,
-                  borderRadius: '14px',
-                  padding: '14px 18px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  width: '100%',
-                  textAlign: 'left',
-                  color: '#F5F3EE',
-                  transform: hovered === lang.code ? 'translateX(-4px)' : 'translateX(0)',
+                  background: (hovered === lang.code || highlighted === lang.code)
+                    ? 'rgba(201,168,76,0.12)'
+                    : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${(hovered === lang.code || highlighted === lang.code)
+                    ? 'rgba(201,168,76,0.7)'
+                    : 'rgba(255,255,255,0.1)'}`,
+                  transform: (hovered === lang.code || highlighted === lang.code) ? 'translateX(-4px)' : 'translateX(0)',
                   animationDelay: `${0.15 + i * 0.07}s`,
                   opacity: 0,
-                  fontFamily: 'inherit',
                 }}
               >
-                <span style={{ fontSize: '26px', lineHeight: 1, flexShrink: 0 }}>{lang.flag}</span>
-                <div>
+                {/* SVG flag image instead of emoji */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={lang.flag}
+                  alt={`${lang.name} flag`}
+                  width={28}
+                  height={21}
+                  style={{ borderRadius: '2px', flexShrink: 0 }}
+                />
+                <div style={{ flex: 1 }}>
                   <div style={{
                     fontSize: '14px', fontWeight: '700',
-                    color: hovered === lang.code ? '#C9A84C' : '#F5F3EE',
+                    color: (hovered === lang.code || highlighted === lang.code) ? '#C9A84C' : '#F5F3EE',
                     transition: 'color 0.2s', lineHeight: 1.2,
                   }}>{lang.native}</div>
                   <div style={{
@@ -312,6 +492,11 @@ export default function LanguageSelectorFull() {
                     letterSpacing: '0.05em', marginTop: '2px',
                   }}>{lang.name}</div>
                 </div>
+                <div style={{
+                  fontSize: '11px', fontWeight: '600',
+                  color: 'rgba(255,255,255,0.2)',
+                  letterSpacing: '0.05em',
+                }}>{lang.country}</div>
               </button>
             ))}
 
@@ -331,7 +516,16 @@ export default function LanguageSelectorFull() {
               ))}
             </div>
           </div>
+        </div>
 
+        {/* Bottom tagline */}
+        <div style={{
+          position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)',
+          zIndex: 7, fontSize: '11px', color: 'rgba(255,255,255,0.15)',
+          letterSpacing: '0.12em', textTransform: 'uppercase',
+          whiteSpace: 'nowrap',
+        }}>
+          No bots. No assistants. When you call, you get Gurpreet. Every time.
         </div>
       </div>
     </>
