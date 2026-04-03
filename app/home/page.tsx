@@ -338,7 +338,7 @@ export default function HomeContentPage() {
           }}
         >
           {[
-            { flag: 'https://flagcdn.com/w40/us.png', label: 'English', href: '/' },
+            { flag: 'https://flagcdn.com/w40/us.png', label: 'English', href: '/search' },
             { flag: 'https://flagcdn.com/w40/mx.png', label: 'Español', href: '/es' },
             { flag: 'https://flagcdn.com/w40/in.png', label: 'ਪੰਜਾਬੀ', href: '/pa' },
             { flag: 'https://flagcdn.com/w40/sa.png', label: 'العربية', href: '/ar' },

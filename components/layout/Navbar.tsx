@@ -23,12 +23,12 @@ const NAV_LINKS = [
 ]
 
 const FLAG_LANGS = [
-  { flag: 'https://flagcdn.com/w40/us.png', code: 'US', label: 'English', href: '/' },
-  { flag: 'https://flagcdn.com/w40/mx.png', code: 'MX', label: 'Español', href: '/es' },
-  { flag: 'https://flagcdn.com/w40/in.png', code: 'IN', label: 'ਪੰਜਾਬੀ', href: '/pa' },
-  { flag: 'https://flagcdn.com/w40/sa.png', code: 'SA', label: 'العربية', href: '/ar' },
-  { flag: 'https://flagcdn.com/w40/cn.png', code: 'CN', label: '中文', href: '/zh' },
-  { flag: 'https://flagcdn.com/w40/vn.png', code: 'VN', label: 'Tiếng Việt', href: '/vi' },
+  { flag: 'https://flagcdn.com/w40/us.png', code: 'US', label: 'English', href: '/search', lang: 'en' },
+  { flag: 'https://flagcdn.com/w40/mx.png', code: 'MX', label: 'Español', href: '/es', lang: 'es' },
+  { flag: 'https://flagcdn.com/w40/in.png', code: 'IN', label: 'ਪੰਜਾਬੀ', href: '/pa', lang: 'pa' },
+  { flag: 'https://flagcdn.com/w40/sa.png', code: 'SA', label: 'العربية', href: '/ar', lang: 'ar' },
+  { flag: 'https://flagcdn.com/w40/cn.png', code: 'CN', label: '中文', href: '/zh', lang: 'zh' },
+  { flag: 'https://flagcdn.com/w40/vn.png', code: 'VN', label: 'Tiếng Việt', href: '/vi', lang: 'vi' },
 ]
 
 export default function Navbar() {
@@ -225,7 +225,7 @@ export default function Navbar() {
                   onClick={() => {
                     setLangOpen(false)
                     if (typeof window !== 'undefined') {
-                      localStorage.setItem('gsb_lang', l.href === '/' ? 'en' : l.href.slice(1))
+                      localStorage.setItem('gsb_lang', l.lang)
                     }
                   }}
                   style={{
@@ -344,7 +344,7 @@ export default function Navbar() {
               <Link key={lang.label} href={lang.href} onClick={() => {
                 setMenuOpen(false)
                 if (typeof window !== 'undefined') {
-                  localStorage.setItem('gsb_lang', lang.href === '/' ? 'en' : lang.href.slice(1))
+                  localStorage.setItem('gsb_lang', lang.lang)
                 }
               }} style={{
                 padding: '7px 12px', border: '1px solid rgba(201,168,76,0.4)',

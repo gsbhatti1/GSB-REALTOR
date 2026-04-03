@@ -18,7 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // ── Core Pages ──────────────────────────────────────
   const staticPages: MetadataRoute.Sitemap = [
-    { url: baseUrl, changeFrequency: 'daily', priority: 1.0, lastModified: now },
+    { url: baseUrl, changeFrequency: 'weekly', priority: 0.5, lastModified: now },
+    { url: `${baseUrl}/home`, changeFrequency: 'daily', priority: 1.0, lastModified: now },
     { url: `${baseUrl}/search`, changeFrequency: 'hourly', priority: 0.9, lastModified: now },
     { url: `${baseUrl}/contact`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/about`, changeFrequency: 'monthly', priority: 0.7 },
