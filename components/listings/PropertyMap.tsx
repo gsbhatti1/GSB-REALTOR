@@ -47,8 +47,8 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
       mapRef.current = map
 
       map.on('load', async () => {
-        // Geocode up to 20 properties
-        const toGeocode = properties.slice(0, 20)
+        // Geocode all properties on current page (max 24)
+        const toGeocode = properties.slice(0, 24)
         let count = 0
 
         await Promise.all(toGeocode.map(async (prop) => {
@@ -77,8 +77,11 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
                 white-space: nowrap;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.4);
               `
-              el.textContent = prop.ListPrice
-                ? `$${(prop.ListPrice / 1000).toFixed(0)}K`
+              const price = prop.ListPrice
+              el.textContent = price
+                ? price >= 1_000_000
+                  ? `$${(price / 1_000_000).toFixed(1)}M`
+                  : `$${(price / 1000).toFixed(0)}K`
                 : prop.City || ''
 
               el.addEventListener('click', () => {
@@ -90,7 +93,7 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
                 .setPopup(
                   new mapboxgl.default.Popup({ offset: 25 }).setHTML(`
                     <div style="font-family: DM Sans, sans-serif; color: #0A0A0A; padding: 4px;">
-                      <div style="font-weight: 700; font-size: 14px;">$${prop.ListPrice?.toLocaleString()}</div>
+                      <div style="font-weight: 700; font-size: 14px;">$${prop.ListPrice >= 1000000 ? (prop.ListPrice / 1000000).toFixed(2) + 'M' : (prop.ListPrice / 1000).toFixed(0) + 'K'}</div>
                       <div style="font-size: 12px; color: #555;">${prop.City}, UT</div>
                     </div>
                   `)
@@ -131,7 +134,7 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
           color: '#C9A84C', fontSize: '12px', padding: '6px 12px', borderRadius: '8px',
           border: '1px solid rgba(201,168,76,0.3)',
         }}>
-          {geocoded} properties on map
+          {geocoded} of {properties.length} listings pinned
         </div>
       )}
     </div>
