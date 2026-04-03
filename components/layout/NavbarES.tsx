@@ -38,32 +38,43 @@ export default function NavbarES() {
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      padding: '0 32px', height: '72px',
+      padding: '0 28px', height: '72px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       transition: 'all 0.3s ease',
-      background: scrolled ? 'rgba(10,10,10,0.95)' : 'transparent',
+      background: scrolled ? 'rgba(10,10,10,0.96)' : 'transparent',
       backdropFilter: scrolled ? 'blur(20px)' : 'none',
       borderBottom: scrolled ? '1px solid rgba(201,168,76,0.15)' : '1px solid transparent',
     }}>
-      <Link href="/es" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-        <Image src="/images/gurpreet-headshot-smile.jpg" alt="Gurpreet Bhatti" width={36} height={36}
-          style={{ borderRadius: '50%', border: '2px solid rgba(201,168,76,0.5)', objectFit: 'cover' }} />
+
+      {/* Left: Logo */}
+      <Link href="/es" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
+        <Image
+          src="/images/gurpreet-headshot-smile.jpg"
+          alt="Gurpreet Bhatti"
+          width={36} height={36}
+          style={{ borderRadius: '50%', border: '2px solid rgba(201,168,76,0.5)', objectFit: 'cover' }}
+        />
         <div>
-          <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '18px', fontWeight: '600', color: '#F5F3EE', lineHeight: '1.1' }}>
+          <div className="nav-logo-name-es" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '18px', fontWeight: '600', color: '#F5F3EE', lineHeight: '1.1' }}>
             GSB Realtor
           </div>
-          <div style={{ fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', lineHeight: '1.1' }}>
+          <div className="nav-logo-sub-es" style={{ fontSize: '9px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#C9A84C', lineHeight: '1.1' }}>
             Gurpreet Bhatti · REALTOR®
           </div>
         </div>
       </Link>
 
-      <div className="nav-links-es" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      {/* Center: Desktop nav links */}
+      <div className="nav-links-es" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         {navLinks.map(link => (
-          <Link key={link.label} href={link.href} style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '13px', color: 'rgba(245,243,238,0.75)', textDecoration: 'none' }}>
+          <Link key={link.label} href={link.href} className="nav-link-es">
             {link.label}
           </Link>
         ))}
+      </div>
+
+      {/* Right: Language flags + Phone */}
+      <div className="nav-right-es" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
 
         {/* Language dropdown */}
         <div
@@ -126,8 +137,9 @@ export default function NavbarES() {
           )}
         </div>
 
-        <a href="tel:8016358462" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
+        {/* Phone */}
+        <a href="tel:8016358462" className="nav-phone-es" style={{
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
           background: 'linear-gradient(135deg, #C9A84C, #E2C070)',
           color: '#0A0A0A', fontWeight: '600', fontSize: '13px',
           padding: '10px 20px', borderRadius: '8px', textDecoration: 'none',
@@ -136,8 +148,13 @@ export default function NavbarES() {
         </a>
       </div>
 
-      <button onClick={() => setMenuOpen(!menuOpen)} className="mobile-menu-btn-es"
-        style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: '#F5F3EE' }}>
+      {/* Mobile hamburger */}
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="mobile-menu-btn-es"
+        aria-label="Toggle menu"
+        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: '#F5F3EE' }}
+      >
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
           {menuOpen ? (
             <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
@@ -147,25 +164,26 @@ export default function NavbarES() {
         </svg>
       </button>
 
+      {/* Mobile menu */}
       {menuOpen && (
         <div style={{
           position: 'absolute', top: '72px', left: 0, right: 0,
           background: 'rgba(10,10,10,0.98)', backdropFilter: 'blur(20px)',
           borderBottom: '1px solid rgba(201,168,76,0.2)',
-          padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '20px',
+          padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '4px',
         }}>
           {navLinks.map(link => (
             <Link key={link.label} href={link.href} onClick={() => setMenuOpen(false)} style={{
               fontFamily: 'DM Sans, sans-serif', fontSize: '16px', color: '#F5F3EE',
-              textDecoration: 'none', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)',
+              textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
             }}>
               {link.label}
             </Link>
           ))}
           {/* Language grid on mobile — 3 columns */}
           <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px',
-            paddingTop: '8px',
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '8px', paddingTop: '12px',
           }}>
             {FLAG_LANGS.map(lang => (
               <Link key={lang.label} href={lang.href} onClick={() => {
@@ -188,6 +206,7 @@ export default function NavbarES() {
           <a href="tel:8016358462" style={{
             color: '#C9A84C', textDecoration: 'none',
             fontFamily: 'Cormorant Garamond, serif', fontSize: '20px',
+            paddingTop: '8px', fontWeight: '600',
           }}>
             📞 801.635.8462
           </a>
@@ -195,9 +214,28 @@ export default function NavbarES() {
       )}
 
       <style>{`
+        .nav-link-es {
+          font-family: DM Sans, sans-serif;
+          font-size: 13px;
+          color: rgba(245,243,238,0.75);
+          text-decoration: none;
+          transition: color 0.2s;
+          letter-spacing: 0.01em;
+          white-space: nowrap;
+          padding: 8px 12px;
+          border-radius: 7px;
+        }
+        .nav-link-es:hover { color: #C9A84C; }
+        /* Desktop: hide hamburger */
+        .mobile-menu-btn-es { display: none !important; }
         @media (max-width: 1100px) {
           .nav-links-es { display: none !important; }
-          .mobile-menu-btn-es { display: block !important; }
+          .nav-right-es { display: none !important; }
+          .mobile-menu-btn-es { display: flex !important; align-items: center; justify-content: center; }
+        }
+        @media (max-width: 480px) {
+          .nav-logo-name-es { font-size: 15px !important; }
+          .nav-logo-sub-es { display: none !important; }
         }
       `}</style>
     </nav>

@@ -128,20 +128,20 @@ export default function RootLayout({
 
         <ChatBot />
 
-        {/* ── Browser language auto-detection (first visit only) ── */}
+        {/* ── Browser Language Auto-Detection ── */}
         <Script id="lang-detect" strategy="afterInteractive">{`
-  (function() {
-    if (localStorage.getItem('gsb_lang_detected')) return;
-    if (window.location.pathname !== '/') return;
-    localStorage.setItem('gsb_lang_detected', '1');
-    var lang = (navigator.language || navigator.userLanguage || '').toLowerCase();
-    if (lang.startsWith('es')) { window.location.replace('/es'); }
-    else if (lang.startsWith('zh')) { window.location.replace('/zh'); }
-    else if (lang.startsWith('ar')) { window.location.replace('/ar'); }
-    else if (lang.startsWith('vi')) { window.location.replace('/vi'); }
-    else if (lang.startsWith('pa') || lang.startsWith('hi')) { window.location.replace('/pa'); }
-  })();
-`}</Script>
+          (function() {
+            if (localStorage.getItem('gsb_lang_detected')) return;
+            if (window.location.pathname !== '/') return;
+            localStorage.setItem('gsb_lang_detected', '1');
+            var lang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+            if (lang.startsWith('es')) { window.location.replace('/es'); }
+            else if (lang.startsWith('zh')) { window.location.replace('/zh'); }
+            else if (lang.startsWith('ar')) { window.location.replace('/ar'); }
+            else if (lang.startsWith('vi')) { window.location.replace('/vi'); }
+            else if (lang.startsWith('pa') || lang.startsWith('hi')) { window.location.replace('/pa'); }
+          })();
+        `}</Script>
 
         {/* ── Google Analytics GA4 ── */}
         <Script

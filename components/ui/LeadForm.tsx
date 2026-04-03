@@ -228,7 +228,13 @@ export default function LeadForm({
           <a href="tel:8016358462" style={{ color: '#C9A84C' }}>801.635.8462</a>
         </p>
       </form>
-      <SignInModal isOpen={showAuth} onClose={() => setShowAuth(false)} />
+
+      <SignInModal
+        isOpen={showAuth}
+        onClose={() => setShowAuth(false)}
+        onSuccess={() => setShowAuth(false)}
+        message="Sign in to schedule a tour or send a message."
+      />
     </div>
   )
 }
