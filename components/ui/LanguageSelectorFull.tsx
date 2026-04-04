@@ -75,7 +75,7 @@ export default function LanguageSelectorFull() {
   // ── Option B: smart returning visitor ──
   useEffect(() => {
     // ?reset param clears saved language — always show welcome page
-    const params = new URLSearchParams(window.location.search)
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams()
     if (params.has('reset')) {
       localStorage.removeItem('gsb_lang')
       setReady(true)

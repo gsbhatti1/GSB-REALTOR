@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Utah Cities — Homes for Sale | GSB Realtor',
   description:
-    'Browse homes for sale across Utah's top cities. West Jordan, Sandy, Draper, South Jordan, Provo and more. Expert local guidance from Gurpreet Bhatti, REALTOR® & USMC Veteran.',
+    "Browse homes for sale across Utah's top cities. West Jordan, Sandy, Draper, South Jordan, Provo and more. Expert local guidance from Gurpreet Bhatti, REALTOR® & USMC Veteran.",
   alternates: { canonical: 'https://gsbrealtor.com/cities' },
 }
 
