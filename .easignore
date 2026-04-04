@@ -1,31 +1,14 @@
-# Only include mobile/ folder in EAS build
-# Exclude everything except what the mobile app needs
+# Exclude web-only heavy files from EAS mobile build
+# These are ROOT level paths only — mobile/ folder is NOT affected
 
-# Web app directories
-app/
-components/
-styles/
-heygen-scripts/
-
-# Large image assets (web only)
-public/
-
-# Build artifacts
-.next/
-node_modules/
-dist/
-coverage/
-out/
-
-# Web config files (root level)
-next.config.js
-tailwind.config.js
-postcss.config.js
-next-env.d.ts
-
-# SQL files
-*.sql
-
-# Logs
-*.log
-npm-debug.log*
+/public/
+/.next/
+/node_modules/
+/heygen-scripts/
+/styles/
+/next.config.js
+/tailwind.config.js
+/postcss.config.js
+/next-env.d.ts
+/*.sql
+/*.log
