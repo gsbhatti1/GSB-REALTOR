@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { saveProperty, unsaveProperty, isPropertySaved } from '@/lib/saved-properties'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@supabase/supabase-js'
 
 interface ListingClientSectionProps {
   listingKey: string
@@ -23,28 +25,34 @@ export default function ListingClientSection({
   photoUrl,
 }: ListingClientSectionProps) {
   const [saved, setSaved] = useState(false)
+  const [showSignInPrompt, setShowSignInPrompt] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setSaved(isPropertySaved(listingKey))
   }, [listingKey])
 
-  function handleToggleSave() {
+  async function handleToggleSave() {
     if (saved) {
       unsaveProperty(listingKey)
       setSaved(false)
-    } else {
-      saveProperty({
-        listingKey,
-        address,
-        city,
-        price,
-        bedrooms,
-        bathrooms,
-        photoUrl,
-        savedAt: new Date().toISOString(),
-      })
-      setSaved(true)
+      return
     }
+    // Check if signed in
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      setShowSignInPrompt(true)
+      return
+    }
+    saveProperty({
+      listingKey, address, city, price, bedrooms, bathrooms, photoUrl,
+      savedAt: new Date().toISOString(),
+    })
+    setSaved(true)
   }
 
   const shareUrl = `https://gsbrealtor.com/listing/${listingKey}`
@@ -54,6 +62,46 @@ export default function ListingClientSection({
 
   return (
     <div>
+      {/* Sign-in prompt modal */}
+      {showSignInPrompt && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(0,0,0,0.7)', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', padding: '20px',
+        }} onClick={() => setShowSignInPrompt(false)}>
+          <div style={{
+            background: '#111', border: '1px solid rgba(201,168,76,0.3)',
+            borderRadius: '16px', padding: '32px', maxWidth: '360px', width: '100%',
+            textAlign: 'center',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>🏠</div>
+            <h3 style={{ color: '#F5F3EE', fontFamily: 'Cormorant Garamond, serif', fontSize: '22px', marginBottom: '8px' }}>
+              Sign In to Save
+            </h3>
+            <p style={{ color: '#888', fontSize: '14px', marginBottom: '24px', lineHeight: '1.5' }}>
+              Create a free account to save properties and get alerts when similar homes hit the market.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button onClick={() => router.push('/signin')} style={{
+                background: '#C9A84C', color: '#0A0A0A', border: 'none',
+                borderRadius: '8px', padding: '13px', fontWeight: '700',
+                fontSize: '15px', cursor: 'pointer', width: '100%',
+              }}>Sign In</button>
+              <button onClick={() => router.push('/signup')} style={{
+                background: 'transparent', color: '#C9A84C',
+                border: '1.5px solid rgba(201,168,76,0.5)',
+                borderRadius: '8px', padding: '13px', fontWeight: '600',
+                fontSize: '15px', cursor: 'pointer', width: '100%',
+              }}>Create Account</button>
+              <button onClick={() => setShowSignInPrompt(false)} style={{
+                background: 'none', color: '#555', border: 'none',
+                fontSize: '13px', cursor: 'pointer', marginTop: '4px',
+              }}>Continue browsing</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Save button */}
       <button
         onClick={handleToggleSave}
