@@ -327,10 +327,12 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div style={{
-          position: 'absolute', top: '72px', left: 0, right: 0,
+          position: 'fixed', top: '72px', left: 0, right: 0, bottom: 0,
           background: 'rgba(10,10,10,0.98)', backdropFilter: 'blur(20px)',
           borderBottom: '1px solid rgba(201,168,76,0.2)',
           padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '4px',
+          overflowY: 'auto', WebkitOverflowScrolling: 'touch' as any,
+          zIndex: 99,
         }}>
           {NAV_LINKS.map(link => (
             <Link key={link.label} href={link.href} onClick={() => setMenuOpen(false)} style={{
@@ -352,19 +354,24 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/signin" onClick={() => setMenuOpen(false)} style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: '#C9A84C',
-            textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
-            fontWeight: '600',
-          }}>
-            Sign In
-          </Link>
-          <Link href="/signup" onClick={() => setMenuOpen(false)} style={{
-            fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: '#888',
-            textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
-          }}>
-            Create Account
-          </Link>
+          <div style={{ display: 'flex', gap: '10px', paddingTop: '8px', paddingBottom: '4px' }}>
+            <Link href="/signin" onClick={() => setMenuOpen(false)} style={{
+              flex: 1, textAlign: 'center',
+              fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: '#0A0A0A',
+              textDecoration: 'none', padding: '13px 0',
+              background: '#C9A84C', borderRadius: '8px', fontWeight: '700',
+            }}>
+              Sign In
+            </Link>
+            <Link href="/signup" onClick={() => setMenuOpen(false)} style={{
+              flex: 1, textAlign: 'center',
+              fontFamily: 'DM Sans, sans-serif', fontSize: '15px', color: '#C9A84C',
+              textDecoration: 'none', padding: '13px 0',
+              border: '1.5px solid rgba(201,168,76,0.5)', borderRadius: '8px', fontWeight: '600',
+            }}>
+              Create Account
+            </Link>
+          </div>
           {/* Language toggle on mobile */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', paddingTop: '8px' }}>
             {FLAG_LANGS.map(lang => (
