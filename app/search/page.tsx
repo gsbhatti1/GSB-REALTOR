@@ -47,6 +47,8 @@ function SearchContent() {
   const [page, setPage]             = useState(0)
   const [hasMore, setHasMore]       = useState(false)
   const [viewMode, setViewMode]       = useState<'list' | 'map'>('list')
+  const [mapProperties, setMapProperties] = useState<typeof properties>([])
+  const [mapLoading, setMapLoading]    = useState(false)
   const PER_PAGE = 24
 
   // Alert modal state
@@ -313,7 +315,27 @@ function SearchContent() {
                 color: viewMode === 'list' ? '#0A0A0A' : '#888',
                 border: 'none', cursor: 'pointer', fontFamily: 'inherit',
               }}>☰ List</button>
-              <button onClick={() => setViewMode('map')} style={{
+              <button onClick={async () => {
+                setViewMode('map')
+                // Fetch up to 500 listings for map
+                setMapLoading(true)
+                try {
+                  const params = new URLSearchParams()
+                  if (filters.city) params.set('city', filters.city)
+                  if (filters.minPrice) params.set('minPrice', filters.minPrice)
+                  if (filters.maxPrice) params.set('maxPrice', filters.maxPrice)
+                  if (filters.beds) params.set('beds', filters.beds)
+                  if (filters.baths) params.set('baths', filters.baths)
+                  if (filters.propertyType) params.set('type', filters.propertyType)
+                  else if (filters.type) params.set('type', filters.type)
+                  params.set('top', '500')
+                  params.set('skip', '0')
+                  const res = await fetch(`/api/search?${params}`)
+                  const data = await res.json()
+                  if (data.properties) setMapProperties(data.properties)
+                } catch { /* use current page properties */ }
+                setMapLoading(false)
+              }} style={{
                 padding: '8px 20px', borderRadius: '8px', fontWeight: '600', fontSize: '13px',
                 background: viewMode === 'map' ? '#C9A84C' : 'rgba(255,255,255,0.06)',
                 color: viewMode === 'map' ? '#0A0A0A' : '#888',
@@ -356,7 +378,14 @@ function SearchContent() {
 
           {/* Map view */}
           {viewMode === 'map' && (
-            <PropertyMap properties={properties} />
+            mapLoading ? (
+              <div style={{ height: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111', borderRadius: '12px', color: '#C9A84C', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ fontSize: '24px' }}>📍</div>
+                <div style={{ fontSize: '14px' }}>Loading all {total} listings on map...</div>
+              </div>
+            ) : (
+              <PropertyMap properties={mapProperties.length > 0 ? mapProperties : properties} />
+            )
           )}
 
           {/* List view */}
