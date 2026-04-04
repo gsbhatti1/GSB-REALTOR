@@ -88,7 +88,7 @@ export default function Navbar() {
     }}>
 
       {/* Left: Logo */}
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
+      <Link href="/?reset" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
         <Image
           src="/images/gurpreet-headshot-smile.jpg"
           alt="Gurpreet Bhatti"

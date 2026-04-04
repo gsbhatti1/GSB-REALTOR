@@ -72,20 +72,28 @@ export default function LanguageSelectorFull() {
   const [ready, setReady]             = useState(false)
   const router = useRouter()
 
-  // ── Check for returning visitor ──
+  // ── Option B: smart returning visitor ──
   useEffect(() => {
+    // ?reset param clears saved language — always show welcome page
+    const params = new URLSearchParams(window.location.search)
+    if (params.has('reset')) {
+      localStorage.removeItem('gsb_lang')
+      setReady(true)
+      return
+    }
+
+    // Returning visitor who already picked a language — skip welcome
+    const VALID = ['en','es','pa','ar','zh','vi','fa','pt']
     const saved = localStorage.getItem('gsb_lang')
-    if (saved) {
-      // Returning visitor — skip welcome, go to search
+    if (saved && VALID.includes(saved)) {
       router.replace(saved === 'en' ? '/search' : `/${saved}`)
       return
     }
 
-    // Auto-detect device language and highlight that button
+    // New visitor — auto-detect device language and highlight button
+    if (saved) localStorage.removeItem('gsb_lang') // clear invalid value
     const detected = detectLanguageCode()
-    if (detected && detected !== 'en') {
-      setHighlighted(detected)
-    }
+    if (detected && detected !== 'en') setHighlighted(detected)
     setReady(true)
   }, [router])
 
