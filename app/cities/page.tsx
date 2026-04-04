@@ -16,6 +16,16 @@ const CITIES = [
   { slug: 'draper', name: 'Draper', county: 'Salt Lake', median: '$600K', pop: '~50,000' },
   { slug: 'south-jordan', name: 'South Jordan', county: 'Salt Lake', median: '$520K', pop: '~80,000' },
   { slug: 'provo', name: 'Provo', county: 'Utah', median: '$400K', pop: '~120,000' },
+  { slug: 'murray', name: 'Murray', county: 'Salt Lake', median: '$450K', pop: '~50,000' },
+  { slug: 'taylorsville', name: 'Taylorsville', county: 'Salt Lake', median: '$390K', pop: '~60,000' },
+  { slug: 'midvale', name: 'Midvale', county: 'Salt Lake', median: '$380K', pop: '~35,000' },
+  { slug: 'millcreek', name: 'Millcreek', county: 'Salt Lake', median: '$520K', pop: '~65,000' },
+  { slug: 'cottonwood-heights', name: 'Cottonwood Heights', county: 'Salt Lake', median: '$650K', pop: '~35,000' },
+  { slug: 'holladay', name: 'Holladay', county: 'Salt Lake', median: '$700K', pop: '~30,000' },
+  { slug: 'herriman', name: 'Herriman', county: 'Salt Lake', median: '$500K', pop: '~60,000' },
+  { slug: 'riverton', name: 'Riverton', county: 'Salt Lake', median: '$480K', pop: '~45,000' },
+  { slug: 'bluffdale', name: 'Bluffdale', county: 'Salt Lake', median: '$520K', pop: '~20,000' },
+  { slug: 'lehi', name: 'Lehi', county: 'Utah', median: '$550K', pop: '~90,000' },
 ]
 
 export default function CitiesHubPage() {

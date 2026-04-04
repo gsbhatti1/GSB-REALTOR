@@ -43,6 +43,21 @@ export async function POST(request: NextRequest) {
     sendLeadEmail(lead).catch(e => console.error('Email failed:', e))
     sendLeadSMS(lead).catch(e => console.error('SMS failed:', e))
 
+    // Auto-enroll in email drip sequence (non-blocking)
+    const dripType = lead.lead_type === 'investor_inquiry' ? 'investor'
+      : lead.lead_type === 'listing_inquiry' || lead.lead_type === 'market_report' ? 'seller'
+      : 'buyer'
+    fetch(new URL('/api/email-drip', request.url).toString(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: lead.email,
+        name: `${lead.first_name} ${lead.last_name}`,
+        type: dripType,
+        city: lead.property_address,
+      }),
+    }).catch(e => console.error('Drip enrollment failed:', e))
+
     // Ping n8n webhook for automations (non-blocking)
     const n8nWebhook = process.env.N8N_WEBHOOK_URL
     if (n8nWebhook) {

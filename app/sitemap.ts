@@ -49,7 +49,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ]
 
   // ── City Landing Pages ──────────────────────────────
-  const CITY_LANDING_SLUGS = ['west-jordan', 'sandy', 'draper', 'south-jordan', 'provo']
+  const CITY_LANDING_SLUGS = [
+    'west-jordan', 'sandy', 'draper', 'south-jordan', 'provo',
+    'murray', 'taylorsville', 'midvale', 'millcreek', 'cottonwood-heights',
+    'holladay', 'herriman', 'riverton', 'bluffdale', 'lehi',
+  ]
   const cityLandingPages: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/cities`, changeFrequency: 'weekly' as const, priority: 0.8, lastModified: now },
     ...CITY_LANDING_SLUGS.map(slug => ({
