@@ -1,0 +1,15 @@
+# Exclude web app files from EAS build — only mobile/ folder needed
+../app
+../components
+../lib
+../styles
+../public
+../node_modules
+../.next
+../heygen-scripts
+../*.sql
+../*.md
+../*.json
+../*.js
+../*.ts
+../supabase*

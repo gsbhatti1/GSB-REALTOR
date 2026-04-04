@@ -1,0 +1,11 @@
+# Exclude heavy web files from EAS mobile build upload
+public/images/
+.next/
+node_modules/
+app/
+components/
+lib/
+styles/
+heygen-scripts/
+*.sql
+coverage/
