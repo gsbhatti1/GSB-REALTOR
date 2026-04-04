@@ -17,10 +17,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.gsbrealtor.app",
       "buildNumber": "1",
-      "requireFullScreen": true,
       "usesAppleSignIn": true,
       "entitlements": {
         "aps-environment": "production"
@@ -29,7 +28,8 @@
         "NSLocationWhenInUseUsageDescription": "GSB Realtor uses your location to find nearby Utah properties.",
         "CFBundleDisplayName": "GSB Realtor",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "requiresFullScreen": false
     },
     "android": {
       "adaptiveIcon": {
