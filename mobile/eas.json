@@ -19,7 +19,8 @@
     "preview": {
       "distribution": "internal",
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "image": "macos-sequoia-15.2-xcode-16.2"
       },
       "android": {
         "buildType": "apk"
@@ -31,7 +32,8 @@
     "production": {
       "autoIncrement": true,
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "image": "macos-sequoia-15.2-xcode-16.2"
       },
       "android": {
         "buildType": "app-bundle"
