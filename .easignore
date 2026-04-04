@@ -1,14 +1,3 @@
-# Exclude web-only heavy files from EAS mobile build
-# These are ROOT level paths only — mobile/ folder is NOT affected
-
-/public/
-/.next/
-/node_modules/
-/heygen-scripts/
-/styles/
-/next.config.js
-/tailwind.config.js
-/postcss.config.js
-/next-env.d.ts
-/*.sql
-/*.log
+**
+!mobile/**
+!mobile/
