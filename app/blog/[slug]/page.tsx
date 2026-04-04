@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { getBlogPost, getAllSlugs, BLOG_POSTS } from '@/lib/blog-posts'
+import { FAQSchema } from '@/components/seo/JsonLd'
 import type { Metadata } from 'next'
 
 type Params = { slug: string }
@@ -22,6 +23,26 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       description: post.excerpt,
     },
   }
+}
+
+function extractFAQs(content: string): { q: string; a: string }[] {
+  const parts = content.split('---')
+  const faqSection = parts[1] || ''
+  if (!faqSection.trim()) return []
+  const faqs: { q: string; a: string }[] = []
+  const lines = faqSection.split('\n').map(l => l.trim()).filter(Boolean)
+  for (let i = 0; i < lines.length; i++) {
+    const qMatch = lines[i].match(/^\*\*Q:\s*(.+?)\*\*$/)
+    if (qMatch && i + 1 < lines.length) {
+      const aLine = lines[i + 1]
+      const aMatch = aLine.match(/^A:\s*(.+)$/)
+      if (aMatch) {
+        faqs.push({ q: qMatch[1], a: aMatch[1] })
+        i++
+      }
+    }
+  }
+  return faqs
 }
 
 const TAG_COLORS: Record<string, string> = {
@@ -176,9 +197,13 @@ export default function BlogPostPage({ params }: { params: Params }) {
   const mainContent = contentParts[0] || post.content
   const faqContent = contentParts[1] || ''
 
+  // Extract FAQs for schema
+  const faqs = extractFAQs(post.content)
+
   return (
     <>
       <Navbar />
+      {faqs.length > 0 && <FAQSchema questions={faqs} />}
       <style>{`
         @media (max-width: 480px) {
           .blog-post-content p { font-size: 15px !important; line-height: 1.8 !important; }

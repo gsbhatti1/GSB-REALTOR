@@ -48,6 +48,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/pt`, changeFrequency: 'monthly', priority: 0.6 },
   ]
 
+  // ── City Landing Pages ──────────────────────────────
+  const CITY_LANDING_SLUGS = ['west-jordan', 'sandy', 'draper', 'south-jordan', 'provo']
+  const cityLandingPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/cities`, changeFrequency: 'weekly' as const, priority: 0.8, lastModified: now },
+    ...CITY_LANDING_SLUGS.map(slug => ({
+      url: `${baseUrl}/cities/${slug}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+      lastModified: now,
+    })),
+  ]
+
   // ── City Market Pages (45+) ─────────────────────────
   const cityPages: MetadataRoute.Sitemap = UTAH_CITY_SLUGS.map(slug => ({
     url: `${baseUrl}/market/${slug}`,
@@ -74,6 +86,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticPages,
     ...langPages,
+    ...cityLandingPages,
     ...cityPages,
     ...sellPages,
     ...blogPages,

@@ -113,6 +113,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
 
+        {/* ── Apple Smart App Banner & Bing Verification ── */}
+        <meta name="apple-itunes-app" content="app-id=6761660435" />
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="msvalidate.01" content="BING_VERIFY_PLACEHOLDER" />
+
         {/* ── Structured Data (JSON-LD) ── */}
         <RealEstateAgentSchema />
         <LocalBusinessSchema />

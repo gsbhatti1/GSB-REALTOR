@@ -10,6 +10,50 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: 'utah-real-estate-market-april-2026',
+    title: 'Utah Real Estate Market Report — April 2026',
+    date: 'April 4, 2026',
+    dateISO: '2026-04-04',
+    tag: 'Market Update',
+    excerpt: 'April 2026 update: Utah home prices stabilize as inventory rises 12% year-over-year. Key insights for buyers and sellers in Salt Lake County, Utah County, and Davis County.',
+    content: `
+Utah Real Estate Market Report — April 2026
+
+Utah's housing market shows signs of stabilization in April 2026, with inventory levels rising 12% year-over-year while median prices hold steady.
+
+## Key Statistics (April 2026)
+- **Median Home Price:** $512,000 (Salt Lake County)
+- **Days on Market:** 28 days average
+- **Inventory:** Up 12% year-over-year
+- **Mortgage Rate:** ~6.8% (30-year fixed)
+- **Active Listings:** 17,400+ statewide
+
+## Salt Lake County
+The Salt Lake City metro continues to attract remote workers and tech professionals. West Jordan and South Jordan remain the most affordable entry points at $420,000-$480,000 median. Draper and Sandy command premium prices due to top-rated schools and mountain access.
+
+## Utah County (Provo/Orem)
+The BYU corridor shows strong demand from young families. Provo median home prices hover around $385,000-$410,000, making it one of the most affordable mid-size cities in the state.
+
+## What This Means for Buyers
+With inventory rising, buyers have more negotiating power than in 2022-2023. Interest rates remain elevated but stable. Now is an excellent time to negotiate seller concessions including rate buydowns.
+
+## What This Means for Sellers
+Properly priced homes are still selling within 28 days. Overpriced listings are sitting longer. Professional photography, staging, and MLS exposure through a licensed REALTOR® are essential in today's market.
+
+---
+
+**FAQ**
+
+**Q: Is it a good time to buy in Utah?**
+A: Yes — rising inventory means more choices and less competition than peak years. Buyers who act now lock in before any rate decreases drive demand back up.
+
+**Q: Should I sell my Utah home now?**
+A: If you're selling to buy elsewhere in Utah, the market is relatively neutral. If you're cashing out to move to a lower cost-of-living state, conditions are favorable.
+
+Contact Gurpreet Bhatti at 801-635-8462 or visit [gsbrealtor.com](https://gsbrealtor.com) for a personalized market analysis.
+    `.trim(),
+  },
+  {
     slug: 'utah-real-estate-market-update-q1-2026',
     title: 'Utah Real Estate Market Update — Q1 2026',
     date: 'March 15, 2026',
