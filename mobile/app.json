@@ -42,7 +42,9 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "INTERNET",
-        "VIBRATE"
+        "VIBRATE",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "web": {
@@ -66,7 +68,9 @@
       ]
     ],
     "extra": {
-      "eas": {},
+      "eas": {
+        "projectId": "61b44dad-4917-45ba-ab9c-6b13b43c2ff8"
+      },
       "supabaseUrl": "https://hgsxndnxyczhudhsbddo.supabase.co",
       "siteUrl": "https://www.gsbrealtor.com"
     },
