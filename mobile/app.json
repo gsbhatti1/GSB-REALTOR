@@ -3,7 +3,9 @@
     "name": "GSB Realtor",
     "slug": "gsb-realtor",
     "version": "1.0.0",
-    "runtimeVersion": { "policy": "appVersion" },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -14,7 +16,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#060606"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.gsbrealtor.app",
@@ -53,7 +57,9 @@
       [
         "expo-build-properties",
         {
-          "ios": { "deploymentTarget": "15.1" },
+          "ios": {
+            "deploymentTarget": "15.1"
+          },
           "android": {
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
@@ -63,7 +69,7 @@
       ]
     ],
     "extra": {
-      "eas": { "projectId": "gsb-realtor-app" },
+      "eas": {},
       "supabaseUrl": "https://hgsxndnxyczhudhsbddo.supabase.co",
       "siteUrl": "https://www.gsbrealtor.com"
     },
