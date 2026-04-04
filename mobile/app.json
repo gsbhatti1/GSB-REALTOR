@@ -65,8 +65,7 @@
             "minSdkVersion": 24
           }
         }
-      ],
-      "./plugins/withSwiftConcurrency"
+      ]
     ],
     "extra": {
       "eas": {
