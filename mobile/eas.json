@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 18.0.0"
+    "version": ">= 18.0.0",
+    "requireCommit": false
   },
   "build": {
     "development": {
@@ -20,7 +21,7 @@
       "distribution": "internal",
       "ios": {
         "simulator": false,
-        "image": "macos-sequoia-15.3-xcode-16.2"
+        "image": "macos-sequoia-15.4-xcode-16.3"
       },
       "android": {
         "buildType": "apk"
@@ -33,7 +34,7 @@
       "autoIncrement": true,
       "ios": {
         "simulator": false,
-        "image": "macos-sequoia-15.3-xcode-16.2"
+        "image": "macos-sequoia-15.4-xcode-16.3"
       },
       "android": {
         "buildType": "app-bundle"
