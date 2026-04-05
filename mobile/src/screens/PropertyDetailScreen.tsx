@@ -106,8 +106,8 @@ export default function PropertyDetailScreen({ navigation, route }: Props) {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Check out this ${formatPrice(property.ListPrice)} property in ${property.City}, UT — listed on GSB Realtor\nhttps://www.gsbrealtor.com/property/${property.ListingKey}`,
-        url: `https://www.gsbrealtor.com/property/${property.ListingKey}`,
+        message: `Check out this ${formatPrice(property.ListPrice)} property in ${property.City}, UT — listed on GSB Realtor\nhttps://www.gsbrealtor.com/listing/${property.ListingKey}`,
+        url: `https://www.gsbrealtor.com/listing/${property.ListingKey}`,
         title: `${formatPrice(property.ListPrice)} in ${property.City}`,
       })
     } catch {}
@@ -283,7 +283,7 @@ export default function PropertyDetailScreen({ navigation, route }: Props) {
 
           <TouchableOpacity
             style={styles.ctaOutline}
-            onPress={() => Linking.openURL(`https://www.gsbrealtor.com/property/${property.ListingKey}`)}
+            onPress={() => Linking.openURL(`https://www.gsbrealtor.com/listing/${property.ListingKey}`)}
             activeOpacity={0.75}
           >
             <Text style={styles.ctaOutlineText}>View Full Listing on Web →</Text>

@@ -133,10 +133,10 @@ export default function PropertyMap({ properties, onPropertySelect }: Props) {
           el.textContent = formatPrice(prop.ListPrice) || prop.City || ''
           el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.1)' })
           el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)' })
-          el.addEventListener('click', () => {
+          el.addEventListener('click', (e) => {
+            e.stopPropagation()
             onPropertySelect?.(prop.ListingKey)
-            // Navigate directly to listing page
-            window.open(`/listing/${prop.ListingKey}`, '_blank')
+            // Popup opens automatically via Mapbox — don't navigate on click
           })
 
           const address = [prop.StreetNumber, prop.StreetName, prop.StreetSuffix].filter(Boolean).join(' ')
