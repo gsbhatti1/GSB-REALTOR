@@ -117,7 +117,7 @@ export default function RootLayout({
         <meta name="apple-itunes-app" content="app-id=6761660435" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="msvalidate.01" content="BING_VERIFY_PLACEHOLDER" />
+        <meta name="msvalidate.01" content="6D275B45360200689C5671CCF44CE383" />
 
         {/* ── Structured Data (JSON-LD) ── */}
         <RealEstateAgentSchema />
